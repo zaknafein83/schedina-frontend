@@ -1,15 +1,16 @@
 import { useRef, useState } from 'react'
-import { Download, Upload, Loader2 } from 'lucide-react'
+import { Download, Upload, Loader2, FileText } from 'lucide-react'
 
 /**
  * Barra export/import riutilizzabile.
  * Props:
- *   exportFn  — funzione async che chiama l'API e ritorna { data: [...] }
- *   importFn  — funzione async che riceve il testo del file
- *   filename  — nome del file esportato (es. "leghe.json")
- *   onImported — callback chiamata dopo import riuscito
+ *   exportFn    — funzione async che chiama l'API e ritorna { data: [...] }
+ *   importFn    — funzione async che riceve il testo del file
+ *   filename    — nome del file esportato (es. "leghe.json")
+ *   onImported  — callback chiamata dopo import riuscito
+ *   templateUrl — (opzionale) URL del template CSV da scaricare
  */
-export default function ImportExport({ exportFn, importFn, filename, onImported }) {
+export default function ImportExport({ exportFn, importFn, filename, onImported, templateUrl }) {
   const fileRef = useRef(null)
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
@@ -67,6 +68,19 @@ export default function ImportExport({ exportFn, importFn, filename, onImported 
         }`}>
           {message.text}
         </span>
+      )}
+
+      {templateUrl && (
+        <a
+          href={templateUrl}
+          download
+          className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-gray-300
+            hover:bg-gray-50 text-gds-gray hover:text-gds-dark transition-colors"
+          title="Scarica template CSV"
+        >
+          <FileText size={14} />
+          Template
+        </a>
       )}
 
       <button

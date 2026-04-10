@@ -97,6 +97,7 @@ export default function Teams() {
             importFn={adminApi.importTeams}
             filename="squadre.json"
             onImported={() => queryClient.invalidateQueries({ queryKey: ['admin-teams'] })}
+            templateUrl="/templates/squadre_template.csv"
           />
           <Button onClick={openCreate}>
             <Plus size={16} />
