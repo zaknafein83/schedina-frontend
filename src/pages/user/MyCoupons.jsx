@@ -19,9 +19,20 @@ function CouponRow({ coupon }) {
   const [expanded, setExpanded] = useState(false)
   const queryClient = useQueryClient()
 
+  // Carica il dettaglio completo (con previsioni) solo quando espanso
+  const { data: detail, isLoading: loadingDetail } = useQuery({
+    queryKey: ['coupon-detail', coupon.id],
+    queryFn: () => couponApi.get(coupon.id).then((r) => r.data),
+    enabled: expanded,
+    staleTime: 30_000,
+  })
+
   const confirmMutation = useMutation({
     mutationFn: () => couponApi.confirm(coupon.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['coupons'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['coupons'] })
+      queryClient.invalidateQueries({ queryKey: ['coupon-detail', coupon.id] })
+    },
   })
 
   const cancelMutation = useMutation({
@@ -43,6 +54,11 @@ function CouponRow({ coupon }) {
               Schedina #{coupon.id}
             </span>
             <Badge color={status.color}>{status.label}</Badge>
+            {coupon.correctCount != null && (
+              <span className="text-xs text-gds-gray">
+                ({coupon.correctCount} corretti)
+              </span>
+            )}
           </div>
           <p className="text-xs text-gds-gray">
             Creata il{' '}
@@ -91,30 +107,56 @@ function CouponRow({ coupon }) {
         </div>
       </div>
 
-      {expanded && coupon.predictions && (
+      {expanded && (
         <div className="px-6 pb-4 bg-gds-pink-light/30">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-            {coupon.predictions.map((pred) => (
-              <div
-                key={pred.matchId}
-                className="flex items-center justify-between bg-white rounded-lg px-3 py-2 text-sm"
-              >
-                <span className="text-gds-dark truncate mr-2">
-                  {pred.homeTeamName} vs {pred.awayTeamName}
-                </span>
-                <div className="flex gap-1 shrink-0">
-                  {pred.choices.map((c) => (
-                    <span
-                      key={c}
-                      className="bg-gds-pink text-white text-xs font-bold rounded px-1.5 py-0.5"
-                    >
-                      {c}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          {loadingDetail ? (
+            <div className="flex justify-center py-4"><Spinner /></div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+              {detail?.predictions?.map((pred) => {
+                const hasResult = pred.officialResult != null
+                const correct = pred.isCorrect
+
+                return (
+                  <div
+                    key={pred.matchId}
+                    className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm border
+                      ${correct === true ? 'bg-green-50 border-green-200' :
+                        correct === false ? 'bg-red-50 border-red-200' :
+                        'bg-white border-gray-100'}`}
+                  >
+                    <div className="flex-1 min-w-0 mr-2">
+                      <p className="text-gds-dark font-medium truncate">
+                        {pred.homeTeamName} vs {pred.awayTeamName}
+                      </p>
+                      {hasResult && (
+                        <p className="text-xs text-gds-gray mt-0.5 font-mono">
+                          {pred.homeScore}–{pred.awayScore}
+                          <span className="ml-1 font-bold">({pred.officialResult})</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {pred.choices.map((c) => (
+                        <span
+                          key={c}
+                          className="bg-gds-pink text-white text-xs font-bold rounded px-1.5 py-0.5"
+                        >
+                          {c}
+                        </span>
+                      ))}
+                      {correct === true && (
+                        <span className="text-green-600 ml-1">✓</span>
+                      )}
+                      {correct === false && (
+                        <span className="text-red-500 ml-1">✗</span>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>

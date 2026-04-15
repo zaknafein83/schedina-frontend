@@ -107,8 +107,8 @@ export const adminApi = {
   createMatch: (data) => apiClient.post('/admin/matches', data),
   updateMatch: (id, data) => apiClient.patch(`/admin/matches/${id}`, data),
   deleteMatch: (id) => apiClient.delete(`/admin/matches/${id}`),
-  setMatchResult: (id, officialResult) =>
-    apiClient.put(`/admin/matches/${id}/result`, { officialResult }),
+  setMatchResult: (id, homeScore, awayScore) =>
+    apiClient.put(`/admin/matches/${id}/result`, { homeScore, awayScore }),
 
   // Users
   getUsers: () => apiClient.get('/admin/users'),

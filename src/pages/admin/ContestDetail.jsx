@@ -10,8 +10,6 @@ import Modal from '../../components/ui/Modal'
 import Badge from '../../components/ui/Badge'
 import { ArrowLeft, Plus, Pencil, Trash2, Check } from 'lucide-react'
 
-const RESULTS = ['1', 'X', '2']
-
 function toDatetimeLocal(iso) {
   if (!iso) return ''
   return iso.slice(0, 16)
@@ -23,7 +21,8 @@ export default function AdminContestDetail() {
   const queryClient = useQueryClient()
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [resultValues, setResultValues] = useState({})
+  // { [matchId]: { home: '', away: '' } }
+  const [scoreValues, setScoreValues] = useState({})
   const [savingResult, setSavingResult] = useState(null)
 
   const { data: matches, isLoading } = useQuery({
@@ -66,8 +65,8 @@ export default function AdminContestDetail() {
   })
 
   const resultMutation = useMutation({
-    mutationFn: ({ matchId, officialResult }) =>
-      adminApi.setMatchResult(matchId, officialResult),
+    mutationFn: ({ matchId, homeScore, awayScore }) =>
+      adminApi.setMatchResult(matchId, homeScore, awayScore),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['admin-matches', id] }),
     onSettled: () => setSavingResult(null),
@@ -128,11 +127,41 @@ export default function AdminContestDetail() {
     }
   }
 
+  function getScore(matchId, side, match) {
+    const local = scoreValues[matchId]
+    if (local && local[side] !== undefined) return local[side]
+    if (side === 'home') return match.homeScore ?? ''
+    return match.awayScore ?? ''
+  }
+
+  function setScore(matchId, side, value) {
+    setScoreValues((prev) => ({
+      ...prev,
+      [matchId]: { ...prev[matchId], [side]: value },
+    }))
+  }
+
   async function handleSaveResult(match) {
-    const result = resultValues[match.id] ?? match.officialResult ?? ''
-    if (!result) return
+    const home = getScore(match.id, 'home', match)
+    const away = getScore(match.id, 'away', match)
+    if (home === '' || away === '') return
     setSavingResult(match.id)
-    resultMutation.mutate({ matchId: match.id, officialResult: result })
+    resultMutation.mutate({
+      matchId: match.id,
+      homeScore: Number(home),
+      awayScore: Number(away),
+    })
+  }
+
+  /** Calcola l'esito 1/X/2 in tempo reale per mostrarlo all'admin */
+  function previewResult(matchId, match) {
+    const home = getScore(matchId, 'home', match)
+    const away = getScore(matchId, 'away', match)
+    if (home === '' || away === '') return null
+    const h = Number(home), a = Number(away)
+    if (h > a) return '1'
+    if (h === a) return 'X'
+    return '2'
   }
 
   if (isLoading) {
@@ -208,25 +237,38 @@ export default function AdminContestDetail() {
                     : '—'}
                 </td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={resultValues[match.id] ?? match.officialResult ?? ''}
-                      onChange={(e) =>
-                        setResultValues((prev) => ({
-                          ...prev,
-                          [match.id]: e.target.value,
-                        }))
-                      }
-                      className="rounded-lg border border-gray-200 px-2 py-1 text-sm bg-white
-                        outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
-                    >
-                      <option value="">-- --</option>
-                      {RESULTS.map((r) => (
-                        <option key={r} value={r}>
-                          {r}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="flex items-center gap-1.5">
+                    {/* Input punteggio casa */}
+                    <input
+                      type="number"
+                      min={0}
+                      value={getScore(match.id, 'home', match)}
+                      onChange={(e) => setScore(match.id, 'home', e.target.value)}
+                      placeholder="0"
+                      className="w-12 text-center rounded-lg border border-gray-200 px-1 py-1 text-sm
+                        bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+                    />
+                    <span className="text-gds-gray font-bold text-xs">–</span>
+                    {/* Input punteggio ospite */}
+                    <input
+                      type="number"
+                      min={0}
+                      value={getScore(match.id, 'away', match)}
+                      onChange={(e) => setScore(match.id, 'away', e.target.value)}
+                      placeholder="0"
+                      className="w-12 text-center rounded-lg border border-gray-200 px-1 py-1 text-sm
+                        bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+                    />
+                    {/* Anteprima esito calcolato */}
+                    {(() => {
+                      const preview = previewResult(match.id, match)
+                      return preview ? (
+                        <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gds-dark">
+                          {preview}
+                        </span>
+                      ) : null
+                    })()}
+                    {/* Salva */}
                     <button
                       onClick={() => handleSaveResult(match)}
                       disabled={savingResult === match.id}
@@ -239,8 +281,11 @@ export default function AdminContestDetail() {
                         <Check size={15} />
                       )}
                     </button>
+                    {/* Risultato salvato */}
                     {match.officialResult && (
-                      <Badge color="green">{match.officialResult}</Badge>
+                      <Badge color="green">
+                        {match.homeScore}–{match.awayScore} ({match.officialResult})
+                      </Badge>
                     )}
                   </div>
                 </td>
