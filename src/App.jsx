@@ -25,10 +25,15 @@ import AdminRules from './pages/admin/Rules'
 import AdminUsers from './pages/admin/Users'
 import AdminNotifications from './pages/admin/Notifications'
 
+// Mod pages
+import ModContests from './pages/mod/Contests'
+import ModContestDetail from './pages/mod/ContestDetail'
+
 function RootRedirect() {
   const { user } = useAuth()
   if (!user) return <Navigate to="/login" replace />
   if (user.role === 'ADMIN') return <Navigate to="/admin" replace />
+  if (user.role === 'MOD')   return <Navigate to="/mod/contests" replace />
   return <Navigate to="/contests" replace />
 }
 
@@ -72,6 +77,12 @@ export default function App() {
         <Route path="/admin/rules" element={<AdminRules />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/notifications" element={<AdminNotifications />} />
+      </Route>
+
+      {/* Mod routes */}
+      <Route element={<ProtectedRoute allowedRole="MOD" />}>
+        <Route path="/mod/contests" element={<ModContests />} />
+        <Route path="/mod/contests/:id" element={<ModContestDetail />} />
       </Route>
     </Routes>
   )

@@ -94,6 +94,7 @@ export const adminApi = {
 
   // Contests
   getContests: () => apiClient.get('/admin/contests'),
+  getContest: (id) => apiClient.get(`/admin/contests/${id}`),
   createContest: (data) => apiClient.post('/admin/contests', data),
   updateContest: (id, data) => apiClient.patch(`/admin/contests/${id}`, data),
   deleteContest: (id) => apiClient.delete(`/admin/contests/${id}`),
