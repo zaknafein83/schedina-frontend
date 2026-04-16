@@ -70,6 +70,10 @@ export default function AdminContests() {
   const deleteMutation = useMutation({
     mutationFn: (id) => adminApi.deleteContest(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-contests'] }),
+    onError: (err) => {
+      const msg = err.response?.data?.error || 'Errore durante l\'eliminazione'
+      alert(msg)
+    },
   })
 
   const openMutation = useMutation({

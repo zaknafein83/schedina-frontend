@@ -52,6 +52,10 @@ export default function Teams() {
   const deleteMutation = useMutation({
     mutationFn: (id) => adminApi.deleteTeam(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-teams'] }),
+    onError: (err) => {
+      const msg = err.response?.data?.error || 'Errore durante l\'eliminazione'
+      alert(msg)
+    },
   })
 
   function openCreate() {
