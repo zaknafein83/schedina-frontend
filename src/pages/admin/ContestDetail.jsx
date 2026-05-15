@@ -39,8 +39,11 @@ export default function AdminContestDetail() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm()
+
+  const watchBetType = watch('betType', 'RESULT_1X2')
 
   const createMutation = useMutation({
     mutationFn: (data) => adminApi.createMatch(data),
@@ -79,6 +82,8 @@ export default function AdminContestDetail() {
       awayTeamId: '',
       matchNumber: '',
       scheduledAt: '',
+      betType: 'RESULT_1X2',
+      overUnderLine: '3.5',
     })
     setModalOpen(true)
   }
@@ -90,6 +95,8 @@ export default function AdminContestDetail() {
       awayTeamId: match.awayTeamId || '',
       matchNumber: match.matchNumber ?? '',
       scheduledAt: toDatetimeLocal(match.scheduledAt),
+      betType: match.betType || 'RESULT_1X2',
+      overUnderLine: match.overUnderLine ?? '3.5',
     })
     setModalOpen(true)
   }
@@ -106,9 +113,9 @@ export default function AdminContestDetail() {
       homeTeamId: data.homeTeamId ? Number(data.homeTeamId) : undefined,
       awayTeamId: data.awayTeamId ? Number(data.awayTeamId) : undefined,
       matchNumber: data.matchNumber !== '' ? Number(data.matchNumber) : undefined,
-      scheduledAt: data.scheduledAt
-        ? new Date(data.scheduledAt).toISOString()
-        : undefined,
+      scheduledAt: data.scheduledAt ? new Date(data.scheduledAt).toISOString() : undefined,
+      betType: data.betType || 'RESULT_1X2',
+      overUnderLine: data.betType === 'UNDER_OVER' ? Number(data.overUnderLine) : undefined,
     }
     if (editing) {
       await updateMutation.mutateAsync({ matchId: editing.id, data: payload })
@@ -199,6 +206,7 @@ export default function AdminContestDetail() {
               <th className="px-4 py-3 text-left font-semibold">#</th>
               <th className="px-4 py-3 text-left font-semibold">Casa</th>
               <th className="px-4 py-3 text-left font-semibold">Ospite</th>
+              <th className="px-4 py-3 text-left font-semibold">Tipo</th>
               <th className="px-4 py-3 text-left font-semibold">Data/ora</th>
               <th className="px-4 py-3 text-left font-semibold">Risultato ufficiale</th>
               <th className="px-4 py-3 text-right font-semibold">Azioni</th>
@@ -207,7 +215,7 @@ export default function AdminContestDetail() {
           <tbody>
             {matches?.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-center py-10 text-gds-gray">
+                <td colSpan={7} className="text-center py-10 text-gds-gray">
                   Nessuna partita aggiunta.
                 </td>
               </tr>
@@ -225,6 +233,12 @@ export default function AdminContestDetail() {
                 </td>
                 <td className="px-4 py-3 font-medium text-gds-dark">
                   {match.awayTeamName || '—'}
+                </td>
+                <td className="px-4 py-3">
+                  {match.betType === 'UNDER_OVER'
+                    ? <span className="text-xs font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">U/O {match.overUnderLine}</span>
+                    : <span className="text-xs font-semibold bg-gray-100 text-gds-dark px-1.5 py-0.5 rounded">1X2</span>
+                  }
                 </td>
                 <td className="px-4 py-3 text-gds-gray text-xs">
                   {match.scheduledAt
@@ -374,6 +388,29 @@ export default function AdminContestDetail() {
             error={errors.scheduledAt?.message}
             {...register('scheduledAt')}
           />
+
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gds-dark">Tipo giocata</label>
+            <select
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
+                bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+              {...register('betType')}
+            >
+              <option value="RESULT_1X2">1 / X / 2 — Risultato finale</option>
+              <option value="UNDER_OVER">Under / Over — Goal totali</option>
+            </select>
+          </div>
+
+          {watchBetType === 'UNDER_OVER' && (
+            <Input
+              label="Soglia (es. 2.5, 3.5, 4.5)"
+              type="number"
+              step="0.5"
+              min="0.5"
+              placeholder="3.5"
+              {...register('overUnderLine')}
+            />
+          )}
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={closeModal}>

@@ -6,14 +6,21 @@ import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import { ArrowLeft, Trophy } from 'lucide-react'
 
-const CHOICES = ['1', 'X', '2']
+const CHOICES_1X2 = ['1', 'X', '2']
+const CHOICES_UO  = ['U', 'O']
+
+function choicesFor(match) {
+  return match.betType === 'UNDER_OVER' ? CHOICES_UO : CHOICES_1X2
+}
 
 function ChoiceButton({ choice, selected, onClick }) {
+  const isUO = choice === 'U' || choice === 'O'
   return (
     <button
       type="button"
       onClick={() => onClick(choice)}
-      className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors border-2
+      className={`h-10 rounded-lg text-sm font-bold transition-colors border-2 px-3
+        ${isUO ? 'min-w-[3rem]' : 'w-10'}
         ${
           selected
             ? 'bg-gds-pink border-gds-pink text-white'
@@ -57,9 +64,14 @@ export default function ContestDetail() {
     },
   })
 
-  function toggleChoice(matchId, choice) {
+  function toggleChoice(matchId, choice, match) {
     setPredictions((prev) => {
       const current = prev[matchId] || []
+      // Under/Over: selezione singola (U o O), niente doppie
+      if (match.betType === 'UNDER_OVER') {
+        return { ...prev, [matchId]: current.includes(choice) ? [] : [choice] }
+      }
+      // 1X2: toggle normale (doppia/tripla)
       if (current.includes(choice)) {
         return { ...prev, [matchId]: current.filter((c) => c !== choice) }
       }
@@ -157,24 +169,28 @@ export default function ContestDetail() {
               <p className="font-semibold text-gds-dark text-sm">
                 {match.homeTeamName} <span className="text-gds-gray font-normal">vs</span> {match.awayTeamName}
               </p>
-              {match.scheduledAt && (
-                <p className="text-xs text-gds-gray mt-0.5">
-                  {new Date(match.scheduledAt).toLocaleString('it-IT', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
-              )}
+              <div className="flex items-center gap-2 mt-0.5">
+                {match.scheduledAt && (
+                  <p className="text-xs text-gds-gray">
+                    {new Date(match.scheduledAt).toLocaleString('it-IT', {
+                      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
+                    })}
+                  </p>
+                )}
+                {match.betType === 'UNDER_OVER' && (
+                  <span className="text-xs font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                    U/O {match.overUnderLine}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex gap-1.5">
-              {CHOICES.map((c) => (
+              {choicesFor(match).map((c) => (
                 <ChoiceButton
                   key={c}
                   choice={c}
                   selected={(predictions[match.id] || []).includes(c)}
-                  onClick={(choice) => toggleChoice(match.id, choice)}
+                  onClick={(choice) => toggleChoice(match.id, choice, match)}
                 />
               ))}
             </div>
