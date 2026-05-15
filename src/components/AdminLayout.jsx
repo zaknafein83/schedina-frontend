@@ -9,6 +9,7 @@ import {
   Bell,
   LogOut,
   ChevronRight,
+  HelpCircle,
 } from 'lucide-react'
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
   { to: '/admin/rules', label: 'Regole', icon: BookOpen },
   { to: '/admin/users', label: 'Utenti', icon: Users },
   { to: '/admin/notifications', label: 'Notifiche', icon: Bell },
+  { to: '/aiuto', label: 'Guida', icon: HelpCircle },
 ]
 
 export default function AdminLayout({ children }) {

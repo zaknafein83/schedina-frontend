@@ -2,12 +2,18 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import Spinner from './components/Spinner'
 import ProtectedRoute from './components/ProtectedRoute'
+import Layout from './components/Layout'
+import AdminLayout from './components/AdminLayout'
+import ModLayout from './components/ModLayout'
 
 // Auth pages
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import ResetPassword from './pages/auth/ResetPassword'
+
+// Shared pages
+import Manual from './pages/Manual'
 
 // User pages
 import Contests from './pages/user/Contests'
@@ -37,6 +43,27 @@ function RootRedirect() {
   return <Navigate to="/contests" replace />
 }
 
+// Guida: accessibile a qualsiasi utente loggato, wrappa nel layout giusto del ruolo
+function ManualRoute() {
+  const { user, isLoading } = useAuth()
+  const hasToken = !!localStorage.getItem('token')
+  if (isLoading || (!user && hasToken)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gds-gray-light">
+        <Spinner size="lg" />
+      </div>
+    )
+  }
+  if (!user) return <Navigate to="/login" replace />
+  const Wrapper =
+    user.role === 'ADMIN' ? AdminLayout : user.role === 'MOD' ? ModLayout : Layout
+  return (
+    <Wrapper>
+      <Manual />
+    </Wrapper>
+  )
+}
+
 export default function App() {
   const { isLoading } = useAuth()
 
@@ -58,6 +85,9 @@ export default function App() {
 
       {/* Root redirect */}
       <Route path="/" element={<RootRedirect />} />
+
+      {/* Manual: accessibile a qualsiasi ruolo loggato */}
+      <Route path="/aiuto" element={<ManualRoute />} />
 
       {/* User routes */}
       <Route element={<ProtectedRoute allowedRole="USER" />}>

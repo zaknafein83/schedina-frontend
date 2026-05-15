@@ -1,9 +1,10 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Trophy, LogOut, ChevronRight } from 'lucide-react'
+import { Trophy, LogOut, ChevronRight, HelpCircle } from 'lucide-react'
 
 const navItems = [
   { to: '/mod/contests', label: 'Concorsi', icon: Trophy },
+  { to: '/aiuto',        label: 'Guida',    icon: HelpCircle },
 ]
 
 export default function ModLayout({ children }) {

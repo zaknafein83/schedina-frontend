@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import { notificationApi } from '../api/client'
-import { Bell, Trophy, FileText, LogOut } from 'lucide-react'
+import { Bell, Trophy, FileText, LogOut, BookOpen } from 'lucide-react'
 
 export default function Layout({ children }) {
   const { user, logout } = useAuth()
@@ -61,6 +61,10 @@ export default function Layout({ children }) {
                 )}
               </span>
               Notifiche
+            </NavLink>
+            <NavLink to="/aiuto" className={navLinkClass}>
+              <BookOpen size={16} />
+              Guida
             </NavLink>
           </nav>
 
