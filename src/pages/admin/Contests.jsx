@@ -155,6 +155,7 @@ export default function AdminContests() {
             exportFn={adminApi.exportContests}
             importFn={adminApi.importContests}
             filename="concorsi.json"
+            templateUrl="/templates/concorsi_template.csv"
             onImported={() => queryClient.invalidateQueries({ queryKey: ['admin-contests'] })}
           />
           <Button onClick={openCreate}>

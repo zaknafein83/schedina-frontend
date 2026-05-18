@@ -126,6 +126,7 @@ export default function Rules() {
             exportFn={adminApi.exportRules}
             importFn={adminApi.importRules}
             filename="regole.json"
+            templateUrl="/templates/regole_template.csv"
             onImported={() => queryClient.invalidateQueries({ queryKey: ['admin-rules'] })}
           />
           <Button onClick={openCreate}>

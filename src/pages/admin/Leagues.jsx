@@ -96,6 +96,7 @@ export default function Leagues() {
             exportFn={adminApi.exportLeagues}
             importFn={adminApi.importLeagues}
             filename="leghe.json"
+            templateUrl="/templates/leghe_template.csv"
             onImported={() => queryClient.invalidateQueries({ queryKey: ['admin-leagues'] })}
           />
           <Button onClick={openCreate}>
