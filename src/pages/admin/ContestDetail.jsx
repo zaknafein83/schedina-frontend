@@ -25,6 +25,11 @@ export default function AdminContestDetail() {
   const [scoreValues, setScoreValues] = useState({})
   const [savingResult, setSavingResult] = useState(null)
 
+  const { data: contest } = useQuery({
+    queryKey: ['admin-contest', id],
+    queryFn: () => adminApi.getContest(id).then((r) => r.data),
+  })
+
   const { data: matches, isLoading } = useQuery({
     queryKey: ['admin-matches', id],
     queryFn: () => adminApi.getMatches(id).then((r) => r.data),
@@ -34,6 +39,8 @@ export default function AdminContestDetail() {
     queryKey: ['admin-teams'],
     queryFn: () => adminApi.getTeams().then((r) => r.data),
   })
+
+  const canAddMatches = !['CLOSED', 'PROCESSING', 'PROCESSED'].includes(contest?.status)
 
   const {
     register,
@@ -193,10 +200,12 @@ export default function AdminContestDetail() {
         <h1 className="text-2xl font-bold text-gds-dark">
           Partite del concorso #{id}
         </h1>
-        <Button onClick={openCreate}>
-          <Plus size={16} />
-          Aggiungi partita
-        </Button>
+        {canAddMatches && (
+          <Button onClick={openCreate}>
+            <Plus size={16} />
+            Aggiungi partita
+          </Button>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
