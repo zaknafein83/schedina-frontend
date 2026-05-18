@@ -10,11 +10,13 @@ import {
   LogOut,
   ChevronRight,
   HelpCircle,
+  FileText,
 } from 'lucide-react'
 
 const navItems = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/contests', label: 'Concorsi', icon: Trophy },
+  { to: '/admin/coupons', label: 'Schedine', icon: FileText },
   { to: '/admin/leagues', label: 'Leghe', icon: Shield },
   { to: '/admin/teams', label: 'Squadre', icon: Users },
   { to: '/admin/rules', label: 'Regole', icon: BookOpen },

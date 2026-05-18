@@ -49,7 +49,7 @@ export default function Layout({ children }) {
             </NavLink>
             <NavLink to="/my-coupons" className={navLinkClass}>
               <FileText size={16} />
-              Le mie schedine
+              Schedine
             </NavLink>
             <NavLink to="/notifications" className={navLinkClass}>
               <span className="relative">

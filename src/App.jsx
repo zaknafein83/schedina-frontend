@@ -14,11 +14,11 @@ import ResetPassword from './pages/auth/ResetPassword'
 
 // Shared pages
 import Manual from './pages/Manual'
+import Coupons from './pages/Coupons'
 
 // User pages
 import Contests from './pages/user/Contests'
 import ContestDetail from './pages/user/ContestDetail'
-import MyCoupons from './pages/user/MyCoupons'
 import UserNotifications from './pages/user/Notifications'
 
 // Admin pages
@@ -93,7 +93,7 @@ export default function App() {
       <Route element={<ProtectedRoute allowedRole="USER" />}>
         <Route path="/contests" element={<Contests />} />
         <Route path="/contests/:id" element={<ContestDetail />} />
-        <Route path="/my-coupons" element={<MyCoupons />} />
+        <Route path="/my-coupons" element={<Coupons />} />
         <Route path="/notifications" element={<UserNotifications />} />
       </Route>
 
@@ -102,6 +102,7 @@ export default function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/contests" element={<AdminContests />} />
         <Route path="/admin/contests/:id" element={<AdminContestDetail />} />
+        <Route path="/admin/coupons" element={<Coupons />} />
         <Route path="/admin/leagues" element={<AdminLeagues />} />
         <Route path="/admin/teams" element={<AdminTeams />} />
         <Route path="/admin/rules" element={<AdminRules />} />
@@ -113,6 +114,7 @@ export default function App() {
       <Route element={<ProtectedRoute allowedRole="MOD" />}>
         <Route path="/mod/contests" element={<ModContests />} />
         <Route path="/mod/contests/:id" element={<ModContestDetail />} />
+        <Route path="/mod/coupons" element={<Coupons />} />
       </Route>
     </Routes>
   )

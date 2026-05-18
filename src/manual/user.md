@@ -10,7 +10,7 @@ controllo dei risultati.
 2. Apri la lista dei **Concorsi** aperti
 3. Selezioni un concorso e **compili una schedina** con i tuoi pronostici
 4. **Confermi** la schedina entro la data di chiusura
-5. Quando l'amministratore inserisce i risultati, vedi se hai vinto in **Le mie schedine**
+5. Quando l'amministratore inserisce i risultati, vedi se hai vinto in **Schedine**
 
 ---
 
@@ -68,9 +68,9 @@ Quando hai compilato tutte le partite richieste clicca **Invia schedina**.
 Una volta inviata, la schedina è **bloccata** e partecipa al concorso.
 Puoi crearne altre fino al limite previsto dal regolamento (di solito 3 per utente).
 
-## 5. Le mie schedine
+## 5. Schedine
 
-Nel menu *"Le mie schedine"* trovi tutte le tue giocate, con il loro stato:
+Nel menu *"Schedine"* trovi tutte le tue giocate, con il loro stato:
 
 | Stato | Significato |
 |---|---|

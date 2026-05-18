@@ -56,6 +56,7 @@ export const contestApi = {
 // ─── Coupons ─────────────────────────────────────────────────────────────────
 export const couponApi = {
   list: () => apiClient.get('/coupons'),
+  listByContest: () => apiClient.get('/coupons/by-contest'),
   create: (data) => apiClient.post('/coupons', data),
   get: (id) => apiClient.get(`/coupons/${id}`),
   confirm: (id) => apiClient.post(`/coupons/${id}/confirm`),
@@ -122,6 +123,10 @@ export const adminApi = {
   getNotifications: (status) =>
     apiClient.get('/admin/notifications', { params: status ? { status } : {} }),
   resendNotification: (id) => apiClient.post(`/admin/notifications/${id}/resend`),
+
+  // Coupons (admin/mod: tutte le schedine di tutti gli utenti)
+  getCouponsByContest: () => apiClient.get('/admin/coupons/by-contest'),
+  getCoupon: (id) => apiClient.get(`/admin/coupons/${id}`),
 
   // Export
   exportLeagues:  () => apiClient.get('/admin/export/leagues'),
