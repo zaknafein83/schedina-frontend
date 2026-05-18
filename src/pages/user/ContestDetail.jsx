@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { contestApi, couponApi, adminApi } from '../../api/client'
+import { contestApi, couponApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import { ArrowLeft, Trophy } from 'lucide-react'
@@ -38,17 +38,10 @@ export default function ContestDetail() {
   const queryClient = useQueryClient()
   const [predictions, setPredictions] = useState({})
   const [submitError, setSubmitError] = useState('')
-  const [ruleId, setRuleId] = useState('')
 
   const { data: matches, isLoading: matchesLoading } = useQuery({
     queryKey: ['contest-matches', id],
     queryFn: () => contestApi.getMatches(id).then((r) => r.data),
-  })
-
-  // Fetch rules from admin endpoint since there is no user-facing rules list
-  const { data: rules } = useQuery({
-    queryKey: ['rules'],
-    queryFn: () => adminApi.getRules().then((r) => r.data),
   })
 
   const submitMutation = useMutation({
@@ -81,10 +74,6 @@ export default function ContestDetail() {
 
   function handleSubmit() {
     setSubmitError('')
-    if (!ruleId) {
-      setSubmitError('Seleziona una regola di gioco.')
-      return
-    }
     const predList = matches?.map((m) => ({
       matchId: m.id,
       choices: predictions[m.id] || [],
@@ -98,7 +87,6 @@ export default function ContestDetail() {
     }
     submitMutation.mutate({
       contestId: Number(id),
-      ruleId: Number(ruleId),
       predictions: predList,
     })
   }
@@ -127,28 +115,6 @@ export default function ContestDetail() {
         </div>
         <h1 className="text-2xl font-bold text-gds-dark">Compila la schedina</h1>
       </div>
-
-      {/* Rule selector */}
-      {rules && rules.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-4">
-          <label className="text-sm font-medium text-gds-dark block mb-2">
-            Regola di gioco
-          </label>
-          <select
-            value={ruleId}
-            onChange={(e) => setRuleId(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gds-dark
-              bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
-          >
-            <option value="">-- Seleziona una regola --</option>
-            {rules.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
 
       {/* Match list */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
