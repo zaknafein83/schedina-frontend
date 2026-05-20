@@ -8368,3 +8368,10 @@
 /.idea/modules.xml
 /.idea/schedina-frontend.iml
 /.idea/vcs.xml
+
+# Build output e dipendenze
+node_modules/
+/dist/
+
+# Personali (config Claude)
+/.claude/
