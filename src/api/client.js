@@ -51,6 +51,7 @@ export const authApi = {
 export const contestApi = {
   listOpen: () => apiClient.get('/contests'),
   getMatches: (id) => apiClient.get(`/contests/${id}/matches`),
+  getMatchSideBets: (matchId) => apiClient.get(`/contests/matches/${matchId}/side-bets`),
 }
 
 // ─── Coupons ─────────────────────────────────────────────────────────────────
@@ -61,6 +62,30 @@ export const couponApi = {
   get: (id) => apiClient.get(`/coupons/${id}`),
   confirm: (id) => apiClient.post(`/coupons/${id}/confirm`),
   cancel: (id) => apiClient.delete(`/coupons/${id}`),
+}
+
+// ─── Listini pubblici (read-only, qualsiasi utente loggato) ──────────────────
+export const listiniApi = {
+  teams: (leagueId) =>
+    apiClient.get('/listini/teams', { params: leagueId ? { leagueId } : {} }),
+  players: (params) =>
+    apiClient.get('/listini/players', { params: params || {} }),
+}
+
+// ─── Season Pool (user) ──────────────────────────────────────────────────────
+export const seasonPoolApi = {
+  listOpen: () => apiClient.get('/season-pools'),
+  get: (id) => apiClient.get(`/season-pools/${id}`),
+  getBets: (id) => apiClient.get(`/season-pools/${id}/bets`),
+}
+
+// ─── Season Coupons (user) ───────────────────────────────────────────────────
+export const seasonCouponApi = {
+  list: () => apiClient.get('/season-coupons'),
+  get: (id) => apiClient.get(`/season-coupons/${id}`),
+  create: (data) => apiClient.post('/season-coupons', data),
+  confirm: (id) => apiClient.post(`/season-coupons/${id}/confirm`),
+  cancel: (id) => apiClient.delete(`/season-coupons/${id}`),
 }
 
 // ─── Notifications ───────────────────────────────────────────────────────────
@@ -87,6 +112,50 @@ export const adminApi = {
   updateTeam: (id, data) => apiClient.patch(`/admin/teams/${id}`, data),
   deleteTeam: (id) => apiClient.delete(`/admin/teams/${id}`),
 
+  // Tournaments
+  getTournaments: (params) =>
+    apiClient.get('/admin/tournaments', { params: params || {} }),
+  createTournament: (data) => apiClient.post('/admin/tournaments', data),
+  updateTournament: (id, data) => apiClient.patch(`/admin/tournaments/${id}`, data),
+  deleteTournament: (id) => apiClient.delete(`/admin/tournaments/${id}`),
+
+  // Season Pools
+  getSeasonPools: (params) => apiClient.get('/admin/season-pools', { params: params || {} }),
+  getSeasonPool: (id) => apiClient.get(`/admin/season-pools/${id}`),
+  createSeasonPool: (data) => apiClient.post('/admin/season-pools', data),
+  updateSeasonPool: (id, data) => apiClient.patch(`/admin/season-pools/${id}`, data),
+  deleteSeasonPool: (id) => apiClient.delete(`/admin/season-pools/${id}`),
+  openSeasonPool: (id) => apiClient.post(`/admin/season-pools/${id}/open`),
+  closeSeasonPool: (id) => apiClient.post(`/admin/season-pools/${id}/close`),
+  processSeasonPool: (id) => apiClient.post(`/admin/season-pools/${id}/process`),
+
+  // Season Pool bets
+  getSeasonBets: (poolId) => apiClient.get(`/admin/season-pools/${poolId}/bets`),
+  createSeasonBet: (poolId, data) => apiClient.post(`/admin/season-pools/${poolId}/bets`, data),
+  updateSeasonBet: (poolId, betId, data) =>
+    apiClient.patch(`/admin/season-pools/${poolId}/bets/${betId}`, data),
+  deleteSeasonBet: (poolId, betId) =>
+    apiClient.delete(`/admin/season-pools/${poolId}/bets/${betId}`),
+  resolveSeasonBet: (poolId, betId, officialResultRef) =>
+    apiClient.patch(`/admin/season-pools/${poolId}/bets/${betId}/resolve`, { officialResultRef }),
+  unresolveSeasonBet: (poolId, betId) =>
+    apiClient.post(`/admin/season-pools/${poolId}/bets/${betId}/unresolve`),
+
+  // Seasons
+  getSeasons: () => apiClient.get('/admin/seasons'),
+  getCurrentSeason: () => apiClient.get('/admin/seasons/current'),
+  createSeason: (data) => apiClient.post('/admin/seasons', data),
+  updateSeason: (id, data) => apiClient.patch(`/admin/seasons/${id}`, data),
+  setCurrentSeason: (id) => apiClient.patch(`/admin/seasons/${id}/set-current`),
+  deleteSeason: (id) => apiClient.delete(`/admin/seasons/${id}`),
+
+  // Players
+  getPlayers: (params) =>
+    apiClient.get('/admin/players', { params: params || {} }),
+  createPlayer: (data) => apiClient.post('/admin/players', data),
+  updatePlayer: (id, data) => apiClient.patch(`/admin/players/${id}`, data),
+  deletePlayer: (id) => apiClient.delete(`/admin/players/${id}`),
+
   // Rules
   getRules: () => apiClient.get('/admin/rules'),
   createRule: (data) => apiClient.post('/admin/rules', data),
@@ -112,6 +181,15 @@ export const adminApi = {
   setMatchResult: (id, homeScore, awayScore) =>
     apiClient.put(`/admin/matches/${id}/result`, { homeScore, awayScore }),
 
+  // Match side bets
+  getMatchSideBets: (matchId) => apiClient.get(`/admin/matches/${matchId}/side-bets`),
+  createMatchSideBet: (matchId, data) =>
+    apiClient.post(`/admin/matches/${matchId}/side-bets`, data),
+  deleteMatchSideBet: (matchId, sid) =>
+    apiClient.delete(`/admin/matches/${matchId}/side-bets/${sid}`),
+  resolveMatchSideBet: (matchId, sid, officialResult) =>
+    apiClient.patch(`/admin/matches/${matchId}/side-bets/${sid}/resolve`, { officialResult }),
+
   // Users
   getUsers: () => apiClient.get('/admin/users'),
   setUserStatus: (id, isActive) =>
@@ -131,6 +209,7 @@ export const adminApi = {
   // Export
   exportLeagues:  () => apiClient.get('/admin/export/leagues'),
   exportTeams:    () => apiClient.get('/admin/export/teams'),
+  exportPlayers:  () => apiClient.get('/admin/export/players'),
   exportRules:    () => apiClient.get('/admin/export/rules'),
   exportContests: () => apiClient.get('/admin/export/contests'),
   exportAll:      () => apiClient.get('/admin/export/all'),
@@ -138,6 +217,7 @@ export const adminApi = {
   // Import (invia il testo grezzo del file, rilevamento auto JSON/CSV)
   importLeagues:  (text) => apiClient.post('/admin/import/leagues',  text, { headers: { 'Content-Type': 'text/plain' } }),
   importTeams:    (text) => apiClient.post('/admin/import/teams',    text, { headers: { 'Content-Type': 'text/plain' } }),
+  importPlayers:  (text) => apiClient.post('/admin/import/players',  text, { headers: { 'Content-Type': 'text/plain' } }),
   importRules:    (text) => apiClient.post('/admin/import/rules',    text, { headers: { 'Content-Type': 'text/plain' } }),
   importContests: (text) => apiClient.post('/admin/import/contests', text, { headers: { 'Content-Type': 'text/plain' } }),
 }
