@@ -1,10 +1,13 @@
 # Guida per l'Amministratore
 
 L'**Amministratore** (`ADMIN`) ha pieno controllo sull'applicazione: crea i
-dati propedeutici (leghe, squadre, regole), apre i concorsi, gestisce
-gli utenti e supervisiona l'intero ciclo di vita di una giocata.
+dati propedeutici (leghe, squadre, regole, stagioni, tornei, giocatori),
+apre concorsi e pool stagionali, gestisce gli utenti e supervisiona
+l'intero ciclo di vita di una giocata.
 
-## Il ciclo di vita di un concorso
+## I due cicli di vita
+
+### Concorso settimanale
 
 ```
 Lega → Squadre → Regola → Concorso (DRAFT) → aggiungi partite →
@@ -12,20 +15,33 @@ Lega → Squadre → Regola → Concorso (DRAFT) → aggiungi partite →
 inserisci risultati → [elabora] → PROCESSED ✓
 ```
 
-Le tre frecce **`[apri]` `[chiudi]` `[elabora]`** sono le azioni a tuo
-carico (un Mod può fare le ultime due, ma non `[apri]`).
+### Pool stagionale
+
+```
+Stagione + Tornei + Giocatori →
+Pool (DRAFT) → configura i bet → [apri] → OPEN → utenti giocano →
+[chiudi] → CLOSED → risolvi i bet uno a uno → processing multiplo →
+tutti RESOLVED → PROCESSED ✓
+```
+
+Le frecce **`[apri]` `[chiudi]` `[elabora/risolvi]`** sono le azioni a tuo
+carico (un Mod può fare le ultime due ma non `[apri]`).
 
 ---
 
 ## 0. Step propedeutici (da fare una volta sola)
 
-Prima di poter creare un concorso devi avere a sistema:
+Prima di poter aprire concorsi e pool stagionali devi avere a sistema un
+set minimo di dati:
 
-1. Almeno una **Lega**
-2. Le **Squadre** che giocheranno
-3. Una **Regola** che definisce i parametri del concorso
-
-Ne parliamo nell'ordine.
+| # | Cosa | Per cosa serve |
+|---|---|---|
+| 0.1 | **Leghe** | Contesto delle partite settimanali |
+| 0.2 | **Squadre** | Componenti delle partite |
+| 0.3 | **Giocatori** | Capocannoniere, primo marcatore, miglior portiere |
+| 0.4 | **Regole** | Parametri dei concorsi settimanali |
+| 0.5 | **Stagioni** | Periodo di riferimento delle pool stagionali |
+| 0.6 | **Tornei** | Competizioni di cui si pronostica il vincitore |
 
 ### 0.1 Creare una Lega
 
@@ -57,11 +73,40 @@ I campi richiesti:
 Per popolazioni grandi (10+ squadre) usa il **template CSV**: scarica,
 compila in Excel/Google Sheets, importa.
 
-### 0.3 Definire una Regola
+### 0.3 Anagrafica Giocatori
+
+Menu laterale → **Giocatori**. Necessaria per i pronostici di tipo
+"capocannoniere", "miglior assist", "miglior portiere" (pool stagionali)
+e "primo marcatore" (side bet partita).
+
+Per ogni giocatore:
+
+- **Nome** e **Cognome** (obbligatori)
+- **Squadra** (opzionale)
+- **Ruolo**: `GK` / `DEF` / `MID` / `FWD`
+- **Attivo** sì/no
+
+Per popolare in massa usa **Import / Export → template CSV**:
+
+| Colonna | Esempio |
+|---|---|
+| `firstName` | Lautaro |
+| `lastName` | Martínez |
+| `teamName` | Inter |
+| `leagueName` | Serie A |
+| `role` | FWD |
+| `isActive` | true |
+
+L'import è **upsert** su `(firstName, lastName, teamName)`.
+
+> Il MOD può gestire i giocatori. Se gestisci più stagioni, importa
+> all'inizio di ognuna le nuove rose.
+
+### 0.4 Definire una Regola
 
 Menu laterale → **Regole** → **Nuova Regola**. La regola è il "contratto"
-del concorso: dice quante partite servono per essere validi, quante
-schedine al massimo può fare ogni utente, ecc.
+del concorso settimanale: dice quante partite servono per essere validi,
+quante schedine al massimo può fare ogni utente, ecc.
 
 ![Form di creazione regola](/aiuto/22-admin-regola.png)
 
@@ -78,9 +123,47 @@ I campi principali:
 
 > Tu sei l'unico che può creare/modificare regole.
 
+### 0.5 Creare una Stagione
+
+Menu laterale → **Stagioni** → **Nuova stagione**.
+
+La **Stagione** rappresenta il periodo di una pool stagionale (es. il
+campionato 2025-26). Solo **una stagione corrente** alla volta: il sistema
+impone questo vincolo via constraint sul database.
+
+Campi:
+
+- **Etichetta**: es. `2025-26` (univoca)
+- **Data inizio** / **Data fine** (opzionali ma utili per il riferimento)
+- **Imposta come corrente** ✓
+
+Per cambiare la stagione corrente più tardi, usa l'azione rapida
+**"Imposta corrente"** in tabella: il sistema azzera il flag sulla
+precedente e lo sposta sulla nuova.
+
+### 0.6 Creare i Tornei
+
+Menu laterale → **Tornei** → **Nuovo torneo**. Un **Tornei** rappresenta
+una competizione di cui si pronostica un vincitore, un capocannoniere,
+ecc. È **distinto** dalla Lega: la stessa "Serie A" può esistere come
+Lega (contesto delle partite del concorso settimanale) e come Tornei
+(target dei pronostici stagionali).
+
+Tre tipi:
+
+| Type | Esempio | Country |
+|---|---|---|
+| `LEAGUE_NATIONAL` | Serie A, Serie B, Serie C | Italia |
+| `CUP_NATIONAL` | Coppa Italia | Italia |
+| `CUP_INTERNATIONAL` | Champions League | — (nullable) |
+
+Il sistema include un **seed automatico** all'avvio del backend con
+i tornei standard italiani: Serie A, Serie B, Serie C, Coppa Italia,
+Champions League. Aggiungi/disattiva dalla pagina se cambi competizioni.
+
 ---
 
-## 1. Creare un Concorso
+## 1. Creare un Concorso settimanale
 
 Menu laterale → **Concorsi** → **Nuovo Concorso**.
 
@@ -115,6 +198,24 @@ Per ogni partita imposta:
 
 Il numero di partite deve essere **almeno pari al `requiredMatches`** della
 regola.
+
+### 2.1 Side bet della partita
+
+Ogni riga partita ha un'icona viola (a forma di "strati") che apre il
+modal **Side bet**. Da qui puoi aggiungere pronostici extra per quella
+partita:
+
+- **Gol/No gol** — entrambi i team segneranno?
+- **Primo marcatore** — chi farà il primo gol?
+
+I side bet sono **opzionali per l'utente** ma se configurati appaiono nella
+sua schedina come tendine sotto i bottoni 1/X/2. Ogni side bet azzeccato
+vale +1 nel `correctCount`.
+
+Per il "Gol/No gol" non serve fare nulla in fase di risoluzione: si calcola
+automaticamente dal punteggio quando inserisci 2-1, 0-0, ecc. Il "Primo
+marcatore" invece va risolto a mano selezionando il giocatore dal dropdown
+(stesso modal).
 
 > Le partite Under/Over vincono se il *totale goal* nella partita reale è
 > minore (U) o maggiore (O) della soglia. Le partite 1X2 vincono se l'esito
@@ -159,12 +260,83 @@ Identico al flow del Mod (vedi *Guida Moderatore* → step 3 e 4):
 
 - Apri il dettaglio del concorso `CLOSED`
 - Inserisci i due punteggi (casa / ospite) per ogni partita
-- Clicca **Elabora**: il sistema confronta i pronostici e marca le schedine
-  come `WINNING` o `NOT_WINNING`
+- Risolvi i side bet "Primo marcatore" via modal
+- Clicca **Elabora**: il sistema confronta i pronostici (1X2/UO + side bet)
+  e marca le schedine come `WINNING` o `NOT_WINNING`
 
 Il concorso passa a `PROCESSED` e gli utenti ricevono notifica.
 
-## 7. Gestione utenti
+---
+
+## 7. Pool stagionali
+
+Menu laterale → **Pool stagionali**. Qui crei e configuri i concorsi
+"lunghi" della stagione (scudetti, capocannoniere, coppe, ecc.).
+
+### 7.1 Creare una pool
+
+Clicca **Nuova pool**:
+
+| Campo | Esempio |
+|---|---|
+| **Stagione** | 2025-26 (corrente) |
+| **Nome** | *Pronostici Stagione 2025-26* |
+| **Descrizione** | (opzionale) |
+| **Apertura** / **Chiusura** | timestamp |
+| **Soglie di vincita** | `7,8,9` (vince chi ne azzecca almeno 7) |
+
+La pool nasce in `DRAFT`.
+
+### 7.2 Configurare i bet abilitati
+
+Nel dettaglio della pool clicca **Aggiungi** per ogni pronostico che vuoi
+abilitare. Combini un **Torneo** con un **Tipo di pronostico**:
+
+| Tipo | Target | Esempio (Torneo: Serie A) |
+|---|---|---|
+| `WINNER` | Squadra | Vincitore Serie A (scudetto) |
+| `TOP_SCORER` | Giocatore | Capocannoniere Serie A |
+| `TOP_ASSIST` | Giocatore | Miglior assist Serie A |
+| `CLEAN_SHEET_TEAM` | Squadra | Porta inviolata Serie A |
+| `BEST_GOALKEEPER` | Giocatore | Miglior portiere Serie A |
+| `MOST_GOALS_FOR` | Squadra | Miglior attacco Serie A |
+| `LEAST_GOALS_AGAINST` | Squadra | Miglior difesa Serie A |
+
+L'etichetta visibile all'utente si genera in automatico ("Vincitore Serie A"),
+ma puoi personalizzarla.
+
+Esempio di configurazione tipica per una pool italiana:
+
+| Torneo | Bet abilitati |
+|---|---|
+| Serie A | WINNER, TOP_SCORER, TOP_ASSIST, BEST_GOALKEEPER, MOST_GOALS_FOR, LEAST_GOALS_AGAINST |
+| Serie B | WINNER, TOP_SCORER |
+| Serie C | WINNER |
+| Coppa Italia | WINNER |
+| Champions League | WINNER |
+
+> Puoi modificare/cancellare i bet **solo finché la pool è in DRAFT**.
+> Una volta aperta, la configurazione è bloccata.
+
+### 7.3 Aprire la pool
+
+Quando la configurazione è pronta clicca **Apri pool**. Lo stato passa a
+`OPEN`: gli utenti la vedono nel menu *"Stagionali"* e possono compilare
+la loro schedina (una sola per utente).
+
+### 7.4 Chiusura e risoluzione
+
+Quando la stagione sta per iniziare, chiudi la pool (azione del Mod o tua).
+Da `CLOSED` puoi risolvere i bet uno alla volta man mano che la stagione
+li chiarisce: stesso meccanismo descritto nella guida del Mod (§6.3 e §6.4).
+
+Il **processing multi-snapshot** ricalcola il `correctCount` parziale delle
+schedine ogni volta che risolvi nuovi bet. La pool diventa `PROCESSED` solo
+quando **tutti** i bet sono risolti.
+
+---
+
+## 8. Gestione utenti
 
 Menu laterale → **Utenti**.
 
@@ -179,20 +351,24 @@ Per ogni utente puoi:
 > a chi gestisce il giorno-per-giorno del concorso senza dargli i poteri di
 > modifica strutturale.
 
-## 8. Import / Export dei dati
+## 9. Import / Export dei dati
 
-Ogni sezione (Leghe, Squadre, Regole, Concorsi) ha un pulsante
-**Import / Export** che permette di:
+Le sezioni **Leghe**, **Squadre**, **Giocatori**, **Regole** e **Concorsi**
+hanno un pulsante **Import / Export** che permette di:
 
 - Scaricare tutti i record correnti in formato **JSON**
 - Importare un file **JSON o CSV** per popolare in massa
-- Scaricare un **template CSV** (solo per Squadre) come base
+- Scaricare un **template CSV** (per Squadre e Giocatori) come base
 
 Usalo per:
 
 - Backup periodici prima di operazioni grosse
 - Migrare i dati di una stagione precedente
-- Popolazione iniziale di un campionato nuovo
+- Popolazione iniziale di un campionato nuovo (es. caricare tutte le rose
+  di Serie A in un colpo)
+
+L'endpoint **Export all** restituisce un singolo JSON con leghe + squadre +
+giocatori + regole + concorsi: utile come backup completo.
 
 ---
 
@@ -212,3 +388,20 @@ da partite). Elimina prima i record dipendenti.
 **Modifica risultato dopo il processing**
 Si può fare: correggi il punteggio e re-clicca **Elabora**. Il sistema
 resetta le schedine e ricalcola tutto.
+
+**"Pool senza bet configurati, impossibile aprirla"**
+Aggiungi almeno un bet (Aggiungi → torneo + tipo) prima di cliccare
+**Apri pool**.
+
+**"Pronostico già configurato"**
+Hai già aggiunto quella combinazione (torneo + tipo) alla pool. Le coppie
+sono uniche: non puoi avere due "Capocannoniere Serie A" nella stessa pool.
+
+**Pool resta in CLOSED dopo il processing**
+È normale: la pool transita a `PROCESSED` solo quando **tutti** i bet
+configurati sono RESOLVED. Finché ne resta uno PENDING, il processing
+aggiorna i punteggi parziali ma non chiude la pool.
+
+**"Stagione corrente già impostata"**
+Non puoi avere due stagioni con `isCurrent=true`. Usa l'azione rapida
+"Imposta corrente" sulla nuova: il sistema sposta automaticamente il flag.
