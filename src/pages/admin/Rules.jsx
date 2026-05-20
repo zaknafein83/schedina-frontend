@@ -137,7 +137,7 @@ export default function Rules() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full text-sm min-w-[700px]">
           <thead>
             <tr className="bg-gds-dark text-white">
               <th className="px-4 py-3 text-left font-semibold">ID</th>
@@ -169,10 +169,10 @@ export default function Rules() {
                 <td className="px-4 py-3 text-gds-gray">{rule.maxTriples ?? 0}</td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
-                    <button onClick={() => openEdit(rule)} className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors">
+                    <button onClick={() => openEdit(rule)} className="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors">
                       <Pencil size={15} />
                     </button>
-                    <button onClick={() => handleDelete(rule)} className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors">
+                    <button onClick={() => handleDelete(rule)} className="p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors">
                       <Trash2 size={15} />
                     </button>
                   </div>
@@ -180,7 +180,7 @@ export default function Rules() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       <Modal isOpen={modalOpen} onClose={closeModal} title={editing ? 'Modifica regola' : 'Nuova regola'} maxWidth="max-w-xl">

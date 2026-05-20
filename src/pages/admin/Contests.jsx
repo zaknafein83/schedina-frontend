@@ -166,7 +166,7 @@ export default function AdminContests() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full text-sm min-w-[700px]">
           <thead>
             <tr className="bg-gds-dark text-white">
               <th className="px-6 py-3 text-left font-semibold">ID</th>
@@ -235,7 +235,7 @@ export default function AdminContests() {
                     {(!contest.status || contest.status === 'DRAFT') && (
                       <button
                         onClick={() => openMutation.mutate(contest.id)}
-                        className="p-1.5 rounded-lg hover:bg-green-50 text-green-600 transition-colors"
+                        className="p-2 rounded-lg hover:bg-green-50 text-green-600 transition-colors"
                         title="Apri concorso"
                       >
                         <Play size={15} />
@@ -245,7 +245,7 @@ export default function AdminContests() {
                     {contest.status === 'OPEN' && (
                       <button
                         onClick={() => closeMutation.mutate(contest.id)}
-                        className="p-1.5 rounded-lg hover:bg-yellow-50 text-yellow-600 transition-colors"
+                        className="p-2 rounded-lg hover:bg-yellow-50 text-yellow-600 transition-colors"
                         title="Chiudi concorso"
                       >
                         <Square size={15} />
@@ -255,7 +255,7 @@ export default function AdminContests() {
                     {contest.status === 'CLOSED' && (
                       <button
                         onClick={() => processMutation.mutate(contest.id)}
-                        className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+                        className="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
                         title="Processa concorso"
                       >
                         <Cpu size={15} />
@@ -263,14 +263,14 @@ export default function AdminContests() {
                     )}
                     <button
                       onClick={() => openEdit(contest)}
-                      className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+                      className="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
                       title="Modifica"
                     >
                       <Pencil size={15} />
                     </button>
                     <button
                       onClick={() => handleDelete(contest)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+                      className="p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
                       title="Elimina"
                     >
                       <Trash2 size={15} />
@@ -280,7 +280,7 @@ export default function AdminContests() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       <Modal

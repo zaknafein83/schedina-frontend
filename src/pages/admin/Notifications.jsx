@@ -63,7 +63,7 @@ export default function AdminNotifications() {
             <Spinner />
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto"><table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="bg-gds-dark text-white">
                 <th className="px-6 py-3 text-left font-semibold">ID</th>
@@ -136,7 +136,7 @@ export default function AdminNotifications() {
                 )
               })}
             </tbody>
-          </table>
+          </table></div>
         )}
       </div>
     </div>

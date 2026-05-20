@@ -136,7 +136,7 @@ export default function Teams() {
             <Spinner />
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto"><table className="w-full text-sm min-w-[560px]">
             <thead>
               <tr className="bg-gds-dark text-white">
                 <th className="px-6 py-3 text-left font-semibold">ID</th>
@@ -171,13 +171,13 @@ export default function Teams() {
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => openEdit(team)}
-                          className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+                          className="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
                         >
                           <Pencil size={15} />
                         </button>
                         <button
                           onClick={() => handleDelete(team)}
-                          className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+                          className="p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
                         >
                           <Trash2 size={15} />
                         </button>
@@ -187,7 +187,7 @@ export default function Teams() {
                 )
               })}
             </tbody>
-          </table>
+          </table></div>
         )}
       </div>
 

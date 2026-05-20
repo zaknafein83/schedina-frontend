@@ -107,7 +107,7 @@ export default function Leagues() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full text-sm min-w-[560px]">
           <thead>
             <tr className="bg-gds-dark text-white">
               <th className="px-6 py-3 text-left font-semibold">ID</th>
@@ -133,14 +133,14 @@ export default function Leagues() {
                   <div className="flex justify-end gap-2">
                     <button
                       onClick={() => openEdit(league)}
-                      className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+                      className="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
                       title="Modifica"
                     >
                       <Pencil size={15} />
                     </button>
                     <button
                       onClick={() => handleDelete(league)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+                      className="p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
                       title="Elimina"
                     >
                       <Trash2 size={15} />
@@ -150,7 +150,7 @@ export default function Leagues() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       <Modal

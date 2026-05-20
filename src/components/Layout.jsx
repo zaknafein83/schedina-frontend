@@ -1,12 +1,24 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import { notificationApi } from '../api/client'
-import { Bell, Trophy, FileText, LogOut, BookOpen } from 'lucide-react'
+import { Bell, Trophy, FileText, LogOut, BookOpen, Star, List, Menu, X } from 'lucide-react'
+
+const navItems = [
+  { to: '/contests',         label: 'Concorsi',         icon: Trophy },
+  { to: '/my-coupons',       label: 'Schedine',         icon: FileText },
+  { to: '/season-pool',      label: 'Stagionali',       icon: Star },
+  { to: '/my-season-coupons',label: 'Le mie stagionali',icon: FileText },
+  { to: '/listini',          label: 'Listini',          icon: List },
+  { to: '/aiuto',            label: 'Guida',            icon: BookOpen },
+]
 
 export default function Layout({ children }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const { data: notifications } = useQuery({
     queryKey: ['notifications'],
@@ -14,44 +26,53 @@ export default function Layout({ children }) {
     refetchInterval: 30000,
   })
 
-  const unreadCount = notifications
-    ? notifications.filter((n) => !n.read).length
-    : 0
+  const unreadCount = notifications ? notifications.filter((n) => !n.read).length : 0
 
-  function handleLogout() {
-    logout()
-    navigate('/login')
-  }
+  useEffect(() => { setDrawerOpen(false) }, [location.pathname])
 
-  const navLinkClass = ({ isActive }) =>
+  function handleLogout() { logout(); navigate('/login') }
+
+  const linkClass = ({ isActive }) =>
     `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
       isActive
         ? 'bg-gds-pink-light text-gds-pink'
         : 'text-gds-gray hover:bg-gds-gray-light hover:text-gds-dark'
     }`
 
+  const drawerLinkClass = ({ isActive }) =>
+    `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+      isActive
+        ? 'bg-gds-pink-light text-gds-pink'
+        : 'text-gds-dark hover:bg-gds-gray-light'
+    }`
+
   return (
     <div className="min-h-screen bg-gds-gray-light">
-      <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <header className="bg-white shadow-sm sticky top-0 z-30">
+        <div className="max-w-6xl mx-auto px-4 h-14 md:h-16 flex items-center justify-between gap-3">
+          {/* Hamburger mobile */}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="md:hidden p-2 -ml-2 rounded-lg text-gds-dark hover:bg-gds-gray-light"
+            aria-label="Apri menu"
+          >
+            <Menu size={22} />
+          </button>
+
           {/* Logo */}
-          <Link to="/contests" className="flex items-center gap-2">
-            <span className="text-2xl font-black text-gds-pink tracking-tight">
-              SCHEDINA
-            </span>
+          <Link to="/contests" className="flex items-center gap-2 md:flex-none flex-1 justify-center md:justify-start">
+            <span className="text-xl md:text-2xl font-black text-gds-pink tracking-tight">SCHEDINA</span>
           </Link>
 
-          {/* Nav links */}
-          <nav className="flex items-center gap-1">
-            <NavLink to="/contests" className={navLinkClass}>
-              <Trophy size={16} />
-              Concorsi
-            </NavLink>
-            <NavLink to="/my-coupons" className={navLinkClass}>
-              <FileText size={16} />
-              Schedine
-            </NavLink>
-            <NavLink to="/notifications" className={navLinkClass}>
+          {/* Nav desktop */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map(({ to, label, icon: Icon }) => (
+              <NavLink key={to} to={to} className={linkClass}>
+                <Icon size={16} />
+                {label}
+              </NavLink>
+            ))}
+            <NavLink to="/notifications" className={linkClass}>
               <span className="relative">
                 <Bell size={16} />
                 {unreadCount > 0 && (
@@ -62,29 +83,84 @@ export default function Layout({ children }) {
               </span>
               Notifiche
             </NavLink>
-            <NavLink to="/aiuto" className={navLinkClass}>
-              <BookOpen size={16} />
-              Guida
-            </NavLink>
           </nav>
 
-          {/* User info + logout */}
-          <div className="flex items-center gap-3">
+          {/* Notifiche + Logout (mobile mostra solo bell badge + logout icona) */}
+          <div className="flex items-center gap-2">
+            <NavLink
+              to="/notifications"
+              className="md:hidden relative p-2 rounded-lg text-gds-dark hover:bg-gds-gray-light"
+              aria-label="Notifiche"
+            >
+              <Bell size={20} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 bg-gds-pink text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </NavLink>
             <span className="text-sm text-gds-gray hidden sm:block">
               {user?.firstName} {user?.lastName}
             </span>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1 text-sm text-gds-gray hover:text-gds-pink transition-colors px-2 py-1"
+              className="flex items-center gap-1 text-sm text-gds-gray hover:text-gds-pink transition-colors p-2"
+              aria-label="Esci"
             >
-              <LogOut size={16} />
+              <LogOut size={18} />
               <span className="hidden sm:block">Esci</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
+      {/* Drawer mobile */}
+      {drawerOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
+      <aside
+        className={`md:hidden fixed left-0 top-0 z-50 w-72 max-w-[85vw] h-full bg-white shadow-xl
+          transition-transform duration-200 ease-out flex flex-col
+          ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        <div className="h-14 flex items-center justify-between px-4 border-b border-gray-100">
+          <span className="text-xl font-black text-gds-pink tracking-tight">SCHEDINA</span>
+          <button
+            onClick={() => setDrawerOpen(false)}
+            className="p-2 rounded-lg text-gds-dark hover:bg-gds-gray-light"
+            aria-label="Chiudi menu"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {navItems.map(({ to, label, icon: Icon }) => (
+            <NavLink key={to} to={to} className={drawerLinkClass}>
+              <Icon size={18} />
+              {label}
+            </NavLink>
+          ))}
+          <NavLink to="/notifications" className={drawerLinkClass}>
+            <span className="relative">
+              <Bell size={18} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-gds-pink text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </span>
+            Notifiche
+          </NavLink>
+        </nav>
+        <div className="p-3 border-t border-gray-100">
+          <p className="text-xs text-gds-gray px-3">{user?.email}</p>
+        </div>
+      </aside>
+
+      <main className="max-w-6xl mx-auto px-4 py-6 md:py-8">{children}</main>
     </div>
   )
 }
