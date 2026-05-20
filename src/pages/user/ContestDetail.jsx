@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { contestApi, couponApi } from '../../api/client'
+import { contestApi, couponApi, listiniApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import { ArrowLeft, Trophy } from 'lucide-react'
@@ -32,11 +32,71 @@ function ChoiceButton({ choice, selected, onClick }) {
   )
 }
 
+function MatchSideBetsInline({ match, values, onChange }) {
+  const { data: sideBets } = useQuery({
+    queryKey: ['contest-match-side-bets', match.id],
+    queryFn: () => contestApi.getMatchSideBets(match.id).then((r) => r.data),
+    staleTime: 60_000,
+  })
+  const { data: homePlayers } = useQuery({
+    queryKey: ['listini-players', match.homeTeamId],
+    queryFn: () => listiniApi.players({ teamId: match.homeTeamId }).then((r) => r.data),
+    enabled: !!(sideBets || []).find((b) => b.betType === 'FIRST_SCORER'),
+    staleTime: 60_000,
+  })
+  const { data: awayPlayers } = useQuery({
+    queryKey: ['listini-players', match.awayTeamId],
+    queryFn: () => listiniApi.players({ teamId: match.awayTeamId }).then((r) => r.data),
+    enabled: !!(sideBets || []).find((b) => b.betType === 'FIRST_SCORER'),
+    staleTime: 60_000,
+  })
+
+  if (!sideBets || sideBets.length === 0) return null
+
+  return (
+    <div className="flex flex-col gap-1.5 mt-1 w-full max-w-[260px]">
+      {sideBets.map((b) => (
+        <div key={b.id} className="flex items-center justify-between gap-2 text-xs">
+          <span className="text-gds-gray">{b.label}:</span>
+          {b.betType === 'GOAL_NOGOAL' ? (
+            <select
+              value={values[b.id] || ''}
+              onChange={(e) => onChange(b.id, e.target.value)}
+              className="rounded border border-gray-200 px-2 py-1 text-xs bg-white"
+            >
+              <option value="">—</option>
+              <option value="GOAL">Goal</option>
+              <option value="NOGOAL">No goal</option>
+            </select>
+          ) : (
+            <select
+              value={values[b.id] || ''}
+              onChange={(e) => onChange(b.id, e.target.value)}
+              className="rounded border border-gray-200 px-2 py-1 text-xs bg-white max-w-[180px]"
+            >
+              <option value="">—</option>
+              <option value="NONE">Nessuno</option>
+              {(homePlayers || []).map((p) => (
+                <option key={`h-${p.id}`} value={p.id}>{p.fullName} ({match.homeTeamName})</option>
+              ))}
+              {(awayPlayers || []).map((p) => (
+                <option key={`a-${p.id}`} value={p.id}>{p.fullName} ({match.awayTeamName})</option>
+              ))}
+            </select>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function ContestDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [predictions, setPredictions] = useState({})
+  // sideChoices: { [matchSidePredictionId]: choice }
+  const [sideChoices, setSideChoices] = useState({})
   const [submitError, setSubmitError] = useState('')
 
   const { data: matches, isLoading: matchesLoading } = useQuery({
@@ -85,9 +145,13 @@ export default function ContestDetail() {
       )
       return
     }
+    const sidePredictions = Object.entries(sideChoices)
+      .filter(([, v]) => v && v.length > 0)
+      .map(([sid, v]) => ({ matchSidePredictionId: Number(sid), choice: String(v) }))
     submitMutation.mutate({
       contestId: Number(id),
       predictions: predList,
+      sidePredictions: sidePredictions.length > 0 ? sidePredictions : undefined,
     })
   }
 
@@ -118,8 +182,7 @@ export default function ContestDetail() {
 
       {/* Match list */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-        <div className="px-6 py-3 bg-gds-dark text-white text-sm font-semibold grid grid-cols-[2rem_1fr_auto] gap-4 items-center">
-          <span>#</span>
+        <div className="px-4 md:px-6 py-3 bg-gds-dark text-white text-sm font-semibold flex items-center justify-between">
           <span>Partita</span>
           <span>Esito</span>
         </div>
@@ -127,38 +190,49 @@ export default function ContestDetail() {
         {matches?.map((match, idx) => (
           <div
             key={match.id}
-            className={`px-6 py-4 grid grid-cols-[2rem_1fr_auto] gap-4 items-center
+            className={`px-4 md:px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4
               ${idx % 2 === 0 ? '' : 'bg-gds-gray-light/50'} hover:bg-gds-pink-light transition-colors`}
           >
-            <span className="text-xs font-bold text-gds-gray">{match.matchNumber ?? idx + 1}</span>
-            <div>
-              <p className="font-semibold text-gds-dark text-sm">
-                {match.homeTeamName} <span className="text-gds-gray font-normal">vs</span> {match.awayTeamName}
-              </p>
-              <div className="flex items-center gap-2 mt-0.5">
-                {match.scheduledAt && (
-                  <p className="text-xs text-gds-gray">
-                    {new Date(match.scheduledAt).toLocaleString('it-IT', {
-                      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
-                    })}
-                  </p>
-                )}
-                {match.betType === 'UNDER_OVER' && (
-                  <span className="text-xs font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
-                    U/O {match.overUnderLine}
-                  </span>
-                )}
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              <span className="text-xs font-bold text-gds-gray w-6 shrink-0 pt-0.5">
+                {match.matchNumber ?? idx + 1}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gds-dark text-sm">
+                  {match.homeTeamName} <span className="text-gds-gray font-normal">vs</span> {match.awayTeamName}
+                </p>
+                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                  {match.scheduledAt && (
+                    <p className="text-xs text-gds-gray">
+                      {new Date(match.scheduledAt).toLocaleString('it-IT', {
+                        day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
+                      })}
+                    </p>
+                  )}
+                  {match.betType === 'UNDER_OVER' && (
+                    <span className="text-xs font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                      U/O {match.overUnderLine}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="flex gap-1.5">
-              {choicesFor(match).map((c) => (
-                <ChoiceButton
-                  key={c}
-                  choice={c}
-                  selected={(predictions[match.id] || []).includes(c)}
-                  onClick={(choice) => toggleChoice(match.id, choice, match)}
-                />
-              ))}
+            <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
+              <div className="flex gap-1.5">
+                {choicesFor(match).map((c) => (
+                  <ChoiceButton
+                    key={c}
+                    choice={c}
+                    selected={(predictions[match.id] || []).includes(c)}
+                    onClick={(choice) => toggleChoice(match.id, choice, match)}
+                  />
+                ))}
+              </div>
+              <MatchSideBetsInline
+                match={match}
+                values={sideChoices}
+                onChange={(sid, v) => setSideChoices((prev) => ({ ...prev, [sid]: v }))}
+              />
             </div>
           </div>
         ))}

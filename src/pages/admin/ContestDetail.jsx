@@ -8,7 +8,8 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
 import Badge from '../../components/ui/Badge'
-import { ArrowLeft, Plus, Pencil, Trash2, Check } from 'lucide-react'
+import { ArrowLeft, Plus, Pencil, Trash2, Check, Layers } from 'lucide-react'
+import MatchSideBetsModal from '../../components/admin/MatchSideBetsModal'
 
 function toDatetimeLocal(iso) {
   if (!iso) return ''
@@ -24,6 +25,7 @@ export default function AdminContestDetail() {
   // { [matchId]: { home: '', away: '' } }
   const [scoreValues, setScoreValues] = useState({})
   const [savingResult, setSavingResult] = useState(null)
+  const [sideBetsMatch, setSideBetsMatch] = useState(null)
 
   const { data: contest } = useQuery({
     queryKey: ['admin-contest', id],
@@ -209,7 +211,7 @@ export default function AdminContestDetail() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full text-sm min-w-[720px]">
           <thead>
             <tr className="bg-gds-dark text-white">
               <th className="px-4 py-3 text-left font-semibold">#</th>
@@ -295,7 +297,7 @@ export default function AdminContestDetail() {
                     <button
                       onClick={() => handleSaveResult(match)}
                       disabled={savingResult === match.id}
-                      className="p-1.5 rounded-lg hover:bg-green-50 text-green-600 transition-colors disabled:opacity-40"
+                      className="p-2 rounded-lg hover:bg-green-50 text-green-600 transition-colors disabled:opacity-40"
                       title="Salva risultato"
                     >
                       {savingResult === match.id ? (
@@ -315,14 +317,21 @@ export default function AdminContestDetail() {
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
                     <button
+                      onClick={() => setSideBetsMatch(match)}
+                      className="p-2 rounded-lg hover:bg-purple-50 text-purple-600 transition-colors"
+                      title="Side bet (gol/no gol, primo marcatore)"
+                    >
+                      <Layers size={15} />
+                    </button>
+                    <button
                       onClick={() => openEdit(match)}
-                      className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+                      className="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
                     >
                       <Pencil size={15} />
                     </button>
                     <button
                       onClick={() => handleDelete(match)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+                      className="p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
                     >
                       <Trash2 size={15} />
                     </button>
@@ -331,8 +340,14 @@ export default function AdminContestDetail() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </div>
+
+      <MatchSideBetsModal
+        match={sideBetsMatch}
+        isOpen={!!sideBetsMatch}
+        onClose={() => setSideBetsMatch(null)}
+      />
 
       <Modal
         isOpen={modalOpen}

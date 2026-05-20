@@ -5,7 +5,8 @@ import { adminApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
-import { ArrowLeft, Check, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Check, RefreshCw, Layers } from 'lucide-react'
+import MatchSideBetsModal from '../../components/admin/MatchSideBetsModal'
 
 const STATUS_COLOR = {
   OPEN: 'green', CLOSED: 'yellow', PROCESSING: 'blue',
@@ -28,6 +29,7 @@ export default function ModContestDetail() {
   const [scoreValues, setScoreValues] = useState({})
   const [savingResult, setSavingResult] = useState(null)
   const [processMsg, setProcessMsg] = useState(null)
+  const [sideBetsMatch, setSideBetsMatch] = useState(null)
 
   const { data: contest } = useQuery({
     queryKey: ['mod-contest', id],
@@ -241,7 +243,7 @@ export default function ModContestDetail() {
                       <button
                         onClick={() => handleSaveResult(match)}
                         disabled={savingResult === match.id}
-                        className="p-1.5 rounded-lg hover:bg-green-50 text-green-600 transition-colors disabled:opacity-40"
+                        className="p-2 rounded-lg hover:bg-green-50 text-green-600 transition-colors disabled:opacity-40"
                         title="Salva risultato"
                       >
                         {savingResult === match.id ? <Spinner size="sm" /> : <Check size={15} />}
@@ -251,11 +253,27 @@ export default function ModContestDetail() {
                           {match.homeScore}–{match.awayScore} ({match.officialResult})
                         </Badge>
                       )}
+                      <button
+                        onClick={() => setSideBetsMatch(match)}
+                        className="p-2 rounded-lg hover:bg-purple-50 text-purple-600 transition-colors ml-2"
+                        title="Side bet"
+                      >
+                        <Layers size={15} />
+                      </button>
                     </div>
                   ) : (
-                    match.officialResult
-                      ? <Badge color="green">{match.homeScore}–{match.awayScore} ({match.officialResult})</Badge>
-                      : <span className="text-gds-gray text-xs">—</span>
+                    <div className="flex items-center gap-2">
+                      {match.officialResult
+                        ? <Badge color="green">{match.homeScore}–{match.awayScore} ({match.officialResult})</Badge>
+                        : <span className="text-gds-gray text-xs">—</span>}
+                      <button
+                        onClick={() => setSideBetsMatch(match)}
+                        className="p-2 rounded-lg hover:bg-purple-50 text-purple-600 transition-colors"
+                        title="Side bet"
+                      >
+                        <Layers size={15} />
+                      </button>
+                    </div>
                   )}
                 </td>
               </tr>
@@ -263,6 +281,12 @@ export default function ModContestDetail() {
           </tbody>
         </table>
       </div>
+
+      <MatchSideBetsModal
+        match={sideBetsMatch}
+        isOpen={!!sideBetsMatch}
+        onClose={() => setSideBetsMatch(null)}
+      />
     </div>
   )
 }

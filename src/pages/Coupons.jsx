@@ -78,6 +78,33 @@ function CouponDetail({ couponId, isAdmin }) {
           </div>
         )
       })}
+      {data.sidePredictions?.length > 0 && (
+        <div className="col-span-full mt-2 pt-2 border-t border-gray-100">
+          <p className="text-xs font-semibold text-gds-gray mb-1">Side bet</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+            {data.sidePredictions.map((s) => (
+              <div
+                key={s.id}
+                className={`text-xs px-2 py-1 rounded border flex justify-between items-center
+                  ${s.isCorrect === true  ? 'bg-green-50 border-green-200' :
+                    s.isCorrect === false ? 'bg-red-50 border-red-200' :
+                                             'bg-white border-gray-100'}`}
+              >
+                <span className="text-gds-dark">
+                  {s.betLabel}: <strong>{s.choiceLabel}</strong>
+                  {s.officialResultLabel && (
+                    <span className="text-gds-gray ml-1">→ {s.officialResultLabel}</span>
+                  )}
+                </span>
+                <span>
+                  {s.isCorrect === true  && <span className="text-green-600">✓</span>}
+                  {s.isCorrect === false && <span className="text-red-500">✗</span>}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
