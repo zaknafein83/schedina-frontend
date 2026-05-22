@@ -1,0 +1,84 @@
+name: deploy
+
+# Si attiva su push a main (deploy in produzione) e manualmente.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancella deploy precedenti se ne arriva uno nuovo sullo stesso ref.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (Vite)
+        env:
+          # In produzione il frontend chiama il backend tramite il proxy nginx /api
+          VITE_API_URL: /api
+        run: npm run build
+
+      - name: Prepare SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if ! ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null 2>&1; then
+            echo "::error::La chiave VPS_SSH_KEY non è parsabile"
+            exit 1
+          fi
+          echo "Chiave SSH valida."
+          # ssh-keyscan best-effort, -4 per forzare IPv4 (runner Azure)
+          ssh-keyscan -4 -T 15 -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null || \
+            echo "::warning::ssh-keyscan in timeout; fallback su accept-new"
+
+      - name: Deploy (rsync di dist/ verso /var/www/fantarole/)
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          REMOTE_DIR: /var/www/fantarole/
+        run: |
+          # --delete rimuove file orfani sul VPS (Vite produce nomi hashati nuovi a ogni build)
+          # --checksum non serve, le mtime sono diverse comunque
+          rsync -avz --delete \
+            -e "ssh -4 -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" \
+            dist/ \
+            "$VPS_USER@$VPS_HOST:$REMOTE_DIR"
+
+      - name: Verify (HTTPS dal pubblico)
+        run: |
+          echo "Verifico che fantarole.zaknafein.ovh risponda con il nuovo bundle..."
+          # Diamo a nginx un secondo per servire i file nuovi (in realtà è immediato, ma siamo prudenti)
+          sleep 2
+          HTTP_CODE=$(curl -fsS -o /dev/null -w "%{http_code}" https://fantarole.zaknafein.ovh/ || true)
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::HTTP $HTTP_CODE atteso 200"
+            exit 1
+          fi
+          echo "✅ HTTP 200 su https://fantarole.zaknafein.ovh"
+          # Verifica anche che il backend dietro nginx /api risponda (sanity check end-to-end)
+          API_CODE=$(curl -fsS -o /dev/null -w "%{http_code}" https://fantarole.zaknafein.ovh/api/q/health/ready || true)
+          if [ "$API_CODE" = "200" ]; then
+            echo "✅ Backend dietro /api healthy"
+          else
+            echo "::warning::Backend dietro /api ha risposto $API_CODE (atteso 200)"
+          fi
