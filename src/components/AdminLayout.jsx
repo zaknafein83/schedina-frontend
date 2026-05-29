@@ -21,11 +21,10 @@ import {
 
 const navItems = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/admin/contests', label: 'Concorsi', icon: Trophy },
-  { to: '/admin/coupons', label: 'Schedine', icon: FileText },
+  { to: '/admin/concorsi', label: 'Concorsi', icon: Trophy },
+  { to: '/admin/schedine', label: 'Schedine', icon: FileText },
   { to: '/admin/seasons', label: 'Stagioni', icon: CalendarDays },
   { to: '/admin/tournaments', label: 'Tornei', icon: Award },
-  { to: '/admin/season-pools', label: 'Pool stagionali', icon: Trophy },
   { to: '/admin/leagues', label: 'Leghe', icon: Shield },
   { to: '/admin/teams', label: 'Squadre', icon: Users },
   { to: '/admin/players', label: 'Giocatori', icon: User },

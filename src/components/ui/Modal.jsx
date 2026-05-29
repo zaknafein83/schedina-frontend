@@ -27,6 +27,9 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
 
       {/* Panel */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
         className={`relative bg-white rounded-xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col`}
       >
         {/* Header */}

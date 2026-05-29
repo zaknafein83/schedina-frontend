@@ -22,7 +22,7 @@ export default function Login() {
       const user = await login(data.email, data.password)
       // ProtectedRoute mostrerà uno spinner mentre user si carica,
       // poi renderizzerà la pagina corretta
-      const dest = user.role === 'ADMIN' ? '/admin' : user.role === 'MOD' ? '/mod/contests' : '/contests'
+      const dest = user.role === 'ADMIN' ? '/admin' : user.role === 'MOD' ? '/mod/concorsi' : '/concorsi'
       navigate(dest, { replace: true })
     } catch (err) {
       setServerError(

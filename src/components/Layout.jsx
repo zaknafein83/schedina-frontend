@@ -6,12 +6,10 @@ import { notificationApi } from '../api/client'
 import { Bell, Trophy, FileText, LogOut, BookOpen, Star, List, Menu, X } from 'lucide-react'
 
 const navItems = [
-  { to: '/contests',         label: 'Concorsi',         icon: Trophy },
-  { to: '/my-coupons',       label: 'Schedine',         icon: FileText },
-  { to: '/season-pool',      label: 'Stagionali',       icon: Star },
-  { to: '/my-season-coupons',label: 'Le mie stagionali',icon: FileText },
-  { to: '/listini',          label: 'Listini',          icon: List },
-  { to: '/aiuto',            label: 'Guida',            icon: BookOpen },
+  { to: '/concorsi', label: 'Concorsi', icon: Trophy },
+  { to: '/schedine', label: 'Schedine', icon: FileText },
+  { to: '/listini',  label: 'Listini',  icon: List },
+  { to: '/aiuto',    label: 'Guida',    icon: BookOpen },
 ]
 
 export default function Layout({ children }) {
@@ -26,7 +24,7 @@ export default function Layout({ children }) {
     refetchInterval: 30000,
   })
 
-  const unreadCount = notifications ? notifications.filter((n) => !n.read).length : 0
+  const unreadCount = notifications ? notifications.filter((n) => n.status !== 'READ').length : 0
 
   useEffect(() => { setDrawerOpen(false) }, [location.pathname])
 
@@ -60,7 +58,7 @@ export default function Layout({ children }) {
           </button>
 
           {/* Logo */}
-          <Link to="/contests" className="flex items-center gap-2 md:flex-none flex-1 justify-center md:justify-start">
+          <Link to="/concorsi" className="flex items-center gap-2 md:flex-none flex-1 justify-center md:justify-start">
             <span className="text-xl md:text-2xl font-black text-gds-pink tracking-tight">SCHEDINA</span>
           </Link>
 

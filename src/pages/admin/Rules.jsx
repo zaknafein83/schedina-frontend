@@ -64,7 +64,7 @@ export default function Rules() {
 
   function openCreate() {
     setEditing(null)
-    reset({ name: '', description: '', leagueId: '', requiredMatches: '', winningThresholds: '', maxDoubles: 0, maxTriples: 0 })
+    reset({ name: '', description: '', leagueId: '', requiredBets: '', winningThresholds: '', maxSchedinePerUser: '', fullCompletionRequired: true })
     setModalOpen(true)
   }
 
@@ -74,10 +74,10 @@ export default function Rules() {
       name: rule.name,
       description: rule.description || '',
       leagueId: rule.leagueId || '',
-      requiredMatches: rule.requiredMatches ?? '',
+      requiredBets: rule.requiredBets ?? '',
       winningThresholds: thresholdsToString(rule.winningThresholds),
-      maxDoubles: rule.maxDoubles ?? 0,
-      maxTriples: rule.maxTriples ?? 0,
+      maxSchedinePerUser: rule.maxSchedinePerUser ?? '',
+      fullCompletionRequired: rule.fullCompletionRequired ?? true,
     })
     setModalOpen(true)
   }
@@ -93,10 +93,10 @@ export default function Rules() {
       name: data.name,
       description: data.description || undefined,
       leagueId: data.leagueId ? Number(data.leagueId) : undefined,
-      requiredMatches: data.requiredMatches !== '' ? Number(data.requiredMatches) : undefined,
+      requiredBets: data.requiredBets !== '' ? Number(data.requiredBets) : undefined,
       winningThresholds: stringToThresholds(data.winningThresholds),
-      maxDoubles: data.maxDoubles !== '' ? Number(data.maxDoubles) : 0,
-      maxTriples: data.maxTriples !== '' ? Number(data.maxTriples) : 0,
+      maxSchedinePerUser: data.maxSchedinePerUser !== '' ? Number(data.maxSchedinePerUser) : undefined,
+      fullCompletionRequired: !!data.fullCompletionRequired,
     }
     if (editing) {
       await updateMutation.mutateAsync({ id: editing.id, data: payload })
@@ -126,7 +126,6 @@ export default function Rules() {
             exportFn={adminApi.exportRules}
             importFn={adminApi.importRules}
             filename="regole.json"
-            templateUrl="/templates/regole_template.csv"
             onImported={() => queryClient.invalidateQueries({ queryKey: ['admin-rules'] })}
           />
           <Button onClick={openCreate}>
@@ -143,30 +142,28 @@ export default function Rules() {
               <th className="px-4 py-3 text-left font-semibold">ID</th>
               <th className="px-4 py-3 text-left font-semibold">Nome</th>
               <th className="px-4 py-3 text-left font-semibold">Lega</th>
-              <th className="px-4 py-3 text-left font-semibold">Partite</th>
+              <th className="px-4 py-3 text-left font-semibold">Scommesse</th>
               <th className="px-4 py-3 text-left font-semibold">Soglie vincita</th>
-              <th className="px-4 py-3 text-left font-semibold">Doppi</th>
-              <th className="px-4 py-3 text-left font-semibold">Tripli</th>
+              <th className="px-4 py-3 text-left font-semibold">Max schedine/utente</th>
               <th className="px-4 py-3 text-right font-semibold">Azioni</th>
             </tr>
           </thead>
           <tbody>
             {rules?.length === 0 && (
               <tr>
-                <td colSpan={8} className="text-center py-10 text-gds-gray">Nessuna regola trovata.</td>
+                <td colSpan={7} className="text-center py-10 text-gds-gray">Nessuna regola trovata.</td>
               </tr>
             )}
             {rules?.map((rule) => (
               <tr key={rule.id} className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors">
                 <td className="px-4 py-3 text-gds-gray">{rule.id}</td>
                 <td className="px-4 py-3 font-medium text-gds-dark">{rule.name}</td>
-                <td className="px-4 py-3 text-gds-gray">{leagueName(rule.leagueId)}</td>
-                <td className="px-4 py-3 text-gds-gray">{rule.requiredMatches ?? '—'}</td>
+                <td className="px-4 py-3 text-gds-gray">{rule.leagueId ? leagueName(rule.leagueId) : '—'}</td>
+                <td className="px-4 py-3 text-gds-gray">{rule.requiredBets ?? '—'}</td>
                 <td className="px-4 py-3 text-gds-gray font-mono text-xs">
                   {thresholdsToString(rule.winningThresholds) || '—'}
                 </td>
-                <td className="px-4 py-3 text-gds-gray">{rule.maxDoubles ?? 0}</td>
-                <td className="px-4 py-3 text-gds-gray">{rule.maxTriples ?? 0}</td>
+                <td className="px-4 py-3 text-gds-gray">{rule.maxSchedinePerUser ?? '∞'}</td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
                     <button onClick={() => openEdit(rule)} className="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors">
@@ -193,41 +190,33 @@ export default function Rules() {
           />
 
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gds-dark">Lega</label>
+            <label className="text-sm font-medium text-gds-dark">Lega (opzionale)</label>
             <select
               className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
-              {...register('leagueId', { required: 'Lega obbligatoria' })}
+              {...register('leagueId')}
             >
-              <option value="">-- Seleziona lega --</option>
+              <option value="">-- Nessuna (es. stagionale) --</option>
               {leagues?.map((l) => (
                 <option key={l.id} value={l.id}>{l.name}</option>
               ))}
             </select>
-            {errors.leagueId && <p className="text-xs text-red-500">{errors.leagueId.message}</p>}
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <Input
-              label="Partite richieste"
+              label="Scommesse richieste"
               type="number"
               min={1}
               placeholder="13"
-              error={errors.requiredMatches?.message}
-              {...register('requiredMatches', { required: 'Campo obbligatorio', min: { value: 1, message: 'Min 1' } })}
+              error={errors.requiredBets?.message}
+              {...register('requiredBets', { required: 'Campo obbligatorio', min: { value: 1, message: 'Min 1' } })}
             />
             <Input
-              label="Max doppi"
+              label="Max schedine/utente"
               type="number"
-              min={0}
-              placeholder="0"
-              {...register('maxDoubles')}
-            />
-            <Input
-              label="Max tripli"
-              type="number"
-              min={0}
-              placeholder="0"
-              {...register('maxTriples')}
+              min={1}
+              placeholder="∞ se vuoto"
+              {...register('maxSchedinePerUser')}
             />
           </div>
 
@@ -236,6 +225,12 @@ export default function Rules() {
             placeholder="11, 12, 13"
             {...register('winningThresholds')}
           />
+
+          <label className="flex items-center gap-2 text-sm text-gds-dark">
+            <input type="checkbox" className="rounded border-gray-300 text-gds-pink focus:ring-gds-pink"
+              {...register('fullCompletionRequired')} />
+            Schedina completa obbligatoria (tutte le scommesse)
+          </label>
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gds-dark">Descrizione</label>
