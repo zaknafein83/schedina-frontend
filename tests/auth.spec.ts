@@ -94,20 +94,20 @@ test.describe('Auth — login', () => {
     await page.waitForURL('**/admin', { timeout: 10_000 })
   })
 
-  test('login mod → redirect a /mod/contests', async ({ page }) => {
+  test('login mod → redirect a /mod/concorsi', async ({ page }) => {
     await page.goto('/login')
     await page.getByLabel('Email').fill(USERS.mod.email)
     await page.getByLabel('Password').fill(USERS.mod.password)
     await page.getByRole('button', { name: 'Accedi' }).click()
-    await page.waitForURL('**/mod/contests', { timeout: 10_000 })
+    await page.waitForURL('**/mod/concorsi', { timeout: 10_000 })
   })
 
-  test('login user → redirect a /contests', async ({ page }) => {
+  test('login user → redirect a /concorsi', async ({ page }) => {
     await page.goto('/login')
     await page.getByLabel('Email').fill(USERS.mario.email)
     await page.getByLabel('Password').fill(USERS.mario.password)
     await page.getByRole('button', { name: 'Accedi' }).click()
-    await page.waitForURL('**/contests', { timeout: 10_000 })
+    await page.waitForURL('**/concorsi', { timeout: 10_000 })
   })
 })
 

@@ -1,8 +1,6 @@
 /**
- * Helper di seeding via API admin. I test che hanno bisogno di entità
- * concrete (lega/squadre/regole/concorsi) le creano qui, evitando di
- * dipendere da una migrazione SQL del backend che potrebbe non popolare
- * il DB di test (es. V10 skippa se mancano leghe).
+ * Helper di seeding via API admin per il modello Scommessa/Schedina.
+ * I test creano lega/regola/concorso/scommesse direttamente via API.
  */
 
 import { api, login, uniq } from './api'
@@ -16,128 +14,83 @@ export async function getAdminToken(): Promise<string> {
   return cachedAdminToken
 }
 
+/** Converte una Date in stringa ISO_LOCAL_DATE_TIME (senza Z/millis). */
+function toLocalDT(d: Date): string {
+  return d.toISOString().slice(0, 19)
+}
+
 export async function createLeague(token: string, name = uniq('Lega')) {
   return api.post('/admin/leagues', { name, country: 'Italia' }, { token })
 }
 
-export async function createTeam(token: string, leagueId: number, name: string, shortName?: string) {
-  return api.post('/admin/teams', {
-    name,
-    shortName: shortName || name.slice(0, 3).toUpperCase(),
-    leagueId,
-    isActive: true,
-  }, { token })
-}
-
-export async function createRule(token: string, leagueId: number, requiredMatches: number) {
+export async function createRule(token: string, requiredBets: number, leagueId?: number) {
   return api.post('/admin/rules', {
-    name: uniq(`Regola-${requiredMatches}`),
+    name: uniq(`Regola-${requiredBets}`),
     description: 'Regola e2e',
     leagueId,
-    requiredMatches,
-    winningThresholds: [requiredMatches],
-    maxCouponsPerUser: 3,
-    maxDoubles: 3,
-    maxTriples: 1,
+    requiredBets,
+    winningThresholds: [requiredBets],
     fullCompletionRequired: true,
     isActive: true,
   }, { token })
 }
 
-export async function createContest(token: string, opts: {
-  leagueId: number
+export async function createConcorso(token: string, opts: {
   ruleId: number
   name?: string
-  description?: string
-  hoursOpen?: number
-  daysClose?: number
+  kind?: 'MATCHDAY' | 'SEASON'
 }) {
-  const openAt = new Date(Date.now() - 60 * 60 * 1000).toISOString() // 1h fa
-  const closeAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // tra 7gg
-  return api.post('/admin/contests', {
+  const openAt = toLocalDT(new Date(Date.now() - 60 * 60 * 1000))          // 1h fa
+  const closeAt = toLocalDT(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) // tra 7gg
+  return api.post('/admin/concorsi', {
     name: opts.name || uniq('Concorso'),
-    description: opts.description || 'Concorso e2e',
-    leagueId: opts.leagueId,
+    description: 'Concorso e2e',
+    kind: opts.kind || 'MATCHDAY',
     ruleId: opts.ruleId,
     openAt,
     closeAt,
   }, { token })
 }
 
-export async function addMatch(token: string, opts: {
-  contestId: number
-  homeTeamId: number
-  awayTeamId: number
-  leagueId: number
-  daysFromNow?: number
-  betType?: 'RESULT_1X2' | 'UNDER_OVER'
+export async function createScommessa(token: string, opts: {
+  concorsoId: number
+  label?: string
+  market?: string
+  options?: { ref: string; label: string }[]
   overUnderLine?: number
 }) {
-  const scheduledAt = new Date(
-    Date.now() + (opts.daysFromNow ?? 1) * 24 * 60 * 60 * 1000
-  ).toISOString()
-  return api.post('/admin/matches', {
-    homeTeamId: opts.homeTeamId,
-    awayTeamId: opts.awayTeamId,
-    leagueId: opts.leagueId,
-    contestId: opts.contestId,
-    scheduledAt,
-    betType: opts.betType || 'RESULT_1X2',
+  return api.post('/admin/scommesse', {
+    concorsoId: opts.concorsoId,
+    label: opts.label || uniq('Scommessa'),
+    market: opts.market || 'GOAL_NOGOAL',
+    options: opts.options,
     overUnderLine: opts.overUnderLine,
   }, { token })
 }
 
-export async function openContest(token: string, contestId: number) {
-  return api.post(`/admin/contests/${contestId}/open`, undefined, { token })
-}
-
-export async function closeContest(token: string, contestId: number) {
-  return api.post(`/admin/contests/${contestId}/close`, undefined, { token })
-}
+export const openConcorso    = (token: string, id: number) => api.post(`/admin/concorsi/${id}/open`, undefined, { token })
+export const closeConcorso   = (token: string, id: number) => api.post(`/admin/concorsi/${id}/close`, undefined, { token })
+export const processConcorso = (token: string, id: number) => api.post(`/admin/concorsi/${id}/process`, undefined, { token })
+export const resolveScommessa = (token: string, betId: number, officialResultRef: string) =>
+  api.patch(`/admin/scommesse/${betId}/resolve`, { officialResultRef }, { token })
 
 /**
- * Crea: 1 lega + N*2 squadre + regola + concorso con N partite + apertura.
- * Restituisce gli ID di tutti gli oggetti creati.
+ * Crea lega + regola (1 scommessa richiesta) + concorso + 1 scommessa GOAL_NOGOAL, e apre il concorso.
  */
-export async function bootstrapOpenContest(opts?: { matches?: number }): Promise<{
+export async function bootstrapOpenConcorso(): Promise<{
   token: string
   leagueId: number
   ruleId: number
-  contestId: number
-  teamIds: number[]
-  matchIds: number[]
+  concorsoId: number
+  betId: number
+  concorsoName: string
 }> {
-  const n = opts?.matches ?? 3
   const token = await getAdminToken()
-
   const league = await createLeague(token, uniq('Lega-e2e'))
-  const leagueId = league.id
-
-  const teamIds: number[] = []
-  for (let i = 0; i < n * 2; i++) {
-    const t = await createTeam(token, leagueId, uniq(`Team${i}`))
-    teamIds.push(t.id)
-  }
-
-  const rule = await createRule(token, leagueId, n)
-  const ruleId = rule.id
-
-  const contest = await createContest(token, { leagueId, ruleId })
-  const contestId = contest.id
-
-  const matchIds: number[] = []
-  for (let i = 0; i < n; i++) {
-    const m = await addMatch(token, {
-      contestId,
-      leagueId,
-      homeTeamId: teamIds[i * 2],
-      awayTeamId: teamIds[i * 2 + 1],
-      daysFromNow: i + 1,
-    })
-    matchIds.push(m.id)
-  }
-
-  await openContest(token, contestId)
-
-  return { token, leagueId, ruleId, contestId, teamIds, matchIds }
+  const rule = await createRule(token, 1, league.id)
+  const concorsoName = uniq('Concorso-e2e')
+  const concorso = await createConcorso(token, { ruleId: rule.id, name: concorsoName })
+  const bet = await createScommessa(token, { concorsoId: concorso.id, label: 'Gol / No gol', market: 'GOAL_NOGOAL' })
+  await openConcorso(token, concorso.id)
+  return { token, leagueId: league.id, ruleId: rule.id, concorsoId: concorso.id, betId: bet.id, concorsoName }
 }
