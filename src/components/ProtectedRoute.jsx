@@ -7,8 +7,8 @@ import ModLayout from './ModLayout'
 
 function homeFor(role) {
   if (role === 'ADMIN') return '/admin'
-  if (role === 'MOD') return '/mod/concorsi'
-  return '/contests'
+  if (role === 'MOD') return '/mod/giornate'
+  return '/giornate'
 }
 
 export default function ProtectedRoute({ allowedRole }) {

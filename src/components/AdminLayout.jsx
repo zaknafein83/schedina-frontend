@@ -3,14 +3,13 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   LayoutDashboard,
-  Trophy,
   Shield,
   Users,
   User,
-  BookOpen,
   Bell,
   CalendarDays,
   Award,
+  Coins,
   LogOut,
   ChevronRight,
   HelpCircle,
@@ -21,14 +20,14 @@ import {
 
 const navItems = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/admin/concorsi', label: 'Concorsi', icon: Trophy },
+  { to: '/admin/giornate', label: 'Calendario', icon: CalendarDays },
+  { to: '/admin/scommesse', label: 'Scommesse', icon: Coins },
   { to: '/admin/schedine', label: 'Schedine', icon: FileText },
   { to: '/admin/seasons', label: 'Stagioni', icon: CalendarDays },
   { to: '/admin/tournaments', label: 'Tornei', icon: Award },
   { to: '/admin/leagues', label: 'Leghe', icon: Shield },
   { to: '/admin/teams', label: 'Squadre', icon: Users },
   { to: '/admin/players', label: 'Giocatori', icon: User },
-  { to: '/admin/rules', label: 'Regole', icon: BookOpen },
   { to: '/admin/users', label: 'Utenti', icon: Users },
   { to: '/admin/notifications', label: 'Notifiche', icon: Bell },
   { to: '/listini', label: 'Listini', icon: User },
