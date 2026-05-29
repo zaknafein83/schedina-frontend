@@ -1,197 +1,93 @@
 # Guida per il Moderatore
 
-Il **Moderatore** (`MOD`) gestisce la vita operativa dei concorsi —
-apertura, chiusura, risultati, processing — e cura l'anagrafica dei
-giocatori. Non crea le entità strutturali (leghe, regole, concorsi):
-quelle sono dell'Admin.
+Il **Moderatore** (`MOD`) gestisce la vita operativa dei concorsi — apertura,
+chiusura, risoluzione delle scommesse, elaborazione — e cura l'anagrafica dei
+giocatori. Non crea né elimina concorsi: quello spetta all'Amministratore.
 
 ## Permessi
 
 | Azione | Mod | Admin |
 |---|---|---|
 | Aprire / chiudere un concorso | ✅ | ✅ |
-| Inserire risultati partite e side bet | ✅ | ✅ |
-| Avviare processing (anche re-processing) | ✅ | ✅ |
-| Chiudere e processare pool stagionali (multi-snapshot) | ✅ | ✅ |
-| CRUD **Giocatori** + import CSV | ✅ | ✅ |
-| Consultare i Listini | ✅ | ✅ |
-| Creare/eliminare concorsi e pool | ❌ | ✅ |
-| Aggiungere/togliere partite e side bet | ❌ | ✅ |
-| Configurare i bet stagionali della pool | ❌ | ✅ |
-| Gestire utenti, ruoli, anagrafiche strutturali | ❌ | ✅ |
+| Aggiungere scommesse a un concorso | ✅ | ✅ |
+| Risolvere le scommesse (impostare l'esito) | ✅ | ✅ |
+| Elaborare un concorso (anche ri-elaborare) | ✅ | ✅ |
+| Vedere le schedine degli utenti | ✅ | ✅ |
+| Gestire i Giocatori | ✅ | ✅ |
+| **Creare / eliminare** un concorso | ❌ | ✅ |
+| Gestire utenti, leghe, squadre, regole, stagioni, tornei | ❌ | ✅ |
 
 ## Flusso operativo
 
 ```
-Concorso OPEN  →  scade il termine  →  [MOD chiude]  →  CLOSED  →
-[MOD inserisce risultati]  →  [MOD elabora]  →  PROCESSED ✓
-
-Pool OPEN  →  (utenti compilano)  →  [MOD chiude]  →  CLOSED  →
-[MOD risolve bet uno a uno + processing]  →  tutti RESOLVED  →  PROCESSED ✓
+Concorso OPEN  →  scade il termine  →  [chiudi]  →  CLOSED  →
+[risolvi le scommesse]  →  [elabora]  →  PROCESSED ✓
 ```
 
 ---
 
-## 1. Dashboard concorsi
+## 1. Concorsi
 
-Dopo il login atterri su **Concorsi (Mod)** con tutti i concorsi in
-qualunque stato. Il badge di stato dice cosa puoi fare:
+Dal menu **Concorsi** vedi tutti i concorsi con il loro stato. Il badge dice
+cosa puoi fare: **OPEN** (utenti stanno giocando), **CLOSED** (puoi risolvere ed
+elaborare), **PROCESSED** (vincitori calcolati; ri-elaborabile).
 
-- **OPEN** → utenti stanno giocando, aspetta la scadenza
-- **CLOSED** → puoi inserire i risultati
-- **PROCESSED** → vincitori calcolati; puoi comunque ri-elaborarlo
+![Lista dei concorsi](/aiuto/11-admin-concorsi.png)
 
-![Dashboard del Moderatore con la lista concorsi](/aiuto/10-mod-dashboard.png)
-
-Nel menu trovi anche **Pool stagionali**, **Giocatori**, **Schedine**
-e **Listini**.
-
-## 2. Chiudere un concorso
-
-Sulla card del concorso aperto clicca **Chiudi**: lo stato passa a
-`CLOSED` e nessuno potrà più confermare schedine.
-
-![Pulsante Chiudi su un concorso aperto](/aiuto/11-mod-chiudi.png)
-
-## 3. Risultati delle partite
-
-Entra nel dettaglio del concorso `CLOSED`. Per ogni partita inserisci
-**due punteggi numerici** (casa / ospite): il sistema calcola
-automaticamente l'esito 1/X/2 (o U/O) e ne mostra l'anteprima.
-
-![Inserimento punteggio casa-ospite con anteprima 1/X/2](/aiuto/12-mod-risultato.png)
-
-Dopo il salvataggio compare un badge `2–1 (1)` che combina punteggio e
-segno. Finché non lanci il processing puoi correggere reinserendo i
-punteggi.
-
-### Side bet
-
-Ogni riga partita ha un'icona viola che apre il modal **side bet**:
-
-- **Gol/No gol** — si risolve **da solo** quando inserisci il punteggio
-  della partita. Non devi fare nulla.
-- **Primo marcatore** — risoluzione **manuale**: clicca ✓ accanto al bet,
-  scegli il giocatore dal dropdown (o `Nessun marcatore` per lo 0-0).
-
-Stato visibile nel modal: **In attesa** (giallo) o **Risolto** (verde).
-Se hai sbagliato un side bet, l'icona "Undo" lo riporta in attesa.
-
-## 4. Processing
-
-Quando tutti i risultati sono inseriti clicca **Elabora**. Il
-`CouponEngine` confronta i pronostici con gli esiti (1X2/UO **+** side
-bet risolti), calcola il `correctCount` di ogni schedina e la marca
-`WINNING` o `NOT_WINNING` in base alle soglie della regola. Lo stato
-del concorso diventa `PROCESSED`.
-
-> I side bet ancora in attesa (es. "Primo marcatore" non risolto) non
-> contano e non penalizzano: il pronostico resta neutro.
-
-### Ri-elaborare
-
-Se ti accorgi di un errore a posteriori:
-
-1. Apri il dettaglio del concorso `PROCESSED`
-2. Correggi il risultato (o un side bet)
-3. Clicca di nuovo **Elabora**
-
-Il sistema resetta le schedine e ricalcola tutto. Le notifiche di
-vincita si aggiornano di conseguenza.
+Le azioni rapide sulla riga: **Apri** (da DRAFT), **Chiudi** (da OPEN),
+**Elabora** (da CLOSED). Clicca sul nome per entrare nel dettaglio.
 
 ---
 
-## 5. Pool stagionali
+## 2. Risolvere le scommesse
 
-Le pool raccolgono i pronostici "lunghi" della stagione (scudetti,
-coppe, capocannoniere, ecc.). Trovi la lista nel menu → **Pool
-stagionali**.
+Nel dettaglio del concorso vedi tutte le **scommesse**. Per ognuna, sotto
+*"Imposta l'esito vincente"*, clicca l'opzione corretta: la scommessa passa a
+**RESOLVED** e mostra l'esito scelto.
 
-### Lifecycle
+![Dettaglio concorso con le scommesse da risolvere](/aiuto/12-admin-concorso.png)
 
-```
-DRAFT  →  [Admin apre]  →  OPEN  →  [Mod chiude]  →
-CLOSED  →  [Mod risolve bet + processing]  →  PROCESSED ✓
-```
-
-Tu intervieni da `OPEN` → `CLOSED` in poi.
-
-### Chiudere e risolvere
-
-Quando la stagione sta per cominciare apri la pool e clicca **Chiudi
-pool**. Da `CLOSED` nel dettaglio trovi la tabella di tutti i bet
-configurati:
-
-| Etichetta | Torneo | Tipo | Stato | Risultato |
-|---|---|---|---|---|
-| Vincitore Serie A | Serie A | WINNER | In attesa | — |
-| Capocannoniere Serie A | Serie A | TOP_SCORER | In attesa | — |
-| Vincitore Coppa Italia | Coppa Italia | WINNER | Risolto | Inter |
-
-Per ogni bet ancora in attesa clicca ✓ e seleziona la squadra (bet
-`TEAM`) o il giocatore (bet `PLAYER`). Tipiche finestre temporali:
-
-| Quando lo sai | Bet tipici |
-|---|---|
-| Fine campionato | Vincitore, Capocannoniere, Assist, Portiere, Attacco/Difesa |
-| Maggio | Vincitore Coppa Italia |
-| Giugno | Vincitore Champions League |
-
-### Processing multi-snapshot
-
-Dopo aver risolto uno o più bet clicca **Processing** per ricalcolare
-i punteggi parziali. Cosa succede:
-
-- Le schedine confrontano le scelte solo coi bet **già risolti**
-- `correctCount` si aggiorna; i bet in attesa restano `isCorrect = null`
-- La pool resta `CLOSED` finché c'è almeno un bet PENDING
-- Quando **tutti** i bet sono risolti la pool transita a `PROCESSED`
-  e le schedine diventano `WINNING` / `NOT_WINNING`
-
-> "Undo" su un bet sbagliato lo riporta in attesa; correggi e rilancia
-> il processing.
+- **Annulla esito**: riporta la scommessa ad aperta se hai sbagliato.
+- **Annulla** (void): neutralizza una scommessa che non si gioca più (non viene
+  conteggiata).
+- Per le scommesse legate a una partita con punteggio, l'esito (1X2, U/O,
+  Gol/No gol) può essere derivato automaticamente; altrimenti lo imposti a mano.
 
 ---
 
-## 6. Anagrafica Giocatori
+## 3. Elaborare
 
-Serve per i bet "Capocannoniere", "Miglior portiere", "Miglior assist"
-e per il side bet "Primo marcatore". Menu → **Giocatori**.
+Quando tutte le scommesse sono risolte (o annullate) clicca **Elabora**. Il
+sistema calcola per ogni schedina i pronostici corretti (1 punto ciascuno) e la
+marca **Vincente** o **Non vincente** in base alle soglie della regola. Lo stato
+del concorso diventa `PROCESSED` e ai vincitori arriva una notifica.
 
-Per ogni giocatore: **Nome**, **Cognome**, **Squadra** (opzionale),
-**Ruolo** (`GK` / `DEF` / `MID` / `FWD`), **Attivo** sì/no
-(gli inattivi non compaiono nei dropdown utente).
+> L'elaborazione è **incrementale**: puoi elaborare anche con solo alcune
+> scommesse risolte (le altre restano in sospeso) e rilanciarla più volte. Il
+> concorso diventa `PROCESSED` solo quando tutte le scommesse sono risolte.
 
-### Import CSV
+---
 
-In alto a destra **Import / Export**: scarica template, importa CSV o
-JSON, esporta i giocatori esistenti.
+## 4. Schedine
 
-| Colonna | Esempio | Note |
-|---|---|---|
-| `firstName` | Lautaro | obbligatorio |
-| `lastName` | Martínez | obbligatorio |
-| `teamName` | Inter | opzionale (deve esistere) |
-| `leagueName` | Serie A | opzionale, aiuta la risoluzione squadra |
-| `role` | FWD | opzionale (GK/DEF/MID/FWD) |
-| `isActive` | true | opzionale |
+Dal menu **Schedine** scegli un concorso per vedere tutte le giocate degli
+utenti, con stato e punteggio; **Vedi** apre il dettaglio con le singole scelte
+e gli esiti.
 
-L'import è **upsert** su `(firstName, lastName, teamName)`: se esiste
-viene aggiornato, altrimenti creato.
+![Viewer delle schedine per concorso](/aiuto/13-admin-schedine.png)
 
-## 7. Listini
+---
 
-Menu → **Listini**: vista read-only di squadre e giocatori, filtrabile.
-Utile per verificare al volo l'esatto nome di un giocatore prima di
-risolvere un bet.
+## 5. Giocatori
+
+Menu → **Giocatori**: servono per le scommesse su persone (capocannoniere,
+miglior portiere, primo marcatore…). Per ognuno: Nome, Cognome, Squadra
+(opzionale), Ruolo (GK/DEF/MID/FWD), Attivo. È disponibile anche
+**Import / Export** CSV/JSON.
 
 ---
 
 ## Cosa NON puoi fare
 
-Per le seguenti azioni contatta un **Amministratore**:
-
-- Creare/eliminare un concorso o aggiungere partite
-- Creare una pool stagionale o configurarne i bet
-- Modificare leghe, squadre, regole, stagioni, tornei
-- Promuovere un utente a Mod o Admin
+Per creare o eliminare concorsi, e per gestire utenti e anagrafiche strutturali
+(leghe, squadre, regole, stagioni, tornei), serve un **Amministratore**.
