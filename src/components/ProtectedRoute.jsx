@@ -7,7 +7,7 @@ import ModLayout from './ModLayout'
 
 function homeFor(role) {
   if (role === 'ADMIN') return '/admin'
-  if (role === 'MOD') return '/mod/contests'
+  if (role === 'MOD') return '/mod/concorsi'
   return '/contests'
 }
 

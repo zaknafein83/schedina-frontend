@@ -8375,3 +8375,7 @@ node_modules/
 
 # Personali (config Claude)
 /.claude/
+
+# Playwright artifacts
+playwright-report/
+test-results/

@@ -4,10 +4,9 @@ import { useAuth } from '../context/AuthContext'
 import { Trophy, FileText, User, LogOut, ChevronRight, HelpCircle, Menu, X } from 'lucide-react'
 
 const navItems = [
-  { to: '/mod/contests',     label: 'Concorsi',        icon: Trophy },
-  { to: '/mod/season-pools', label: 'Pool stagionali', icon: Trophy },
-  { to: '/mod/coupons',      label: 'Schedine',        icon: FileText },
-  { to: '/mod/players',      label: 'Giocatori',       icon: User },
+  { to: '/mod/concorsi', label: 'Concorsi',  icon: Trophy },
+  { to: '/mod/schedine', label: 'Schedine',  icon: FileText },
+  { to: '/mod/players',  label: 'Giocatori', icon: User },
   { to: '/listini',          label: 'Listini',         icon: User },
   { to: '/aiuto',            label: 'Guida',           icon: HelpCircle },
 ]
