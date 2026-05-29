@@ -70,35 +70,45 @@ Menu → **Concorsi** → **Nuovo concorso**. Campi: **Nome**, **Tipo**
 
 ---
 
-## 3. Aggiungere le scommesse
+## 3. Aggiungere le partite (1X2 / Under-Over / Gol-No gol)
 
-Entra nel dettaglio del concorso e clicca **Aggiungi**. Scegli il **mercato**:
+Nel dettaglio del concorso, sezione **Partite**, clicca **Aggiungi partita**:
 
-| Mercato | Target | Opzioni |
-|---|---|---|
-| Esito 1X2 | — | 1 / X / 2 (automatiche) |
-| Under/Over | — | Under / Over (imposti la soglia) |
-| Gol/No gol | — | Gol / No gol (automatiche) |
-| Vincitore, Più clean sheet, Più gol fatti, Meno gol subiti | Squadra | scegli le squadre candidate |
-| Primo marcatore, Capocannoniere, Miglior assist, Miglior portiere | Giocatore | scegli i giocatori candidati |
+- **Casa** e **Ospite** — scegli le due squadre. Sono raggruppate per divisione
+  (Serie A / B / C): le due squadre di una partita devono essere della **stessa
+  divisione**, ma una schedina può contenere partite di **divisioni diverse**.
+- **Data e ora** della partita.
+- **Mercati da creare**: spunta quelli che vuoi — *Esito 1X2*, *Under/Over*
+  (con la soglia, es. 2.5), *Gol/No gol*. Vengono creati i relativi pronostici,
+  con le opzioni (1/X/2, Under/Over, Gol/No gol) generate in automatico.
 
-Per i mercati a squadra/giocatore selezioni dall'elenco le opzioni candidate;
-per i mercati token (1X2, U/O, Gol/No gol) le opzioni sono generate da sole.
+![Dettaglio concorso: partite e pronostici](/aiuto/12-admin-concorso.png)
 
-![Dettaglio concorso: scommesse e risoluzione](/aiuto/12-admin-concorso.png)
+### Altre scommesse (stagionali)
+
+Per i pronostici non legati a una partita usa **Aggiungi (vincitore,
+capocannoniere…)** e seleziona le opzioni candidate:
+
+| Mercato | Target |
+|---|---|
+| Vincitore, Più clean sheet, Più gol fatti, Meno gol subiti | Squadra |
+| Capocannoniere, Miglior assist, Miglior portiere, Primo marcatore | Giocatore |
 
 ---
 
-## 4. Aprire, risolvere, elaborare
+## 4. Aprire, inserire i risultati, elaborare
 
 - **Apri**: stato → `OPEN`, gli utenti possono giocare.
 - **Chiudi**: stato → `CLOSED` allo scadere del termine.
-- **Risolvi le scommesse**: nel dettaglio, sotto *"Imposta l'esito vincente"*,
-  clicca l'opzione corretta di ogni scommessa (oppure **Annulla** per
-  neutralizzarla). *Annulla esito* per correggere.
+- **Risultati delle partite**: su ogni partita inserisci il **punteggio**
+  (casa-ospite) e clicca **Salva**: i pronostici 1X2, Under/Over e Gol/No gol
+  di quella partita si risolvono **automaticamente**. Per correggere, *Annulla
+  esito* sul pronostico e reinserisci il punteggio.
+- **Scommesse stagionali**: si risolvono a mano cliccando l'opzione vincente
+  (*Imposta l'esito vincente*).
 - **Elabora**: calcola le schedine e le marca Vincente/Non vincente; il
   concorso passa a `PROCESSED`. È **incrementale** e **ri-eseguibile**: puoi
-  elaborare anche con solo alcune scommesse risolte e rilanciare dopo.
+  elaborare anche con solo alcuni esiti inseriti e rilanciare dopo.
 
 (Le operazioni di chiusura/risoluzione/elaborazione può farle anche un **Mod**.)
 
