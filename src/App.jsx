@@ -34,6 +34,7 @@ import AdminTeams from './pages/admin/Teams'
 import AdminPlayers from './pages/admin/Players'
 import AdminSeasons from './pages/admin/Seasons'
 import AdminTournaments from './pages/admin/Tournaments'
+import AdminRules from './pages/admin/Rules'
 import AdminUsers from './pages/admin/Users'
 import AdminNotifications from './pages/admin/Notifications'
 
@@ -108,6 +109,7 @@ export default function App() {
         <Route path="/admin/players" element={<AdminPlayers />} />
         <Route path="/admin/seasons" element={<AdminSeasons />} />
         <Route path="/admin/tournaments" element={<AdminTournaments />} />
+        <Route path="/admin/rules" element={<AdminRules />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/notifications" element={<AdminNotifications />} />
       </Route>
