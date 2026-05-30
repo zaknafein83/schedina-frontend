@@ -9,6 +9,12 @@ import Modal from '../../components/ui/Modal'
 import Badge from '../../components/ui/Badge'
 import { ArrowLeft, Trash2, Save, CalendarPlus, Check } from 'lucide-react'
 
+/** Data odierna in formato YYYY-MM-DD nel fuso locale (per gli input type="date"). */
+function todayLocal() {
+  const d = new Date()
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10)
+}
+
 export default function GiornataDetail() {
   const { id } = useParams()
   const location = useLocation()
@@ -97,7 +103,7 @@ function MatchCard({ match, players, onSaveScore, saving, onValidate, onScorer, 
         <div>
           <p className="font-semibold text-gds-dark">{match.homeTeamName} – {match.awayTeamName}</p>
           <p className="text-xs text-gds-gray">
-            {match.scheduledAt && <>{String(match.scheduledAt).slice(0, 16).replace('T', ' ')} · </>}
+            {match.scheduledAt && <>{String(match.scheduledAt).slice(0, 10)} · </>}
             Under/Over {match.overUnderLine}
             {match.concorsoId && <> · <span className="text-gds-pink">in concorso</span></>}
           </p>
@@ -144,26 +150,27 @@ function MatchCard({ match, players, onSaveScore, saving, onValidate, onScorer, 
 function AddMatchModal({ isOpen, onClose, giornataId, teams, onCreated }) {
   const [home, setHome] = useState('')
   const [away, setAway] = useState('')
-  const [when, setWhen] = useState('')
+  const [when, setWhen] = useState(todayLocal())
   const [line, setLine] = useState(2.5)
   const [err, setErr] = useState('')
 
   const create = useMutation({
     mutationFn: () => adminApi.createMatch({
       giornataId: Number(giornataId), homeTeamId: Number(home), awayTeamId: Number(away),
-      scheduledAt: when, overUnderLine: Number(line),
+      // L'utente inserisce solo la data: la fissiamo a mezzanotte per il LocalDateTime del backend.
+      scheduledAt: `${when}T00:00:00`, overUnderLine: Number(line),
     }),
     onSuccess: () => { reset(); onCreated(); onClose() },
     onError: (e) => setErr(e.response?.data?.error || 'Errore nella creazione'),
   })
 
-  function reset() { setHome(''); setAway(''); setWhen(''); setLine(2.5); setErr('') }
+  function reset() { setHome(''); setAway(''); setWhen(todayLocal()); setLine(2.5); setErr('') }
   function close() { reset(); onClose() }
   function submit() {
     setErr('')
     if (!home || !away) return setErr('Seleziona entrambe le squadre')
     if (home === away) return setErr('Casa e ospite non possono coincidere')
-    if (!when) return setErr('Imposta data e ora')
+    if (!when) return setErr('Imposta la data')
     create.mutate()
   }
 
@@ -185,7 +192,7 @@ function AddMatchModal({ isOpen, onClose, giornataId, teams, onCreated }) {
             <Select value={away} onChange={setAway} ph="-- squadra ospite --" /></div>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <Input label="Data e ora" type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} />
+          <Input label="Data" type="date" value={when} onChange={(e) => setWhen(e.target.value)} />
           <Input label="Soglia Under/Over" type="number" step="0.5" value={line} onChange={(e) => setLine(e.target.value)} />
         </div>
         {err && <div className="bg-red-50 text-red-700 rounded-lg p-2.5 text-sm">{err}</div>}
