@@ -45,20 +45,27 @@ export const authApi = {
     apiClient.post('/auth/reset-password', { token, newPassword }),
 }
 
-// ─── Concorsi (user) ───────────────────────────────────────────────────────────
-export const concorsoApi = {
-  listOpen: () => apiClient.get('/concorsi'),
-  get: (id) => apiClient.get(`/concorsi/${id}`),
-  getScommesse: (id) => apiClient.get(`/concorsi/${id}/scommesse`),
+// ─── Giornate / Calendario (user) ────────────────────────────────────────────
+export const giornataApi = {
+  listOpen: () => apiClient.get('/giornate'),
+  get: (id) => apiClient.get(`/giornate/${id}`),
+  partite: (id) => apiClient.get(`/giornate/${id}/partite`),
 }
 
-// ─── Schedine (user) ─────────────────────────────────────────────────────────
+// ─── Schedine (user) — 1X2 + Under/Over per partita della giornata ────────────
 export const schedinaApi = {
   listMine: () => apiClient.get('/schedine'),
   get: (id) => apiClient.get(`/schedine/${id}`),
-  create: (data) => apiClient.post('/schedine', data),
+  create: (data) => apiClient.post('/schedine', data), // { giornataId, pronostici: [{ matchId, choice1x2, choiceUo }] }
   confirm: (id) => apiClient.post(`/schedine/${id}/confirm`),
   cancel: (id) => apiClient.delete(`/schedine/${id}`),
+}
+
+// ─── Scommesse extra (user) — giocate singole indipendenti ────────────────────
+export const scommessaApi = {
+  listOpen: () => apiClient.get('/scommesse'),
+  listMine: () => apiClient.get('/scommesse/mine'),
+  place: (scommessaId, choiceRef) => apiClient.post('/scommesse', { scommessaId, choiceRef }),
 }
 
 // ─── Listini pubblici (read-only, qualsiasi utente loggato) ──────────────────
@@ -115,23 +122,17 @@ export const adminApi = {
   updatePlayer: (id, data) => apiClient.patch(`/admin/players/${id}`, data),
   deletePlayer: (id) => apiClient.delete(`/admin/players/${id}`),
 
-  // Rules
-  getRules: () => apiClient.get('/admin/rules'),
-  createRule: (data) => apiClient.post('/admin/rules', data),
-  updateRule: (id, data) => apiClient.patch(`/admin/rules/${id}`, data),
-  deleteRule: (id) => apiClient.delete(`/admin/rules/${id}`),
+  // Giornate / Calendario
+  getGiornate: () => apiClient.get('/admin/giornate'),
+  getGiornata: (id) => apiClient.get(`/admin/giornate/${id}`),
+  createGiornata: (data) => apiClient.post('/admin/giornate', data),
+  updateGiornata: (id, data) => apiClient.patch(`/admin/giornate/${id}`, data),
+  deleteGiornata: (id) => apiClient.delete(`/admin/giornate/${id}`),
+  openGiornata: (id) => apiClient.post(`/admin/giornate/${id}/open`),
+  closeGiornata: (id) => apiClient.post(`/admin/giornate/${id}/close`),
+  processGiornata: (id) => apiClient.post(`/admin/giornate/${id}/process`),
 
-  // Concorsi
-  getConcorsi: () => apiClient.get('/admin/concorsi'),
-  getConcorso: (id) => apiClient.get(`/admin/concorsi/${id}`),
-  createConcorso: (data) => apiClient.post('/admin/concorsi', data),
-  updateConcorso: (id, data) => apiClient.patch(`/admin/concorsi/${id}`, data),
-  deleteConcorso: (id) => apiClient.delete(`/admin/concorsi/${id}`),
-  openConcorso: (id) => apiClient.post(`/admin/concorsi/${id}/open`),
-  closeConcorso: (id) => apiClient.post(`/admin/concorsi/${id}/close`),
-  processConcorso: (id) => apiClient.post(`/admin/concorsi/${id}/process`),
-
-  // Scommesse
+  // Scommesse extra (catalogo)
   getScommesse: (params) => apiClient.get('/admin/scommesse', { params: params || {} }),
   getScommessa: (id) => apiClient.get(`/admin/scommesse/${id}`),
   createScommessa: (data) => apiClient.post('/admin/scommesse', data),
@@ -141,19 +142,20 @@ export const adminApi = {
   unresolveScommessa: (id) => apiClient.post(`/admin/scommesse/${id}/unresolve`),
   voidScommessa: (id) => apiClient.post(`/admin/scommesse/${id}/void`),
 
-  // Schedine (admin/mod: tutte le schedine di un concorso)
-  getSchedineByConcorso: (concorsoId) =>
-    apiClient.get('/admin/schedine/by-concorso', { params: { concorsoId } }),
+  // Schedine (admin/mod: tutte le schedine di una giornata)
+  getSchedineByGiornata: (giornataId) =>
+    apiClient.get('/admin/schedine/by-giornata', { params: { giornataId } }),
   getSchedina: (id) => apiClient.get(`/admin/schedine/${id}`),
 
-  // Matches (anagrafica fixture; il legame con le scommesse passa da matchId)
-  getMatches: (leagueId) =>
-    apiClient.get('/admin/matches', { params: leagueId ? { leagueId } : {} }),
+  // Matches (partite della giornata)
+  getMatches: (params) =>
+    apiClient.get('/admin/matches', { params: params || {} }),
   createMatch: (data) => apiClient.post('/admin/matches', data),
   updateMatch: (id, data) => apiClient.patch(`/admin/matches/${id}`, data),
   deleteMatch: (id) => apiClient.delete(`/admin/matches/${id}`),
   setMatchResult: (id, homeScore, awayScore) =>
     apiClient.put(`/admin/matches/${id}/result`, { homeScore, awayScore }),
+  validateMatch: (id) => apiClient.post(`/admin/matches/${id}/validate`),
 
   // Users
   getUsers: () => apiClient.get('/admin/users'),
@@ -171,12 +173,10 @@ export const adminApi = {
   exportLeagues: () => apiClient.get('/admin/export/leagues'),
   exportTeams:   () => apiClient.get('/admin/export/teams'),
   exportPlayers: () => apiClient.get('/admin/export/players'),
-  exportRules:   () => apiClient.get('/admin/export/rules'),
   exportAll:     () => apiClient.get('/admin/export/all'),
   importLeagues: (text) => apiClient.post('/admin/import/leagues', text, { headers: { 'Content-Type': 'text/plain' } }),
   importTeams:   (text) => apiClient.post('/admin/import/teams',   text, { headers: { 'Content-Type': 'text/plain' } }),
   importPlayers: (text) => apiClient.post('/admin/import/players', text, { headers: { 'Content-Type': 'text/plain' } }),
-  importRules:   (text) => apiClient.post('/admin/import/rules',   text, { headers: { 'Content-Type': 'text/plain' } }),
 }
 
 export default apiClient

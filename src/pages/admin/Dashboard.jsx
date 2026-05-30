@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { adminApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
-import { Users, FileText, Trophy, Target, CheckCircle, XCircle } from 'lucide-react'
+import { Users, FileText, CalendarDays, Coins, CheckCircle, XCircle } from 'lucide-react'
 
 function StatCard({ label, value, sub, icon: Icon, color }) {
   const colorMap = {
@@ -53,10 +53,10 @@ export default function Dashboard() {
           sub={`${data?.users?.active ?? 0} attivi`} icon={Users} color="blue" />
         <StatCard label="Schedine totali" value={data?.schedine?.total}
           sub={`${data?.schedine?.winning ?? 0} vincenti`} icon={FileText} color="pink" />
-        <StatCard label="Concorsi aperti" value={data?.concorsi?.open}
-          sub={`${data?.concorsi?.processed ?? 0} processati`} icon={Trophy} color="green" />
-        <StatCard label="Scommesse aperte" value={data?.openBets}
-          icon={Target} color="yellow" />
+        <StatCard label="Giornate aperte" value={data?.giornate?.open}
+          sub={`${data?.giornate?.processed ?? 0} elaborate`} icon={CalendarDays} color="green" />
+        <StatCard label="Scommesse aperte" value={data?.scommesse?.open}
+          sub={`${data?.scommesse?.giocate ?? 0} giocate`} icon={Coins} color="yellow" />
         <StatCard label="Notifiche inviate" value={data?.notifications?.sent}
           icon={CheckCircle} color="green" />
         <StatCard label="Notifiche fallite" value={data?.notifications?.failed}

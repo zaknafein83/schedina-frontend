@@ -4,8 +4,8 @@ import { schedinaApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
-import Button from '../../components/ui/Button'
-import { Check, X, FileText, Trash2 } from 'lucide-react'
+import SchedinaSelezioni from '../../components/SchedinaSelezioni'
+import { FileText, Trash2 } from 'lucide-react'
 
 const ST_COLOR = { WINNING: 'green', NOT_WINNING: 'red', CONFIRMED: 'blue', PROCESSED: 'yellow', DRAFT: 'gray', CANCELLED: 'gray' }
 const ST_LABEL = { WINNING: 'Vincente', NOT_WINNING: 'Non vincente', CONFIRMED: 'Confermata', PROCESSED: 'In elaborazione', DRAFT: 'Bozza', CANCELLED: 'Annullata' }
@@ -72,21 +72,7 @@ export default function Schedine() {
               <span className="text-sm text-gds-gray">Punti: <strong className="text-gds-dark">{detail.correctCount ?? '—'}</strong></span>
               {detail.isWinner && <span>🏆</span>}
             </div>
-            <ul className="space-y-2">
-              {detail.selezioni?.map((sel, i) => (
-                <li key={i} className="flex items-center justify-between border border-gray-100 rounded-lg px-3 py-2">
-                  <div>
-                    <p className="text-sm font-medium text-gds-dark">{sel.betLabel}</p>
-                    <p className="text-xs text-gds-gray">
-                      Scelta: <strong>{sel.choiceLabel}</strong>
-                      {sel.officialResultRef && <> · Esito: {sel.officialResultRef}</>}
-                    </p>
-                  </div>
-                  {sel.isCorrect === true && <Check size={18} className="text-green-600" />}
-                  {sel.isCorrect === false && <X size={18} className="text-red-500" />}
-                </li>
-              ))}
-            </ul>
+            <SchedinaSelezioni selezioni={detail.selezioni} />
           </div>
         )}
       </Modal>
