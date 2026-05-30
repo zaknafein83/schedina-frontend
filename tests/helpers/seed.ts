@@ -27,17 +27,23 @@ export async function createTeam(token: string, leagueId: number, name = uniq('S
   return api.post('/admin/teams', { name, leagueId, isActive: true }, { token })
 }
 
+export async function createRule(token: string, winningThresholds: number[], name = uniq('Regola')) {
+  return api.post('/admin/rules', { name, winningThresholds, isActive: true }, { token })
+}
+
 export async function createGiornata(token: string, opts: {
   name?: string
+  ruleId?: number
   winningThresholds?: number[]
 } = {}) {
   const openAt = toLocalDT(new Date(Date.now() - 60 * 60 * 1000))          // 1h fa
   const closeAt = toLocalDT(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) // tra 7gg
   return api.post('/admin/giornate', {
     name: opts.name || uniq('Giornata'),
+    ruleId: opts.ruleId,
     openAt,
     closeAt,
-    winningThresholds: opts.winningThresholds ?? [2],
+    winningThresholds: opts.winningThresholds,
   }, { token })
 }
 
@@ -103,8 +109,9 @@ export async function bootstrapOpenGiornata(): Promise<{
   const awayName = uniq('Ospite')
   const home = await createTeam(token, league.id, homeName)
   const away = await createTeam(token, league.id, awayName)
+  const rule = await createRule(token, [2], uniq('Regola-e2e'))
   const giornataName = uniq('Giornata-e2e')
-  const giornata = await createGiornata(token, { name: giornataName, winningThresholds: [2] })
+  const giornata = await createGiornata(token, { name: giornataName, ruleId: rule.id })
   const match = await createMatch(token, { giornataId: giornata.id, homeTeamId: home.id, awayTeamId: away.id, overUnderLine: 2.5 })
   await openGiornata(token, giornata.id)
   return { token, leagueId: league.id, giornataId: giornata.id, matchId: match.id, homeName, awayName, giornataName }

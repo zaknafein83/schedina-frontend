@@ -29,6 +29,10 @@ export default function Giornate() {
     queryKey: ['admin-seasons'],
     queryFn: () => adminApi.getSeasons().then((r) => r.data),
   })
+  const { data: rules } = useQuery({
+    queryKey: ['admin-rules'],
+    queryFn: () => adminApi.getRules().then((r) => r.data),
+  })
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm()
 
@@ -43,30 +47,27 @@ export default function Giornate() {
 
   function openCreate() {
     setEditing(null)
-    reset({ name: '', number: '', seasonId: '', openAt: '', closeAt: '', winningThresholds: '' })
+    reset({ name: '', number: '', seasonId: '', ruleId: '', openAt: '', closeAt: '' })
     setModalOpen(true)
   }
   function openEdit(g) {
     setEditing(g)
     reset({
-      name: g.name, number: g.number ?? '', seasonId: g.seasonId || '',
+      name: g.name, number: g.number ?? '', seasonId: g.seasonId || '', ruleId: g.ruleId || '',
       openAt: (g.openAt || '').slice(0, 16), closeAt: (g.closeAt || '').slice(0, 16),
-      winningThresholds: (g.winningThresholds || []).join(', '),
     })
     setModalOpen(true)
   }
   function closeModal() { setModalOpen(false); setEditing(null); reset() }
 
   async function onSubmit(data) {
-    const thresholds = String(data.winningThresholds || '')
-      .split(',').map((s) => s.trim()).filter(Boolean).map(Number).filter((n) => !Number.isNaN(n))
     const payload = {
       name: data.name,
       number: data.number ? Number(data.number) : undefined,
       seasonId: data.seasonId ? Number(data.seasonId) : undefined,
+      ruleId: data.ruleId ? Number(data.ruleId) : undefined,
       openAt: data.openAt,
       closeAt: data.closeAt,
-      winningThresholds: thresholds,
     }
     if (editing) await updateMutation.mutateAsync({ id: editing.id, data: payload })
     else await createMutation.mutateAsync(payload)
@@ -97,7 +98,7 @@ export default function Giornate() {
               <th className="px-4 py-3 text-left font-semibold">Stato</th>
               <th className="px-4 py-3 text-left font-semibold">Partite</th>
               <th className="px-4 py-3 text-left font-semibold">Schedine</th>
-              <th className="px-4 py-3 text-left font-semibold">Soglie</th>
+              <th className="px-4 py-3 text-left font-semibold">Regola</th>
               <th className="px-4 py-3 text-left font-semibold">Chiusura</th>
               <th className="px-4 py-3 text-right font-semibold">Azioni</th>
             </tr>
@@ -117,7 +118,7 @@ export default function Giornate() {
                 <td className="px-4 py-3"><Badge color={STATUS_COLOR[g.status]}>{g.status}</Badge></td>
                 <td className="px-4 py-3 text-gds-gray">{g.matchCount}</td>
                 <td className="px-4 py-3 text-gds-gray">{g.schedinaCount}</td>
-                <td className="px-4 py-3 text-gds-gray text-xs">{(g.winningThresholds || []).join(', ') || '—'}</td>
+                <td className="px-4 py-3 text-gds-gray text-xs">{g.ruleName ? `${g.ruleName} [${(g.winningThresholds || []).join(', ') || '—'}]` : '—'}</td>
                 <td className="px-4 py-3 text-gds-gray text-xs">{(g.closeAt || '').slice(0, 16).replace('T', ' ')}</td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-1">
@@ -152,7 +153,7 @@ export default function Giornate() {
               <label className="text-sm font-medium text-gds-dark">Stagione</label>
               <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink" {...register('seasonId')}>
                 <option value="">-- Nessuna --</option>
-                {seasons?.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                {seasons?.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
             </div>
           </div>
@@ -165,9 +166,14 @@ export default function Giornate() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <Input label="Soglie vincenti (punti, separati da virgola)" placeholder="es. 12, 13"
-              {...register('winningThresholds')} />
-            <p className="text-xs text-gds-gray">Ogni partita vale fino a 2 punti (1X2 + Under/Over). Lascia vuoto per impostarle dopo.</p>
+            <label className="text-sm font-medium text-gds-dark">Regola (soglie vincenti)</label>
+            <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink" {...register('ruleId')}>
+              <option value="">-- Nessuna (da assegnare) --</option>
+              {rules?.filter((r) => r.isActive || String(r.id) === String(editing?.ruleId)).map((r) => (
+                <option key={r.id} value={r.id}>{r.name} [{(r.winningThresholds || []).join(', ') || '—'}]</option>
+              ))}
+            </select>
+            <p className="text-xs text-gds-gray">Le soglie si gestiscono in <strong>Regole</strong>. Puoi assegnarla anche dopo, prima dell'elaborazione.</p>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

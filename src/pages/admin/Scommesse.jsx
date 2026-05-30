@@ -101,7 +101,7 @@ export default function Scommesse() {
             <select value={seasonId} onChange={(e) => setSeasonId(e.target.value)}
               className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
               <option value="">-- Seleziona --</option>
-              {seasons?.map((s) => <option key={s.id} value={s.id}>{s.name}{s.isCurrent ? ' (corrente)' : ''}</option>)}
+              {seasons?.map((s) => <option key={s.id} value={s.id}>{s.label}{s.isCurrent ? ' (corrente)' : ''}</option>)}
             </select>
           </div>
         )}

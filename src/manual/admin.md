@@ -7,8 +7,9 @@ gli utenti, e segue l'intero ciclo di vita di una giocata.
 ## Il modello in tre concetti
 
 - **Giornata**: una tappa del calendario. Contiene le **partite** su cui si
-  gioca la schedina. Ha le sue **soglie di vittoria** e una finestra di gioco
-  (apertura/chiusura).
+  gioca la schedina, usa una **Regola** (che ne definisce le soglie di vittoria)
+  e ha una finestra di gioco (apertura/chiusura). Può mischiare partite di
+  divisioni diverse (Serie A/B/C).
 - **Schedina**: la giocata di un utente su una giornata. Per ogni partita
   contiene due pronostici — **1X2** e **Under/Over** — entrambi a punteggio.
 - **Scommessa extra**: una previsione singola e indipendente dalla schedina, di
@@ -33,9 +34,8 @@ Dal menu laterale:
 - **Giocatori** — per le scommesse su persone; Nome, Cognome, Squadra, Ruolo
   (GK/DEF/MID/FWD). Import/Export CSV (upsert su nome+cognome+squadra).
 - **Stagioni** e **Tornei** — riferimenti per le scommesse di fine stagione.
-
-> Non esiste più una *Regola* separata: le **soglie di vittoria** vivono
-> direttamente sulla giornata.
+- **Regole** — definiscono le **soglie di vittoria** della schedina (punteggi a
+  match esatto, es. `12, 13`). Sono riusabili: ogni giornata ne seleziona una.
 
 ---
 
@@ -52,12 +52,14 @@ giornate aperte/elaborate, scommesse aperte e giocate, notifiche.
 
 Menu → **Calendario** → **Nuova giornata**. Campi: **Nome** (es. *Giornata 1*),
 **Numero** (opzionale, altrimenti progressivo), **Stagione** (opzionale),
-**Apertura** e **Chiusura**, **Soglie vincenti** (punti separati da virgola,
-es. `12, 13`). Nasce in `DRAFT` (non visibile agli utenti).
+**Regola** (le soglie vincenti; opzionale, assegnabile anche dopo ma prima
+dell'elaborazione), **Apertura** e **Chiusura**. Nasce in `DRAFT` (non visibile
+agli utenti).
 
-> La vincita è a **soglia esatta**: con soglie `12, 13` vince chi totalizza
-> esattamente 12 o 13 pronostici corretti. Ogni partita vale fino a 2 punti
-> (1X2 + Under/Over), quindi con N partite il massimo è 2·N.
+> La vincita è a **soglia esatta**: con una regola a soglie `12, 13` vince chi
+> totalizza esattamente 12 o 13 pronostici corretti. Ogni partita vale fino a 2
+> punti (1X2 + Under/Over), quindi con N partite il massimo è 2·N. Le soglie si
+> gestiscono nella sezione **Regole** e si riusano tra le giornate.
 
 ![Lista delle giornate](/aiuto/11-admin-concorsi.png)
 

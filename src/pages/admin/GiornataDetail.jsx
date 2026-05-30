@@ -74,7 +74,7 @@ export default function GiornataDetail() {
           <div className="flex items-center gap-2 mt-1">
             <Badge color={STATUS_COLOR[giornata.status]}>{giornata.status}</Badge>
             <span className="text-sm text-gds-gray">
-              Soglie vincenti: {(giornata.winningThresholds || []).join(', ') || '—'} · max {maxPunti} punti
+              Regola: {giornata.ruleName || '— (nessuna)'} · soglie {(giornata.winningThresholds || []).join(', ') || '—'} · max {maxPunti} punti
             </span>
           </div>
         </div>

@@ -122,6 +122,12 @@ export const adminApi = {
   updatePlayer: (id, data) => apiClient.patch(`/admin/players/${id}`, data),
   deletePlayer: (id) => apiClient.delete(`/admin/players/${id}`),
 
+  // Regole (soglie vincenti riusabili)
+  getRules: () => apiClient.get('/admin/rules'),
+  createRule: (data) => apiClient.post('/admin/rules', data),
+  updateRule: (id, data) => apiClient.patch(`/admin/rules/${id}`, data),
+  deleteRule: (id) => apiClient.delete(`/admin/rules/${id}`),
+
   // Giornate / Calendario
   getGiornate: () => apiClient.get('/admin/giornate'),
   getGiornata: (id) => apiClient.get(`/admin/giornate/${id}`),
