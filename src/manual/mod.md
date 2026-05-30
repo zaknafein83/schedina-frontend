@@ -1,100 +1,73 @@
 # Guida per il Moderatore
 
-Il **Moderatore** (`MOD`) gestisce la vita operativa delle giornate — apertura,
-chiusura, inserimento punteggi, elaborazione — risolve le scommesse extra e cura
-l'anagrafica dei giocatori. Non crea né elimina le giornate: quello spetta
-all'Amministratore.
+Il **Moderatore** (`MOD`) gestisce la vita operativa: calendario e partite,
+composizione e stato dei **Concorsi**, punteggi, elaborazione, scommesse. Non
+gestisce utenti né anagrafiche strutturali (quello spetta all'Amministratore).
 
 ## Permessi
 
 | Azione | Mod | Admin |
 |---|---|---|
-| Aprire / chiudere una giornata | ✅ | ✅ |
-| Aggiungere partite a una giornata | ✅ | ✅ |
-| Inserire i punteggi delle partite | ✅ | ✅ |
-| Elaborare una giornata (anche ri-elaborare) | ✅ | ✅ |
-| Creare e risolvere le scommesse extra | ✅ | ✅ |
-| Vedere le schedine degli utenti | ✅ | ✅ |
+| Calendario: creare giornate e partite | ✅ | ✅ |
+| Inserire punteggi / primo marcatore | ✅ | ✅ |
+| Concorsi: creare, selezionare partite, aprire/chiudere/riaprire/elaborare | ✅ | ✅ |
+| Scommesse fine campionato: creare e risolvere | ✅ | ✅ |
+| Vedere le schedine | ✅ | ✅ |
 | Gestire i Giocatori | ✅ | ✅ |
-| **Creare / eliminare** una giornata | ❌ | ✅ |
-| Gestire utenti, leghe, squadre, stagioni, tornei | ❌ | ✅ |
+| Gestire utenti, leghe, squadre, stagioni, tornei, regole | ❌ | ✅ |
 
 ## Flusso operativo
 
 ```
-Giornata OPEN  →  scade il termine  →  [chiudi]  →  CLOSED  →
-[inserisci i punteggi]  →  [elabora]  →  PROCESSED ✓
+Calendario (giornate + partite) → Concorso (seleziona partite del turno) →
+[apri] → utenti giocano → [chiudi] → punteggi → [elabora] → PROCESSED ✓
 ```
 
 ---
 
-## 1. Calendario / Giornate
+## 1. Calendario
 
-Dal menu **Calendario** vedi tutte le giornate con il loro stato. Il badge dice
-cosa puoi fare: **OPEN** (utenti stanno giocando), **CLOSED** (puoi inserire i
-punteggi ed elaborare), **PROCESSED** (vincitori calcolati; ri-elaborabile).
+Menu → **Calendario**: crea le giornate di campionato (per lega) e, nel dettaglio,
+le **partite**. Qui inserisci i **punteggi**, **validi** le partite e indichi il
+**primo marcatore**.
 
 ![Lista delle giornate](/aiuto/11-admin-concorsi.png)
 
-Le azioni rapide sulla riga: **Apri** (da DRAFT), **Chiudi** (da OPEN),
-**Elabora** (da CLOSED). Clicca sul nome per entrare nel dettaglio.
+---
+
+## 2. Concorsi
+
+Menu → **Concorsi**: crea il concorso del turno, **seleziona le partite**
+disponibili di quel turno, poi **Apri**. Allo scadere **Chiudi**, inserisci i
+punteggi (dal Calendario) e **Elabora**. Puoi **Riaprire** un concorso chiuso o
+elaborato per correggere.
+
+![Dettaglio concorso](/aiuto/12-admin-concorso.png)
+
+> L'elaborazione calcola i punti delle schedine (1X2 + U/O) e marca
+> Vincente/Non vincente secondo le soglie della Regola. È ri-eseguibile.
 
 ---
 
-## 2. Inserire i punteggi
+## 3. Scommesse
 
-Nel dettaglio della giornata, sezione **Partite**, su ogni partita inserisci il
-**punteggio** (casa-ospite) e clicca **Salva**: gli esiti 1X2 e Under/Over si
-calcolano dal punteggio. Con **Valida** blocchi il risultato della partita.
-
-![Dettaglio giornata con le partite](/aiuto/12-admin-concorso.png)
-
----
-
-## 3. Elaborare
-
-Quando hai inserito i punteggi clicca **Elabora**. Il sistema calcola per ogni
-schedina i pronostici corretti (1 punto ciascuno, fino a 2 per partita) e la
-marca **Vincente** o **Non vincente** in base alle soglie della giornata. Lo
-stato della giornata diventa `PROCESSED` e ai vincitori arriva una notifica.
-
-> L'elaborazione è **incrementale**: puoi elaborare anche con solo alcuni
-> punteggi inseriti e rilanciarla più volte. La giornata diventa `PROCESSED`
-> solo quando tutte le partite hanno il punteggio.
+Le scommesse di **fine campionato** si creano e si risolvono a mano. Quelle di
+**partita** (Gol/No gol, Vincitore, Risultato esatto, Primo marcatore) si
+risolvono in automatico dal punteggio — il *Primo marcatore* lo imposti dal
+Calendario sulla partita.
 
 ---
 
-## 4. Scommesse extra
+## 4. Schedine
 
-Dal menu **Scommesse** crei e risolvi le scommesse di fine stagione o di
-giornata. Per risolverle clicca l'opzione vincente sotto *"Imposta l'esito
-vincente"*: la scommessa passa a **RESOLVED** e le giocate degli utenti vengono
-valutate. **Annulla esito** la riapre; **Annulla** (void) la neutralizza. Le
-scommesse *Gol/No gol* collegate a una partita si risolvono in automatico
-all'inserimento del punteggio.
+Menu → **Schedine**: scegli un concorso per vedere le schedine degli utenti, con
+stato, punteggio e dettaglio dei pronostici.
 
----
-
-## 5. Schedine
-
-Dal menu **Schedine** scegli una giornata per vedere tutte le schedine degli
-utenti, con stato e punteggio; **Vedi** apre il dettaglio con i pronostici 1X2 /
-Under/Over e gli esiti.
-
-![Viewer delle schedine per giornata](/aiuto/13-admin-schedine.png)
-
----
-
-## 6. Giocatori
-
-Menu → **Giocatori**: servono per le scommesse su persone (capocannoniere,
-miglior portiere, primo marcatore…). Per ognuno: Nome, Cognome, Squadra
-(opzionale), Ruolo (GK/DEF/MID/FWD), Attivo. È disponibile anche
-**Import / Export** CSV/JSON.
+![Viewer delle schedine](/aiuto/13-admin-schedine.png)
 
 ---
 
 ## Cosa NON puoi fare
 
-Per creare o eliminare le giornate, e per gestire utenti e anagrafiche
-strutturali (leghe, squadre, stagioni, tornei), serve un **Amministratore**.
+Gestire utenti e anagrafiche strutturali (leghe, squadre, stagioni, tornei,
+regole): serve un **Amministratore**.

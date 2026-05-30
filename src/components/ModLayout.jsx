@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { CalendarDays, FileText, Coins, User, LogOut, ChevronRight, HelpCircle, Menu, X } from 'lucide-react'
+import { CalendarDays, FileText, Coins, Trophy, User, LogOut, ChevronRight, HelpCircle, Menu, X } from 'lucide-react'
 
 const navItems = [
   { to: '/mod/giornate',  label: 'Calendario', icon: CalendarDays },
+  { to: '/mod/concorsi',  label: 'Concorsi',   icon: Trophy },
   { to: '/mod/scommesse', label: 'Scommesse',  icon: Coins },
   { to: '/mod/schedine',  label: 'Schedine',   icon: FileText },
   { to: '/mod/players',   label: 'Giocatori',  icon: User },

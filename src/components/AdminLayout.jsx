@@ -11,6 +11,7 @@ import {
   CalendarDays,
   Award,
   Coins,
+  Trophy,
   LogOut,
   ChevronRight,
   HelpCircle,
@@ -22,6 +23,7 @@ import {
 const navItems = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/giornate', label: 'Calendario', icon: CalendarDays },
+  { to: '/admin/concorsi', label: 'Concorsi', icon: Trophy },
   { to: '/admin/scommesse', label: 'Scommesse', icon: Coins },
   { to: '/admin/schedine', label: 'Schedine', icon: FileText },
   { to: '/admin/rules', label: 'Regole', icon: BookOpen },
