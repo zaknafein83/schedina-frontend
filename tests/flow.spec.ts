@@ -1,31 +1,25 @@
 import { test, expect } from '@playwright/test'
 import { loginAs } from './helpers/auth'
-import {
-  bootstrapOpenGiornata, createScommessa,
-  setMatchResult, closeGiornata, processGiornata, resolveScommessa,
-} from './helpers/seed'
+import { bootstrapOpenConcorso, setMatchResult, closeConcorso, processConcorso } from './helpers/seed'
 
-test.describe('Flusso Calendario/Schedina', () => {
-  test('admin vede la giornata creata', async ({ page }) => {
-    const { giornataName } = await bootstrapOpenGiornata()
+test.describe('Flusso Concorso/Schedina (redesign #3)', () => {
+  test('admin vede il concorso creato', async ({ page }) => {
+    const { concorsoName } = await bootstrapOpenConcorso()
     await loginAs(page, 'admin')
-    await page.goto('/admin/giornate')
-    await expect(page.getByText(giornataName)).toBeVisible()
+    await page.goto('/admin/concorsi')
+    await expect(page.getByText(concorsoName)).toBeVisible()
   })
 
-  test('utente compila la schedina (1X2 + U/O) e risulta vincente dopo elaborazione', async ({ page }) => {
-    const { token, giornataId, matchId, giornataName, homeName, awayName } = await bootstrapOpenGiornata()
+  test('utente compila la schedina e risulta vincente dopo elaborazione', async ({ page }) => {
+    const { token, concorsoId, matchId, concorsoName, homeName, awayName } = await bootstrapOpenConcorso()
 
-    // L'utente compila e conferma la schedina via UI
     await loginAs(page, 'mario')
-    await page.goto('/giornate')
-    await expect(page.getByText(giornataName)).toBeVisible()
-    await page.getByText(giornataName).click()
+    await page.goto('/concorsi')
+    await expect(page.getByText(concorsoName)).toBeVisible()
+    await page.getByText(concorsoName).click()
 
-    await page.waitForURL(`**/giornate/${giornataId}`)
+    await page.waitForURL(`**/concorsi/${concorsoId}`)
     await expect(page.getByText(`${homeName} – ${awayName}`)).toBeVisible()
-
-    // Pronostico: esito 1 + Over (coerenti col punteggio 3-0)
     await page.getByRole('button', { name: '1', exact: true }).click()
     await page.getByRole('button', { name: /^Over/ }).click()
     await page.getByRole('button', { name: /Conferma schedina/ }).click()
@@ -33,44 +27,41 @@ test.describe('Flusso Calendario/Schedina', () => {
     await page.waitForURL('**/schedine')
     await expect(page.getByText(/Schedina #/).first()).toBeVisible()
 
-    // L'admin inserisce il punteggio (3-0 → esito 1, Over 2.5), chiude ed elabora
-    await setMatchResult(token, matchId, 3, 0)
-    await closeGiornata(token, giornataId)
-    await processGiornata(token, giornataId)
+    // admin: punteggio 2-1 (1, Over) → chiude → elabora
+    await setMatchResult(token, matchId, 2, 1)
+    await closeConcorso(token, concorsoId)
+    await processConcorso(token, concorsoId)
 
-    // La schedina dell'utente deve risultare vincente (2 pronostici corretti)
     await page.reload()
     await expect(page.getByText('Vincente').first()).toBeVisible()
   })
 
-  test('admin riapre una giornata chiusa', async ({ page }) => {
-    const { token, giornataId } = await bootstrapOpenGiornata()
-    await closeGiornata(token, giornataId)
-
+  test('admin riapre un concorso chiuso', async ({ page }) => {
+    const { token, concorsoId } = await bootstrapOpenConcorso()
+    await closeConcorso(token, concorsoId)
     await loginAs(page, 'admin')
-    await page.goto(`/admin/giornate/${giornataId}`)
+    await page.goto(`/admin/concorsi/${concorsoId}`)
     await expect(page.getByText('CLOSED')).toBeVisible()
     await page.getByRole('button', { name: /Riapri/ }).click()
     await expect(page.getByText('OPEN')).toBeVisible()
   })
 
-  test('scommessa extra di giornata: giocata e risoluzione manuale', async ({ page }) => {
-    const { token, giornataId } = await bootstrapOpenGiornata()
-    const bet = await createScommessa(token, {
-      scope: 'GIORNATA', giornataId, label: 'Gol / No gol giornata', market: 'GOAL_NOGOAL',
-    })
+  test('utente gioca una scommessa di partita (Vincitore)', async ({ page }) => {
+    const { giornataId, matchId, homeName, awayName } = await bootstrapOpenConcorso()
 
     await loginAs(page, 'giulia')
     await page.goto('/scommesse')
-    await expect(page.getByText('Gol / No gol giornata')).toBeVisible()
-    await page.getByRole('button', { name: 'Gol', exact: true }).click()
-    await expect(page.getByText('La tua giocata è registrata')).toBeVisible()
-
-    // L'admin risolve la scommessa con esito GOAL
-    await resolveScommessa(token, bet.id, 'GOAL')
-
-    // La giocata dell'utente deve risultare corretta
-    await page.reload()
-    await expect(page.getByText('Gol / No gol giornata').first()).toBeVisible()
+    await page.getByRole('button', { name: 'Di partita' }).click()
+    // seleziona la giornata e la partita (per value = id)
+    await page.locator('select').first().selectOption(String(giornataId))
+    const matchSelect = page.locator('select').nth(1)
+    await expect(matchSelect).toBeEnabled()
+    await matchSelect.selectOption(String(matchId))
+    // tipo Vincitore + previsione squadra di casa
+    await page.getByRole('button', { name: 'Vincitore' }).click()
+    await page.getByRole('button', { name: homeName, exact: true }).click()
+    await page.getByRole('button', { name: /Conferma giocata/ }).click()
+    // la giocata appare tra "le mie giocate di partita"
+    await expect(page.getByText('Previsione:', { exact: false })).toBeVisible()
   })
 })

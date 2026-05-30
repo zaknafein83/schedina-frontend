@@ -3,10 +3,10 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import { notificationApi } from '../api/client'
-import { Bell, CalendarDays, FileText, Coins, LogOut, BookOpen, List, Menu, X } from 'lucide-react'
+import { Bell, Trophy, FileText, Coins, LogOut, BookOpen, List, Menu, X } from 'lucide-react'
 
 const navItems = [
-  { to: '/giornate',  label: 'Giornate',  icon: CalendarDays },
+  { to: '/concorsi',  label: 'Concorsi',  icon: Trophy },
   { to: '/scommesse', label: 'Scommesse', icon: Coins },
   { to: '/schedine',  label: 'Schedine',  icon: FileText },
   { to: '/listini',   label: 'Listini',   icon: List },
@@ -59,7 +59,7 @@ export default function Layout({ children }) {
           </button>
 
           {/* Logo */}
-          <Link to="/giornate" className="flex items-center gap-2 md:flex-none flex-1 justify-center md:justify-start">
+          <Link to="/concorsi" className="flex items-center gap-2 md:flex-none flex-1 justify-center md:justify-start">
             <span className="text-xl md:text-2xl font-black text-gds-pink tracking-tight">SCHEDINA</span>
           </Link>
 

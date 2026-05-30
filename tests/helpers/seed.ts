@@ -1,6 +1,6 @@
 /**
- * Helper di seeding via API admin per il modello Calendario/Giornate.
- * I test creano lega/squadre/giornata/partite e scommesse extra via API.
+ * Helper di seeding via API admin per il redesign #3:
+ * Giornata di campionato (per-lega) → Concorso (selezione partite) → Schedina.
  */
 
 import { api, login, uniq } from './api'
@@ -14,105 +14,60 @@ export async function getAdminToken(): Promise<string> {
   return cachedAdminToken
 }
 
-/** Converte una Date in stringa ISO_LOCAL_DATE_TIME (senza Z/millis). */
-function toLocalDT(d: Date): string {
-  return d.toISOString().slice(0, 19)
-}
+function toLocalDT(d: Date): string { return d.toISOString().slice(0, 19) }
 
 export async function createLeague(token: string, name = uniq('Lega')) {
   return api.post('/admin/leagues', { name, country: 'Italia' }, { token })
 }
-
 export async function createTeam(token: string, leagueId: number, name = uniq('Squadra')) {
   return api.post('/admin/teams', { name, leagueId, isActive: true }, { token })
 }
-
 export async function createRule(token: string, winningThresholds: number[], name = uniq('Regola')) {
   return api.post('/admin/rules', { name, winningThresholds, isActive: true }, { token })
 }
-
-export async function createGiornata(token: string, opts: {
-  name?: string
-  ruleId?: number
-  winningThresholds?: number[]
-} = {}) {
-  const openAt = toLocalDT(new Date(Date.now() - 60 * 60 * 1000))          // 1h fa
-  const closeAt = toLocalDT(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) // tra 7gg
-  return api.post('/admin/giornate', {
-    name: opts.name || uniq('Giornata'),
-    ruleId: opts.ruleId,
-    openAt,
-    closeAt,
-    winningThresholds: opts.winningThresholds,
-  }, { token })
+export async function createGiornata(token: string, opts: { leagueId: number; number: number; name?: string }) {
+  return api.post('/admin/giornate', { leagueId: opts.leagueId, number: opts.number, name: opts.name || uniq('Giornata') }, { token })
 }
-
-export async function createMatch(token: string, opts: {
-  giornataId: number
-  homeTeamId: number
-  awayTeamId: number
-  overUnderLine?: number
-}) {
+export async function createMatch(token: string, opts: { giornataId: number; homeTeamId: number; awayTeamId: number; overUnderLine?: number }) {
   return api.post('/admin/matches', {
-    giornataId: opts.giornataId,
-    homeTeamId: opts.homeTeamId,
-    awayTeamId: opts.awayTeamId,
-    scheduledAt: toLocalDT(new Date(Date.now() + 24 * 60 * 60 * 1000)),
-    overUnderLine: opts.overUnderLine ?? 2.5,
+    giornataId: opts.giornataId, homeTeamId: opts.homeTeamId, awayTeamId: opts.awayTeamId,
+    scheduledAt: toLocalDT(new Date(Date.now() + 24 * 60 * 60 * 1000)), overUnderLine: opts.overUnderLine ?? 2.5,
   }, { token })
 }
-
-export async function createScommessa(token: string, opts: {
-  scope: 'SEASON' | 'GIORNATA'
-  label?: string
-  market?: string
-  giornataId?: number
-  seasonId?: number
-  matchId?: number
-  options?: { ref: string; label: string }[]
-}) {
-  return api.post('/admin/scommesse', {
-    scope: opts.scope,
-    label: opts.label || uniq('Scommessa'),
-    market: opts.market || 'GOAL_NOGOAL',
-    giornataId: opts.giornataId,
-    seasonId: opts.seasonId,
-    matchId: opts.matchId,
-    options: opts.options,
-  }, { token })
+export async function createConcorso(token: string, opts: { number: number; name?: string; ruleId?: number }) {
+  const openAt = toLocalDT(new Date(Date.now() - 60 * 60 * 1000))
+  const closeAt = toLocalDT(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))
+  return api.post('/admin/concorsi', { name: opts.name || uniq('Concorso'), number: opts.number, ruleId: opts.ruleId, openAt, closeAt }, { token })
 }
 
-export const openGiornata    = (token: string, id: number) => api.post(`/admin/giornate/${id}/open`, undefined, { token })
-export const closeGiornata   = (token: string, id: number) => api.post(`/admin/giornate/${id}/close`, undefined, { token })
-export const processGiornata = (token: string, id: number) => api.post(`/admin/giornate/${id}/process`, undefined, { token })
-export const setMatchResult  = (token: string, matchId: number, homeScore: number, awayScore: number) =>
+export const addConcorsoMatch = (token: string, concorsoId: number, matchId: number) =>
+  api.post(`/admin/concorsi/${concorsoId}/matches`, { matchId }, { token })
+export const openConcorso = (token: string, id: number) => api.post(`/admin/concorsi/${id}/open`, undefined, { token })
+export const closeConcorso = (token: string, id: number) => api.post(`/admin/concorsi/${id}/close`, undefined, { token })
+export const reopenConcorso = (token: string, id: number) => api.post(`/admin/concorsi/${id}/reopen`, undefined, { token })
+export const processConcorso = (token: string, id: number) => api.post(`/admin/concorsi/${id}/process`, undefined, { token })
+export const setMatchResult = (token: string, matchId: number, homeScore: number, awayScore: number) =>
   api.put(`/admin/matches/${matchId}/result`, { homeScore, awayScore }, { token })
-export const resolveScommessa = (token: string, betId: number, officialResultRef: string) =>
-  api.patch(`/admin/scommesse/${betId}/resolve`, { officialResultRef }, { token })
 
 /**
- * Crea lega + 2 squadre + giornata (soglia [2]) + 1 partita, e apre la giornata.
- * Soglia 2 = entrambi i pronostici (1X2 + U/O) corretti su una partita.
+ * Crea lega + 2 squadre + giornata (turno 1) + 1 partita + regola [2] + concorso (turno 1)
+ * con la partita selezionata, e apre il concorso.
  */
-export async function bootstrapOpenGiornata(): Promise<{
-  token: string
-  leagueId: number
-  giornataId: number
-  matchId: number
-  homeName: string
-  awayName: string
-  giornataName: string
+export async function bootstrapOpenConcorso(): Promise<{
+  token: string; leagueId: number; giornataId: number; concorsoId: number; matchId: number
+  homeName: string; awayName: string; concorsoName: string
 }> {
   const token = await getAdminToken()
   const league = await createLeague(token, uniq('Lega-e2e'))
-  const homeName = uniq('Casa')
-  const awayName = uniq('Ospite')
+  const homeName = uniq('Casa'); const awayName = uniq('Ospite')
   const home = await createTeam(token, league.id, homeName)
   const away = await createTeam(token, league.id, awayName)
+  const giornata = await createGiornata(token, { leagueId: league.id, number: 1, name: uniq('Giornata-e2e') })
+  const match = await createMatch(token, { giornataId: giornata.id, homeTeamId: home.id, awayTeamId: away.id })
   const rule = await createRule(token, [2], uniq('Regola-e2e'))
-  const giornataName = uniq('Giornata-e2e')
-  const giornata = await createGiornata(token, { name: giornataName, ruleId: rule.id })
-  const match = await createMatch(token, { giornataId: giornata.id, homeTeamId: home.id, awayTeamId: away.id, overUnderLine: 2.5 })
-  await openGiornata(token, giornata.id)
-  return { token, leagueId: league.id, giornataId: giornata.id, matchId: match.id, homeName, awayName, giornataName }
+  const concorsoName = uniq('Concorso-e2e')
+  const concorso = await createConcorso(token, { number: 1, name: concorsoName, ruleId: rule.id })
+  await addConcorsoMatch(token, concorso.id, match.id)
+  await openConcorso(token, concorso.id)
+  return { token, leagueId: league.id, giornataId: giornata.id, concorsoId: concorso.id, matchId: match.id, homeName, awayName, concorsoName }
 }

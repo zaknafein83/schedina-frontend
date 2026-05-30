@@ -17,8 +17,8 @@ import Manual from './pages/Manual'
 import Listini from './pages/Listini'
 
 // User pages
-import Giornate from './pages/user/Giornate'
-import GiornataDetail from './pages/user/GiornataDetail'
+import Concorsi from './pages/user/Concorsi'
+import ConcorsoDetail from './pages/user/ConcorsoDetail'
 import MySchedine from './pages/user/Schedine'
 import UserScommesse from './pages/user/Scommesse'
 import UserNotifications from './pages/user/Notifications'
@@ -27,6 +27,8 @@ import UserNotifications from './pages/user/Notifications'
 import AdminDashboard from './pages/admin/Dashboard'
 import AdminGiornate from './pages/admin/Giornate'
 import AdminGiornataDetail from './pages/admin/GiornataDetail'
+import AdminConcorsi from './pages/admin/Concorsi'
+import AdminConcorsoDetail from './pages/admin/ConcorsoDetail'
 import AdminScommesse from './pages/admin/Scommesse'
 import AdminSchedine from './pages/admin/Schedine'
 import AdminLeagues from './pages/admin/Leagues'
@@ -42,11 +44,10 @@ function RootRedirect() {
   const { user } = useAuth()
   if (!user) return <Navigate to="/login" replace />
   if (user.role === 'ADMIN') return <Navigate to="/admin" replace />
-  if (user.role === 'MOD')   return <Navigate to="/mod/giornate" replace />
-  return <Navigate to="/giornate" replace />
+  if (user.role === 'MOD')   return <Navigate to="/mod/concorsi" replace />
+  return <Navigate to="/concorsi" replace />
 }
 
-// Guida / Listini: accessibili a qualsiasi ruolo loggato, nel layout giusto
 function WrappedRoute({ children }) {
   const { user, isLoading } = useAuth()
   const hasToken = !!localStorage.getItem('token')
@@ -90,8 +91,8 @@ export default function App() {
 
       {/* User routes */}
       <Route element={<ProtectedRoute allowedRole="USER" />}>
-        <Route path="/giornate" element={<Giornate />} />
-        <Route path="/giornate/:id" element={<GiornataDetail />} />
+        <Route path="/concorsi" element={<Concorsi />} />
+        <Route path="/concorsi/:id" element={<ConcorsoDetail />} />
         <Route path="/scommesse" element={<UserScommesse />} />
         <Route path="/schedine" element={<MySchedine />} />
         <Route path="/notifications" element={<UserNotifications />} />
@@ -102,6 +103,8 @@ export default function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/giornate" element={<AdminGiornate />} />
         <Route path="/admin/giornate/:id" element={<AdminGiornataDetail />} />
+        <Route path="/admin/concorsi" element={<AdminConcorsi />} />
+        <Route path="/admin/concorsi/:id" element={<AdminConcorsoDetail />} />
         <Route path="/admin/scommesse" element={<AdminScommesse />} />
         <Route path="/admin/schedine" element={<AdminSchedine />} />
         <Route path="/admin/leagues" element={<AdminLeagues />} />
@@ -118,6 +121,8 @@ export default function App() {
       <Route element={<ProtectedRoute allowedRole="MOD" />}>
         <Route path="/mod/giornate" element={<AdminGiornate />} />
         <Route path="/mod/giornate/:id" element={<AdminGiornataDetail />} />
+        <Route path="/mod/concorsi" element={<AdminConcorsi />} />
+        <Route path="/mod/concorsi/:id" element={<AdminConcorsoDetail />} />
         <Route path="/mod/scommesse" element={<AdminScommesse />} />
         <Route path="/mod/schedine" element={<AdminSchedine />} />
         <Route path="/mod/players" element={<AdminPlayers />} />

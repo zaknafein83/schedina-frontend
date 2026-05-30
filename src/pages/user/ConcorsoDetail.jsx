@@ -1,88 +1,60 @@
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { giornataApi, schedinaApi } from '../../api/client'
+import { concorsoApi, schedinaApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import { ArrowLeft, FileText } from 'lucide-react'
 
-const X12 = [
-  { ref: '1', label: '1' },
-  { ref: 'X', label: 'X' },
-  { ref: '2', label: '2' },
-]
+const X12 = [{ ref: '1', label: '1' }, { ref: 'X', label: 'X' }, { ref: '2', label: '2' }]
 
-export default function GiornataDetail() {
+export default function ConcorsoDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [picks, setPicks] = useState({}) // { matchId: { choice1x2, choiceUo } }
   const [error, setError] = useState('')
 
-  const { data: giornata, isLoading } = useQuery({
-    queryKey: ['giornata', id],
-    queryFn: () => giornataApi.get(id).then((r) => r.data),
-  })
-  const { data: partite } = useQuery({
-    queryKey: ['giornata-partite', id],
-    queryFn: () => giornataApi.partite(id).then((r) => r.data),
-  })
+  const { data: concorso, isLoading } = useQuery({ queryKey: ['concorso', id], queryFn: () => concorsoApi.get(id).then((r) => r.data) })
+  const { data: partite } = useQuery({ queryKey: ['concorso-partite', id], queryFn: () => concorsoApi.partite(id).then((r) => r.data) })
 
   const submit = useMutation({
     mutationFn: async () => {
-      const pronostici = (partite || []).map((m) => ({
-        matchId: m.id,
-        choice1x2: picks[m.id]?.choice1x2,
-        choiceUo: picks[m.id]?.choiceUo,
-      }))
-      const res = await schedinaApi.create({ giornataId: Number(id), pronostici })
+      const pronostici = (partite || []).map((m) => ({ matchId: m.id, choice1x2: picks[m.id]?.choice1x2, choiceUo: picks[m.id]?.choiceUo }))
+      const res = await schedinaApi.create({ concorsoId: Number(id), pronostici })
       await schedinaApi.confirm(res.data.id)
       return res.data
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-schedine'] })
-      navigate('/schedine')
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['my-schedine'] }); navigate('/schedine') },
     onError: (e) => setError(e.response?.data?.error || "Errore nell'invio della schedina"),
   })
 
-  function pick1x2(matchId, ref) {
-    setPicks((p) => ({ ...p, [matchId]: { ...p[matchId], choice1x2: ref } }))
-  }
-  function pickUo(matchId, ref) {
-    setPicks((p) => ({ ...p, [matchId]: { ...p[matchId], choiceUo: ref } }))
-  }
+  function pick1x2(matchId, ref) { setPicks((p) => ({ ...p, [matchId]: { ...p[matchId], choice1x2: ref } })) }
+  function pickUo(matchId, ref) { setPicks((p) => ({ ...p, [matchId]: { ...p[matchId], choiceUo: ref } })) }
 
   if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>
-  if (!giornata) return <div className="text-gds-gray">Giornata non trovata.</div>
+  if (!concorso) return <div className="text-gds-gray">Concorso non trovato.</div>
 
-  const isOpen = giornata.status === 'OPEN'
+  const isOpen = concorso.status === 'OPEN'
   const total = partite?.length ?? 0
   const completed = (partite || []).filter((m) => picks[m.id]?.choice1x2 && picks[m.id]?.choiceUo).length
   const allDone = total > 0 && completed === total
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Link to="/giornate" className="inline-flex items-center gap-1 text-sm text-gds-gray hover:text-gds-pink mb-4">
-        <ArrowLeft size={16} /> Giornate
+      <Link to="/concorsi" className="inline-flex items-center gap-1 text-sm text-gds-gray hover:text-gds-pink mb-4">
+        <ArrowLeft size={16} /> Concorsi
       </Link>
 
-      <h1 className="text-2xl font-bold text-gds-dark">{giornata.name}</h1>
+      <h1 className="text-2xl font-bold text-gds-dark">{concorso.name}</h1>
       <p className="text-gds-gray mt-1 mb-6">Pronostica esito 1X2 e Under/Over per ogni partita.</p>
 
-      {!isOpen && (
-        <div className="bg-yellow-50 text-yellow-800 rounded-xl p-4 mb-6 text-sm">
-          Questa giornata non è aperta alle giocate.
-        </div>
-      )}
+      {!isOpen && <div className="bg-yellow-50 text-yellow-800 rounded-xl p-4 mb-6 text-sm">Questo concorso non è aperto alle giocate.</div>}
 
       <div className="space-y-3">
         {partite?.map((m) => {
           const p = picks[m.id] || {}
-          const uo = [
-            { ref: 'U', label: `Under ${m.overUnderLine}` },
-            { ref: 'O', label: `Over ${m.overUnderLine}` },
-          ]
+          const uo = [{ ref: 'U', label: `Under ${m.overUnderLine}` }, { ref: 'O', label: `Over ${m.overUnderLine}` }]
           return (
             <div key={m.id} className="bg-white rounded-xl shadow-sm p-4">
               <p className="font-semibold text-gds-dark mb-3">{m.homeTeamName} – {m.awayTeamName}</p>
@@ -90,19 +62,13 @@ export default function GiornataDetail() {
                 <div>
                   <p className="text-xs text-gds-gray mb-1">Esito 1X2</p>
                   <div className="flex flex-wrap gap-2">
-                    {X12.map((o) => (
-                      <PickButton key={o.ref} disabled={!isOpen} selected={p.choice1x2 === o.ref}
-                        onClick={() => pick1x2(m.id, o.ref)} label={o.label} />
-                    ))}
+                    {X12.map((o) => <PickButton key={o.ref} disabled={!isOpen} selected={p.choice1x2 === o.ref} onClick={() => pick1x2(m.id, o.ref)} label={o.label} />)}
                   </div>
                 </div>
                 <div>
                   <p className="text-xs text-gds-gray mb-1">Under/Over {m.overUnderLine}</p>
                   <div className="flex flex-wrap gap-2">
-                    {uo.map((o) => (
-                      <PickButton key={o.ref} disabled={!isOpen} selected={p.choiceUo === o.ref}
-                        onClick={() => pickUo(m.id, o.ref)} label={o.label} />
-                    ))}
+                    {uo.map((o) => <PickButton key={o.ref} disabled={!isOpen} selected={p.choiceUo === o.ref} onClick={() => pickUo(m.id, o.ref)} label={o.label} />)}
                   </div>
                 </div>
               </div>
@@ -130,8 +96,6 @@ function PickButton({ selected, disabled, onClick, label }) {
     <button disabled={disabled} onClick={onClick}
       className={`px-3 py-1.5 text-sm rounded-lg border transition-colors disabled:opacity-50 ${
         selected ? 'bg-gds-pink text-white border-gds-pink' : 'bg-white text-gds-dark border-gray-200 hover:border-gds-pink'
-      }`}>
-      {label}
-    </button>
+      }`}>{label}</button>
   )
 }

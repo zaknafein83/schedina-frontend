@@ -10,18 +10,18 @@ import { FileText } from 'lucide-react'
 const ST_COLOR = { WINNING: 'green', NOT_WINNING: 'red', CONFIRMED: 'blue', PROCESSED: 'yellow', DRAFT: 'gray', CANCELLED: 'gray' }
 
 export default function Schedine() {
-  const [giornataId, setGiornataId] = useState('')
+  const [concorsoId, setConcorsoId] = useState('')
   const [detailId, setDetailId] = useState(null)
 
-  const { data: giornate } = useQuery({
-    queryKey: ['admin-giornate'],
-    queryFn: () => adminApi.getGiornate().then((r) => r.data),
+  const { data: concorsi } = useQuery({
+    queryKey: ['admin-concorsi'],
+    queryFn: () => adminApi.getConcorsi().then((r) => r.data),
   })
 
   const { data: schedine, isLoading } = useQuery({
-    queryKey: ['admin-schedine-by', giornataId],
-    queryFn: () => adminApi.getSchedineByGiornata(giornataId).then((r) => r.data),
-    enabled: !!giornataId,
+    queryKey: ['admin-schedine-by', concorsoId],
+    queryFn: () => adminApi.getSchedineByConcorso(concorsoId).then((r) => r.data),
+    enabled: !!concorsoId,
   })
 
   const { data: detail } = useQuery({
@@ -35,18 +35,18 @@ export default function Schedine() {
       <h1 className="text-2xl font-bold text-gds-dark mb-6">Schedine</h1>
 
       <div className="mb-5 max-w-md">
-        <label className="text-sm font-medium text-gds-dark">Giornata</label>
-        <select value={giornataId} onChange={(e) => setGiornataId(e.target.value)}
+        <label className="text-sm font-medium text-gds-dark">Concorso</label>
+        <select value={concorsoId} onChange={(e) => setConcorsoId(e.target.value)}
           className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
-          <option value="">-- Seleziona una giornata --</option>
-          {giornate?.map((g) => <option key={g.id} value={g.id}>{g.name} ({g.schedinaCount})</option>)}
+          <option value="">-- Seleziona un concorso --</option>
+          {concorsi?.map((c) => <option key={c.id} value={c.id}>{c.name} ({c.schedinaCount})</option>)}
         </select>
       </div>
 
-      {!giornataId ? (
+      {!concorsoId ? (
         <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gds-gray">
           <FileText size={40} className="mx-auto mb-3 text-gray-300" />
-          Seleziona una giornata per vedere le schedine.
+          Seleziona un concorso per vedere le schedine.
         </div>
       ) : isLoading ? (
         <div className="flex justify-center py-16"><Spinner size="lg" /></div>

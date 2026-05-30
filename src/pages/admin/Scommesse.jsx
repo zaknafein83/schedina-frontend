@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { adminApi } from '../../api/client'
@@ -11,107 +10,58 @@ import Badge from '../../components/ui/Badge'
 import { Plus, Trash2, Check, RotateCcw, Ban, Coins } from 'lucide-react'
 
 const MARKETS = [
-  { value: 'GOAL_NOGOAL', label: 'Gol/No gol', target: 'TOKEN' },
-  { value: 'EXACT_SCORE', label: 'Risultato esatto', target: 'TOKEN' },
-  { value: 'WINNER', label: 'Vincitore', target: 'TEAM' },
-  { value: 'CLEAN_SHEET_TEAM', label: 'Più clean sheet', target: 'TEAM' },
-  { value: 'MOST_GOALS_FOR', label: 'Più gol fatti', target: 'TEAM' },
-  { value: 'LEAST_GOALS_AGAINST', label: 'Meno gol subiti', target: 'TEAM' },
-  { value: 'FIRST_SCORER', label: 'Primo marcatore', target: 'PLAYER' },
   { value: 'TOP_SCORER', label: 'Capocannoniere', target: 'PLAYER' },
   { value: 'TOP_ASSIST', label: 'Miglior assist', target: 'PLAYER' },
-  { value: 'BEST_GOALKEEPER', label: 'Miglior portiere', target: 'PLAYER' },
+  { value: 'BEST_GOALKEEPER', label: 'Miglior portiere', target: 'PLAYER', gk: true },
+  { value: 'CLEAN_SHEET', label: 'Più clean sheet', target: 'PLAYER', gk: true },
+  { value: 'MOST_GOALS_FOR', label: 'Più gol fatti', target: 'TEAM' },
+  { value: 'LEAST_GOALS_AGAINST', label: 'Meno gol subiti', target: 'TEAM' },
 ]
 const marketLabel = (m) => MARKETS.find((x) => x.value === m)?.label ?? m
-const targetOf = (m) => MARKETS.find((x) => x.value === m)?.target ?? 'TOKEN'
+const marketDef = (m) => MARKETS.find((x) => x.value === m) ?? {}
 const BET_COLOR = { OPEN: 'yellow', RESOLVED: 'green', VOID: 'gray' }
 const refLabel = (bet, ref) => bet.options?.find((o) => o.ref === ref)?.label ?? ref
 
 export default function Scommesse() {
   const queryClient = useQueryClient()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [scope, setScope] = useState(searchParams.get('giornataId') ? 'GIORNATA' : 'SEASON')
-  const [giornataId, setGiornataId] = useState(searchParams.get('giornataId') || '')
   const [seasonId, setSeasonId] = useState('')
   const [betModal, setBetModal] = useState(false)
 
-  const { data: giornate } = useQuery({ queryKey: ['admin-giornate'], queryFn: () => adminApi.getGiornate().then((r) => r.data) })
   const { data: seasons } = useQuery({ queryKey: ['admin-seasons'], queryFn: () => adminApi.getSeasons().then((r) => r.data) })
-
-  // Default season alla corrente
   useEffect(() => {
-    if (scope === 'SEASON' && !seasonId && seasons?.length) {
-      setSeasonId(String(seasons.find((s) => s.isCurrent)?.id ?? seasons[0].id))
-    }
-  }, [scope, seasons, seasonId])
-
-  const ctxId = scope === 'GIORNATA' ? giornataId : seasonId
-  const params = scope === 'GIORNATA' ? { giornataId } : { seasonId }
+    if (!seasonId && seasons?.length) setSeasonId(String(seasons.find((s) => s.isCurrent)?.id ?? seasons[0].id))
+  }, [seasons, seasonId])
 
   const { data: bets, isLoading } = useQuery({
-    queryKey: ['admin-scommesse', scope, ctxId],
-    queryFn: () => adminApi.getScommesse(params).then((r) => r.data),
-    enabled: !!ctxId,
+    queryKey: ['admin-scommesse', seasonId],
+    queryFn: () => adminApi.getScommesse(seasonId ? { seasonId } : {}).then((r) => r.data),
+    enabled: !!seasonId,
   })
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-scommesse', scope, ctxId] })
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-scommesse', seasonId] })
   const resolveBet = useMutation({ mutationFn: ({ betId, ref }) => adminApi.resolveScommessa(betId, ref), onSuccess: invalidate })
   const unresolveBet = useMutation({ mutationFn: (betId) => adminApi.unresolveScommessa(betId), onSuccess: invalidate })
   const voidBet = useMutation({ mutationFn: (betId) => adminApi.voidScommessa(betId), onSuccess: invalidate })
   const deleteBet = useMutation({ mutationFn: (betId) => adminApi.deleteScommessa(betId), onSuccess: invalidate })
 
-  function changeScope(s) {
-    setScope(s)
-    if (s === 'SEASON') setSearchParams({})
-  }
-  function changeGiornata(v) {
-    setGiornataId(v)
-    setSearchParams(v ? { giornataId: v } : {})
-  }
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Scommesse extra</h1>
-        <Button onClick={() => setBetModal(true)} disabled={!ctxId}><Plus size={16} /> Nuova scommessa</Button>
+        <h1 className="text-2xl font-bold text-gds-dark">Scommesse · fine campionato</h1>
+        <Button onClick={() => setBetModal(true)} disabled={!seasonId}><Plus size={16} /> Nuova scommessa</Button>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3 mb-6">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gds-dark">Tipo</label>
-          <div className="flex rounded-lg border border-gray-200 overflow-hidden">
-            <button onClick={() => changeScope('SEASON')}
-              className={`px-4 py-2 text-sm font-medium ${scope === 'SEASON' ? 'bg-gds-pink text-white' : 'bg-white text-gds-dark'}`}>Fine stagione</button>
-            <button onClick={() => changeScope('GIORNATA')}
-              className={`px-4 py-2 text-sm font-medium ${scope === 'GIORNATA' ? 'bg-gds-pink text-white' : 'bg-white text-gds-dark'}`}>Di giornata</button>
-          </div>
-        </div>
-        {scope === 'GIORNATA' ? (
-          <div className="flex flex-col gap-1 min-w-[220px]">
-            <label className="text-sm font-medium text-gds-dark">Giornata</label>
-            <select value={giornataId} onChange={(e) => changeGiornata(e.target.value)}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
-              <option value="">-- Seleziona --</option>
-              {giornate?.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
-            </select>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-1 min-w-[220px]">
-            <label className="text-sm font-medium text-gds-dark">Stagione</label>
-            <select value={seasonId} onChange={(e) => setSeasonId(e.target.value)}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
-              <option value="">-- Seleziona --</option>
-              {seasons?.map((s) => <option key={s.id} value={s.id}>{s.label}{s.isCurrent ? ' (corrente)' : ''}</option>)}
-            </select>
-          </div>
-        )}
+      <div className="mb-6 max-w-xs">
+        <label className="text-sm font-medium text-gds-dark">Stagione</label>
+        <select value={seasonId} onChange={(e) => setSeasonId(e.target.value)}
+          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
+          <option value="">-- Seleziona --</option>
+          {seasons?.map((s) => <option key={s.id} value={s.id}>{s.label}{s.isCurrent ? ' (corrente)' : ''}</option>)}
+        </select>
       </div>
 
-      {!ctxId ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gds-gray">
-          <Coins size={40} className="mx-auto mb-3 text-gray-300" />
-          Seleziona {scope === 'GIORNATA' ? 'una giornata' : 'una stagione'} per gestire le scommesse.
-        </div>
+      {!seasonId ? (
+        <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gds-gray"><Coins size={40} className="mx-auto mb-3 text-gray-300" />Seleziona una stagione.</div>
       ) : isLoading ? (
         <div className="flex justify-center py-16"><Spinner size="lg" /></div>
       ) : (
@@ -120,8 +70,7 @@ export default function Scommesse() {
           {bets?.map((bet) => (
             <div key={bet.id} className="bg-white rounded-xl shadow-sm p-4">
               <div className="flex items-start justify-between gap-2">
-                <div><p className="font-semibold text-gds-dark">{bet.label}</p>
-                  <p className="text-xs text-gds-gray">{marketLabel(bet.market)}{bet.resolutionMode === 'AUTO' ? ' · auto' : ''}</p></div>
+                <div><p className="font-semibold text-gds-dark">{bet.label}</p><p className="text-xs text-gds-gray">{marketLabel(bet.market)}</p></div>
                 <Badge color={BET_COLOR[bet.status]}>{bet.status}</Badge>
               </div>
               {bet.status === 'RESOLVED' ? (
@@ -151,94 +100,53 @@ export default function Scommesse() {
         </div>
       )}
 
-      <AddBetModal isOpen={betModal} onClose={() => setBetModal(false)}
-        scope={scope} seasonId={seasonId} giornataId={giornataId} onCreated={invalidate} />
+      <AddBetModal isOpen={betModal} onClose={() => setBetModal(false)} seasonId={seasonId} onCreated={invalidate} />
     </div>
   )
 }
 
-/* ─── Modal: crea scommessa ──────────────────────────────────────────────────── */
-function AddBetModal({ isOpen, onClose, scope, seasonId, giornataId, onCreated }) {
-  const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm({ defaultValues: { market: 'WINNER', label: '', matchId: '', tokens: '' } })
+function AddBetModal({ isOpen, onClose, seasonId, onCreated }) {
+  const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm({ defaultValues: { market: 'TOP_SCORER', label: '' } })
   const market = watch('market')
-  const matchId = watch('matchId')
-  const target = targetOf(market)
+  const def = marketDef(market)
   const [options, setOptions] = useState([])
   const [err, setErr] = useState('')
 
   const { data: teams } = useQuery({ queryKey: ['admin-teams-all'], queryFn: () => adminApi.getTeams().then((r) => r.data) })
   const { data: players } = useQuery({ queryKey: ['admin-players-all'], queryFn: () => adminApi.getPlayers().then((r) => r.data) })
-  const { data: matches } = useQuery({
-    queryKey: ['admin-giornata-matches', giornataId],
-    queryFn: () => adminApi.getMatches({ giornataId }).then((r) => r.data),
-    enabled: scope === 'GIORNATA' && !!giornataId,
-  })
+
+  const playerItems = (players || []).filter((p) => !def.gk || p.role === 'GK')
 
   const create = useMutation({
     mutationFn: (payload) => adminApi.createScommessa(payload),
     onSuccess: () => { close(); onCreated() },
-    onError: (e) => setErr(e.response?.data?.error || 'Errore nella creazione'),
+    onError: (e) => setErr(e.response?.data?.error || 'Errore'),
   })
 
   function toggle(ref, label) {
     setOptions((prev) => prev.some((o) => o.ref === ref) ? prev.filter((o) => o.ref !== ref) : [...prev, { ref: String(ref), label }])
   }
-
+  function close() { reset(); setOptions([]); setErr(''); onClose() }
   function onSubmit(data) {
     setErr('')
-    let opts
-    if (market === 'GOAL_NOGOAL') {
-      opts = undefined // generate automatiche lato backend
-    } else if (market === 'EXACT_SCORE') {
-      opts = String(data.tokens || '').split(',').map((s) => s.trim()).filter(Boolean).map((t) => ({ ref: t, label: t }))
-      if (opts.length < 2) return setErr('Inserisci almeno 2 risultati (es. 0-0, 1-0, 2-1)')
-    } else {
-      if (options.length < 2) return setErr('Seleziona almeno 2 opzioni')
-      opts = options
-    }
-    create.mutate({
-      scope,
-      label: data.label,
-      market: data.market,
-      seasonId: scope === 'SEASON' ? Number(seasonId) : undefined,
-      giornataId: scope === 'GIORNATA' ? Number(giornataId) : undefined,
-      matchId: data.matchId ? Number(data.matchId) : undefined,
-      options: opts,
-    })
+    if (options.length < 2) return setErr('Seleziona almeno 2 opzioni')
+    create.mutate({ label: data.label, market: data.market, seasonId: Number(seasonId), options })
   }
 
-  function close() { reset(); setOptions([]); setErr(''); onClose() }
-
   return (
-    <Modal isOpen={isOpen} onClose={close} title="Nuova scommessa extra" maxWidth="max-w-lg">
+    <Modal isOpen={isOpen} onClose={close} title="Nuova scommessa di fine campionato" maxWidth="max-w-lg">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gds-dark">Mercato</label>
-          <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink" {...register('market')}>
+          <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink"
+            {...register('market')} onChange={(e) => { setOptions([]); register('market').onChange(e) }}>
             {MARKETS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
         </div>
-
-        <Input label="Etichetta" placeholder="es. Vincitore Serie A" error={errors.label?.message} {...register('label', { required: 'Etichetta obbligatoria' })} />
-
-        {scope === 'GIORNATA' && (
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gds-dark">Partita collegata (opzionale)</label>
-            <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink" {...register('matchId')}>
-              <option value="">-- Nessuna --</option>
-              {matches?.map((m) => <option key={m.id} value={m.id}>{m.homeTeamName} – {m.awayTeamName}</option>)}
-            </select>
-            {market === 'GOAL_NOGOAL' && <p className="text-xs text-gds-gray">Con una partita collegata, Gol/No gol si risolve in automatico dal punteggio.</p>}
-          </div>
-        )}
-
-        {market === 'GOAL_NOGOAL' && <p className="text-sm text-gds-gray bg-gds-gray-light rounded-lg p-3">Opzioni automatiche: <strong>Gol</strong> / <strong>No gol</strong>.</p>}
-        {market === 'EXACT_SCORE' && (
-          <Input label="Risultati possibili (separati da virgola)" placeholder="0-0, 1-0, 0-1, 1-1, 2-1" {...register('tokens')} />
-        )}
-        {target === 'TEAM' && <OptionPicker label="Squadre candidate" items={teams} getRef={(t) => t.id} getLabel={(t) => t.name} options={options} toggle={toggle} />}
-        {target === 'PLAYER' && <OptionPicker label="Giocatori candidati" items={players} getRef={(p) => p.id} getLabel={(p) => `${p.firstName} ${p.lastName}`} options={options} toggle={toggle} />}
-
+        <Input label="Etichetta" placeholder="es. Capocannoniere Serie A" error={errors.label?.message} {...register('label', { required: 'Etichetta obbligatoria' })} />
+        {def.target === 'TEAM'
+          ? <OptionPicker label="Squadre candidate" items={teams} getRef={(t) => t.id} getLabel={(t) => t.name} options={options} toggle={toggle} />
+          : <OptionPicker label={def.gk ? 'Portieri candidati' : 'Giocatori candidati'} items={playerItems} getRef={(p) => p.id} getLabel={(p) => `${p.firstName} ${p.lastName}`} options={options} toggle={toggle} />}
         {err && <div className="bg-red-50 text-red-700 rounded-lg p-2.5 text-sm">{err}</div>}
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="secondary" onClick={close}>Annulla</Button>
