@@ -7,7 +7,7 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
 import Badge from '../../components/ui/Badge'
-import { ArrowLeft, Trash2, Save, CalendarPlus, Lock, Unlock, Cog, Check, Coins } from 'lucide-react'
+import { ArrowLeft, Trash2, Save, CalendarPlus, Lock, Unlock, Cog, Check, Coins, RotateCcw } from 'lucide-react'
 
 const STATUS_COLOR = { DRAFT: 'gray', OPEN: 'green', CLOSED: 'yellow', PROCESSED: 'blue', CANCELLED: 'red' }
 const SCH_COLOR = { WINNING: 'green', NOT_WINNING: 'red', CONFIRMED: 'blue', PROCESSED: 'yellow', DRAFT: 'gray', CANCELLED: 'gray' }
@@ -55,6 +55,7 @@ export default function GiornataDetail() {
   const deleteMatch = useMutation({ mutationFn: (matchId) => adminApi.deleteMatch(matchId), onSuccess: invalidate })
   const openG = useMutation({ mutationFn: () => adminApi.openGiornata(id), onSuccess: invalidateAll, onError: (e) => alert(e.response?.data?.error || 'Errore apertura') })
   const closeG = useMutation({ mutationFn: () => adminApi.closeGiornata(id), onSuccess: invalidateAll })
+  const reopenG = useMutation({ mutationFn: () => adminApi.reopenGiornata(id), onSuccess: invalidateAll, onError: (e) => alert(e.response?.data?.error || 'Errore riapertura') })
   const processG = useMutation({ mutationFn: () => adminApi.processGiornata(id), onSuccess: invalidateAll })
 
   if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>
@@ -86,6 +87,8 @@ export default function GiornataDetail() {
           {giornata.status === 'OPEN' && <Button variant="secondary" onClick={() => closeG.mutate()}><Lock size={16} /> Chiudi</Button>}
           {(giornata.status === 'CLOSED' || giornata.status === 'PROCESSED') &&
             <Button variant="secondary" onClick={() => processG.mutate()} loading={processG.isPending}><Cog size={16} /> Elabora</Button>}
+          {(giornata.status === 'CLOSED' || giornata.status === 'PROCESSED') &&
+            <Button variant="secondary" onClick={() => reopenG.mutate()} loading={reopenG.isPending}><RotateCcw size={16} /> Riapri</Button>}
         </div>
       </div>
 

@@ -43,6 +43,17 @@ test.describe('Flusso Calendario/Schedina', () => {
     await expect(page.getByText('Vincente').first()).toBeVisible()
   })
 
+  test('admin riapre una giornata chiusa', async ({ page }) => {
+    const { token, giornataId } = await bootstrapOpenGiornata()
+    await closeGiornata(token, giornataId)
+
+    await loginAs(page, 'admin')
+    await page.goto(`/admin/giornate/${giornataId}`)
+    await expect(page.getByText('CLOSED')).toBeVisible()
+    await page.getByRole('button', { name: /Riapri/ }).click()
+    await expect(page.getByText('OPEN')).toBeVisible()
+  })
+
   test('scommessa extra di giornata: giocata e risoluzione manuale', async ({ page }) => {
     const { token, giornataId } = await bootstrapOpenGiornata()
     const bet = await createScommessa(token, {

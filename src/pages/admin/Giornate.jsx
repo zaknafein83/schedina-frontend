@@ -8,7 +8,7 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
 import Badge from '../../components/ui/Badge'
-import { Plus, Pencil, Trash2, Lock, Unlock, Cog, ChevronRight } from 'lucide-react'
+import { Plus, Pencil, Trash2, Lock, Unlock, Cog, ChevronRight, RotateCcw } from 'lucide-react'
 
 const STATUS_COLOR = {
   DRAFT: 'gray', OPEN: 'green', CLOSED: 'yellow', PROCESSED: 'blue', CANCELLED: 'red',
@@ -43,6 +43,7 @@ export default function Giornate() {
   const deleteMutation = useMutation({ mutationFn: (id) => adminApi.deleteGiornata(id), onSuccess: invalidate, onError: (e) => alert(e.response?.data?.error || 'Errore eliminazione') })
   const openMutation = useMutation({ mutationFn: (id) => adminApi.openGiornata(id), onSuccess: invalidate, onError: (e) => alert(e.response?.data?.error || 'Errore apertura') })
   const closeMutation = useMutation({ mutationFn: (id) => adminApi.closeGiornata(id), onSuccess: invalidate })
+  const reopenMutation = useMutation({ mutationFn: (id) => adminApi.reopenGiornata(id), onSuccess: invalidate, onError: (e) => alert(e.response?.data?.error || 'Errore riapertura') })
   const processMutation = useMutation({ mutationFn: (id) => adminApi.processGiornata(id), onSuccess: invalidate })
 
   function openCreate() {
@@ -130,6 +131,9 @@ export default function Giornate() {
                     )}
                     {(g.status === 'CLOSED' || g.status === 'PROCESSED') && (
                       <button title="Elabora" onClick={() => handleProcess(g)} className="p-2 rounded-lg hover:bg-blue-50 text-blue-600"><Cog size={15} /></button>
+                    )}
+                    {(g.status === 'CLOSED' || g.status === 'PROCESSED') && (
+                      <button title="Riapri" onClick={() => reopenMutation.mutate(g.id)} className="p-2 rounded-lg hover:bg-green-50 text-green-600"><RotateCcw size={15} /></button>
                     )}
                     <button title="Modifica" onClick={() => openEdit(g)} className="p-2 rounded-lg hover:bg-blue-50 text-blue-600"><Pencil size={15} /></button>
                     <button title="Elimina" onClick={() => handleDelete(g)} className="p-2 rounded-lg hover:bg-red-50 text-red-600"><Trash2 size={15} /></button>

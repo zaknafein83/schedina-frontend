@@ -136,6 +136,7 @@ export const adminApi = {
   deleteGiornata: (id) => apiClient.delete(`/admin/giornate/${id}`),
   openGiornata: (id) => apiClient.post(`/admin/giornate/${id}/open`),
   closeGiornata: (id) => apiClient.post(`/admin/giornate/${id}/close`),
+  reopenGiornata: (id) => apiClient.post(`/admin/giornate/${id}/reopen`),
   processGiornata: (id) => apiClient.post(`/admin/giornate/${id}/process`),
 
   // Scommesse extra (catalogo)
