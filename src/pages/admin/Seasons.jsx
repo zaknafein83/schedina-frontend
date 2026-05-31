@@ -86,14 +86,14 @@ export default function Seasons() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Stagioni</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Stagioni</h1>
         <Button onClick={openCreate}>
           <Plus size={16} />
           Nuova stagione
         </Button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex justify-center py-10"><Spinner /></div>
         ) : (
@@ -113,9 +113,9 @@ export default function Seasons() {
                 <tr><td colSpan={6} className="text-center py-10 text-gds-gray">Nessuna stagione.</td></tr>
               )}
               {seasons?.map((s) => (
-                <tr key={s.id} className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors">
+                <tr key={s.id} className="border-t border-gds-border hover:bg-gds-pink-light transition-colors">
                   <td className="px-6 py-3 text-gds-gray">{s.id}</td>
-                  <td className="px-6 py-3 font-medium text-gds-dark">{s.label}</td>
+                  <td className="px-6 py-3 font-medium text-gds-white">{s.label}</td>
                   <td className="px-6 py-3 text-gds-gray">{s.startDate || '—'}</td>
                   <td className="px-6 py-3 text-gds-gray">{s.endDate || '—'}</td>
                   <td className="px-6 py-3">
@@ -161,7 +161,7 @@ export default function Seasons() {
             <Input label="Data inizio" type="date" {...register('startDate')} />
             <Input label="Data fine"   type="date" {...register('endDate')} />
           </div>
-          <label className="flex items-center gap-2 text-sm text-gds-dark cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-gds-white cursor-pointer">
             <input type="checkbox" {...register('isCurrent')} />
             Imposta come stagione corrente
           </label>

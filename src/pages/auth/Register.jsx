@@ -41,9 +41,9 @@ export default function Register() {
   if (success) {
     return (
       <div className="min-h-screen bg-gds-gray-light flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-sm p-8 w-full max-w-sm text-center">
+        <div className="bg-gds-surface rounded-xl shadow-sm p-8 w-full max-w-sm text-center">
           <div className="text-4xl mb-4">✓</div>
-          <h2 className="text-xl font-bold text-gds-dark mb-2">
+          <h2 className="text-xl font-bold text-gds-white mb-2">
             Registrazione completata!
           </h2>
           <p className="text-gds-gray text-sm">
@@ -56,7 +56,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gds-gray-light flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-sm p-8 w-full max-w-sm">
+      <div className="bg-gds-surface rounded-xl shadow-sm p-8 w-full max-w-sm">
         <div className="text-center mb-8">
           <span className="text-4xl font-black text-gds-pink tracking-tight">
             SCHEDINA

@@ -35,24 +35,24 @@ export default function Layout({ children }) {
     `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
       isActive
         ? 'bg-gds-pink-light text-gds-pink'
-        : 'text-gds-gray hover:bg-gds-gray-light hover:text-gds-dark'
+        : 'text-gds-gray hover:bg-gds-gray-light hover:text-gds-white'
     }`
 
   const drawerLinkClass = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
       isActive
         ? 'bg-gds-pink-light text-gds-pink'
-        : 'text-gds-dark hover:bg-gds-gray-light'
+        : 'text-gds-white hover:bg-gds-gray-light'
     }`
 
   return (
-    <div className="min-h-screen bg-gds-gray-light">
-      <header className="bg-white shadow-sm sticky top-0 z-30">
+    <div className="min-h-screen">
+      <header className="bg-gds-surface/95 backdrop-blur border-b border-gds-border sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 h-14 md:h-16 flex items-center justify-between gap-3">
           {/* Hamburger mobile */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="md:hidden p-2 -ml-2 rounded-lg text-gds-dark hover:bg-gds-gray-light"
+            className="md:hidden p-2 -ml-2 rounded-lg text-gds-white hover:bg-gds-gray-light"
             aria-label="Apri menu"
           >
             <Menu size={22} />
@@ -88,7 +88,7 @@ export default function Layout({ children }) {
           <div className="flex items-center gap-2">
             <NavLink
               to="/notifications"
-              className="md:hidden relative p-2 rounded-lg text-gds-dark hover:bg-gds-gray-light"
+              className="md:hidden relative p-2 rounded-lg text-gds-white hover:bg-gds-gray-light"
               aria-label="Notifiche"
             >
               <Bell size={20} />
@@ -121,15 +121,15 @@ export default function Layout({ children }) {
         />
       )}
       <aside
-        className={`md:hidden fixed left-0 top-0 z-50 w-72 max-w-[85vw] h-full bg-white shadow-xl
+        className={`md:hidden fixed left-0 top-0 z-50 w-72 max-w-[85vw] h-full bg-gds-surface shadow-xl
           transition-transform duration-200 ease-out flex flex-col
           ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="h-14 flex items-center justify-between px-4 border-b border-gray-100">
+        <div className="h-14 flex items-center justify-between px-4 border-b border-gds-border">
           <span className="text-xl font-black text-gds-pink tracking-tight">SCHEDINA</span>
           <button
             onClick={() => setDrawerOpen(false)}
-            className="p-2 rounded-lg text-gds-dark hover:bg-gds-gray-light"
+            className="p-2 rounded-lg text-gds-white hover:bg-gds-gray-light"
             aria-label="Chiudi menu"
           >
             <X size={20} />
@@ -154,7 +154,7 @@ export default function Layout({ children }) {
             Notifiche
           </NavLink>
         </nav>
-        <div className="p-3 border-t border-gray-100">
+        <div className="p-3 border-t border-gds-border">
           <p className="text-xs text-gds-gray px-3">{user?.email}</p>
         </div>
       </aside>

@@ -2,13 +2,13 @@ import Spinner from '../Spinner'
 
 const variants = {
   primary:
-    'bg-gds-pink text-white hover:bg-gds-pink-dark focus:ring-gds-pink disabled:opacity-60',
+    'bg-pg-gradient text-white hover:shadow-pg-glow focus:ring-gds-pink disabled:opacity-60',
   secondary:
-    'bg-white text-gds-dark border border-gray-200 hover:bg-gds-gray-light focus:ring-gray-300 disabled:opacity-60',
+    'bg-gds-surface text-gds-white border border-gds-border hover:border-gds-pink focus:ring-gds-pink disabled:opacity-60',
   danger:
     'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:opacity-60',
   ghost:
-    'bg-transparent text-gds-gray hover:bg-gds-gray-light focus:ring-gray-300 disabled:opacity-60',
+    'bg-transparent text-gds-gray hover:bg-gds-pink-light hover:text-gds-white focus:ring-gds-pink disabled:opacity-60',
 }
 
 const sizes = {
@@ -29,8 +29,8 @@ export default function Button({
     <button
       {...props}
       disabled={loading || props.disabled}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium
-        transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1
+      className={`inline-flex items-center justify-center gap-2 rounded-lg font-semibold
+        transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-gds-dark
         ${variants[variant]} ${sizes[size]} ${className}`}
     >
       {loading && <Spinner size="sm" />}

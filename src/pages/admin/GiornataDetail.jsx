@@ -68,7 +68,7 @@ export default function GiornataDetail() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gds-dark">{giornata.name}</h1>
+          <h1 className="text-2xl font-bold text-gds-white">{giornata.name}</h1>
           <p className="text-sm text-gds-gray mt-1">{giornata.leagueName} · turno {giornata.number}</p>
         </div>
         <Button size="sm" onClick={() => setMatchModal(true)}><CalendarPlus size={15} /> Aggiungi partita</Button>
@@ -77,7 +77,7 @@ export default function GiornataDetail() {
       <p className="text-xs text-gds-gray mb-3">Le partite di questa giornata possono essere selezionate in un Concorso. Qui inserisci i punteggi e il primo marcatore.</p>
 
       <div className="space-y-3">
-        {matches?.length === 0 && <div className="bg-white rounded-xl p-6 text-center text-gds-gray">Nessuna partita.</div>}
+        {matches?.length === 0 && <div className="bg-gds-surface rounded-xl p-6 text-center text-gds-gray">Nessuna partita.</div>}
         {matches?.map((m) => (
           <MatchCard key={m.id} match={m} players={players}
             onSaveScore={(home, away) => saveScore.mutate({ matchId: m.id, home, away })}
@@ -101,10 +101,10 @@ function MatchCard({ match, players, onSaveScore, saving, onValidate, onScorer, 
   const matchPlayers = (players || []).filter((p) => p.teamId === match.homeTeamId || p.teamId === match.awayTeamId)
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
+    <div className="bg-gds-surface rounded-xl shadow-sm p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="font-semibold text-gds-dark">{match.homeTeamName} – {match.awayTeamName}</p>
+          <p className="font-semibold text-gds-white">{match.homeTeamName} – {match.awayTeamName}</p>
           <p className="text-xs text-gds-gray">
             {match.scheduledAt && <>{String(match.scheduledAt).slice(0, 10)} · </>}
             Under/Over {match.overUnderLine}
@@ -113,10 +113,10 @@ function MatchCard({ match, players, onSaveScore, saving, onValidate, onScorer, 
         </div>
         <div className="flex items-center gap-2">
           <input type="number" min={0} value={h} onChange={(e) => setH(e.target.value)} placeholder="–" disabled={validated}
-            className="w-14 text-center rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:ring-2 focus:ring-gds-pink outline-none disabled:bg-gray-50" />
+            className="w-14 text-center rounded-lg border border-gds-border px-2 py-1.5 text-sm focus:ring-2 focus:ring-gds-pink outline-none disabled:bg-gds-pink-light" />
           <span className="text-gds-gray">-</span>
           <input type="number" min={0} value={a} onChange={(e) => setA(e.target.value)} placeholder="–" disabled={validated}
-            className="w-14 text-center rounded-lg border border-gray-200 px-2 py-1.5 text-sm focus:ring-2 focus:ring-gds-pink outline-none disabled:bg-gray-50" />
+            className="w-14 text-center rounded-lg border border-gds-border px-2 py-1.5 text-sm focus:ring-2 focus:ring-gds-pink outline-none disabled:bg-gds-pink-light" />
           {!validated && (
             <Button size="sm" variant="secondary" loading={saving}
               disabled={h === '' || a === ''} onClick={() => onSaveScore(h, a)}><Save size={14} /> Salva</Button>
@@ -138,10 +138,10 @@ function MatchCard({ match, players, onSaveScore, saving, onValidate, onScorer, 
       </div>
 
       {/* Primo marcatore (per la scommessa di partita) */}
-      <div className="mt-3 pt-2 border-t border-gray-100 flex items-center gap-2">
+      <div className="mt-3 pt-2 border-t border-gds-border flex items-center gap-2">
         <span className="text-xs text-gds-gray">Primo marcatore:</span>
         <select value={match.firstScorerOwnGoal ? '-1' : (match.firstScorerPlayerId ?? '')} onChange={(e) => onScorer(e.target.value ? Number(e.target.value) : null)}
-          className="text-sm rounded-lg border border-gray-200 px-2 py-1 bg-white outline-none focus:ring-2 focus:ring-gds-pink">
+          className="text-sm rounded-lg border border-gds-border px-2 py-1 bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink">
           <option value="">— nessuno —</option>
           {matchPlayers.map((p) => (
             <option key={p.id} value={p.id}>
@@ -184,7 +184,7 @@ function AddMatchModal({ isOpen, onClose, giornataId, teams, onCreated }) {
 
   const Select = ({ value, onChange, ph }) => (
     <select value={value} onChange={(e) => onChange(e.target.value)}
-      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
+      className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink">
       <option value="">{ph}</option>
       {(teams || []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
     </select>
@@ -194,9 +194,9 @@ function AddMatchModal({ isOpen, onClose, giornataId, teams, onCreated }) {
     <Modal isOpen={isOpen} onClose={close} title="Aggiungi partita" maxWidth="max-w-lg">
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1"><label className="text-sm font-medium text-gds-dark">Casa</label>
+          <div className="flex flex-col gap-1"><label className="text-sm font-medium text-gds-white">Casa</label>
             <Select value={home} onChange={setHome} ph="-- squadra casa --" /></div>
-          <div className="flex flex-col gap-1"><label className="text-sm font-medium text-gds-dark">Ospite</label>
+          <div className="flex flex-col gap-1"><label className="text-sm font-medium text-gds-white">Ospite</label>
             <Select value={away} onChange={setAway} ph="-- squadra ospite --" /></div>
         </div>
         <div className="grid grid-cols-2 gap-3">

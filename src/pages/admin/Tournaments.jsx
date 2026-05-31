@@ -82,27 +82,27 @@ export default function Tournaments() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Tornei</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Tornei</h1>
         <Button onClick={openCreate}>
           <Plus size={16} />
           Nuovo torneo
         </Button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-4">
-        <label className="text-sm font-medium text-gds-dark block mb-2">Filtra per tipo</label>
+      <div className="bg-gds-surface rounded-xl shadow-sm p-4 mb-4">
+        <label className="text-sm font-medium text-gds-white block mb-2">Filtra per tipo</label>
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="w-full max-w-xs rounded-lg border border-gray-200 px-3 py-2 text-sm
-            bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+          className="w-full max-w-xs rounded-lg border border-gds-border px-3 py-2 text-sm
+            bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
         >
           <option value="">Tutti i tipi</option>
           {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
         </select>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex justify-center py-10"><Spinner /></div>
         ) : (
@@ -122,9 +122,9 @@ export default function Tournaments() {
                 <tr><td colSpan={6} className="text-center py-10 text-gds-gray">Nessun torneo.</td></tr>
               )}
               {tournaments?.map((t) => (
-                <tr key={t.id} className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors">
+                <tr key={t.id} className="border-t border-gds-border hover:bg-gds-pink-light transition-colors">
                   <td className="px-6 py-3 text-gds-gray">{t.id}</td>
-                  <td className="px-6 py-3 font-medium text-gds-dark">{t.name}</td>
+                  <td className="px-6 py-3 font-medium text-gds-white">{t.name}</td>
                   <td className="px-6 py-3 text-gds-gray">{TYPE_LABELS[t.type] || t.type}</td>
                   <td className="px-6 py-3 text-gds-gray">{t.country || '—'}</td>
                   <td className="px-6 py-3 text-gds-gray">{t.isActive ? 'Sì' : 'No'}</td>
@@ -154,17 +154,17 @@ export default function Tournaments() {
             {...register('name', { required: 'Nome obbligatorio' })}
           />
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gds-dark">Tipo</label>
+            <label className="text-sm font-medium text-gds-white">Tipo</label>
             <select
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-                bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+              className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm
+                bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
               {...register('type', { required: true })}
             >
               {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </div>
           <Input label="Paese (opzionale)" placeholder="Italia" {...register('country')} />
-          <label className="flex items-center gap-2 text-sm text-gds-dark cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-gds-white cursor-pointer">
             <input type="checkbox" {...register('isActive')} />
             Attivo
           </label>

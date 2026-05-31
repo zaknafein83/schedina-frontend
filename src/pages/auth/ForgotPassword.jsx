@@ -41,7 +41,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-gds-gray-light flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-sm p-8 w-full max-w-sm">
+      <div className="bg-gds-surface rounded-xl shadow-sm p-8 w-full max-w-sm">
         <div className="text-center mb-8">
           <span className="text-4xl font-black text-gds-pink tracking-tight">
             SCHEDINA
@@ -95,7 +95,7 @@ export default function ForgotPassword() {
                   Token di reset
                 </p>
                 <div className="flex items-start gap-2">
-                  <code className="flex-1 text-sm text-gds-dark break-all font-mono bg-white rounded px-2 py-1.5 border border-gds-pink/20">
+                  <code className="flex-1 text-sm text-gds-white break-all font-mono bg-gds-surface rounded px-2 py-1.5 border border-gds-pink/20">
                     {result.resetToken}
                   </code>
                   <button

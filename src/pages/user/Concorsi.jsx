@@ -27,11 +27,11 @@ export default function Concorsi() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gds-dark mb-6">Concorsi aperti</h1>
+      <h1 className="text-2xl font-bold text-gds-white mb-6">Concorsi aperti</h1>
 
       {concorsi?.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gds-gray">
-          <FileText size={48} className="mx-auto mb-4 text-gray-300" />
+        <div className="bg-gds-surface rounded-xl shadow-sm p-12 text-center text-gds-gray">
+          <FileText size={48} className="mx-auto mb-4 text-gds-gray" />
           <p className="font-medium">Nessun concorso aperto al momento.</p>
           <p className="text-sm mt-1">Torna più tardi!</p>
         </div>
@@ -39,14 +39,14 @@ export default function Concorsi() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {concorsi?.map((c) => (
             <Link key={c.id} to={`/concorsi/${c.id}`}
-              className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow group block">
+              className="bg-gds-surface rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow group block">
               <div className="flex items-start justify-between mb-3">
                 <div className="p-2 bg-gds-pink-light rounded-lg"><FileText size={20} className="text-gds-pink" /></div>
                 <ChevronRight size={18} className="text-gds-gray group-hover:text-gds-pink transition-colors mt-1" />
               </div>
-              <h3 className="font-bold text-gds-dark text-lg leading-tight mb-1">{c.name}</h3>
+              <h3 className="font-bold text-gds-white text-lg leading-tight mb-1">{c.name}</h3>
               <p className="text-sm text-gds-gray">Turno {c.number}</p>
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-gds-border">
                 <div className="flex items-center gap-1.5 text-sm text-gds-pink">
                   <Clock size={14} /><span className="font-semibold">{timeLeft(c.closeAt)}</span>
                 </div>

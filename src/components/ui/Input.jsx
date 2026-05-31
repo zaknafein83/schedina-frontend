@@ -11,7 +11,7 @@ const Input = forwardRef(function Input(
       {label && (
         <label
           htmlFor={inputId}
-          className="text-sm font-medium text-gds-dark"
+          className="text-sm font-medium text-gds-white"
         >
           {label}
         </label>
@@ -20,10 +20,10 @@ const Input = forwardRef(function Input(
         ref={ref}
         id={inputId}
         {...props}
-        className={`w-full rounded-lg border px-3 py-2 text-sm text-gds-dark
-          placeholder:text-gray-400 bg-white outline-none transition-colors
+        className={`w-full rounded-lg border px-3 py-2 text-sm text-gds-white
+          placeholder:text-gds-gray bg-gds-surface outline-none transition-colors
           focus:ring-2 focus:ring-gds-pink focus:border-gds-pink
-          ${error ? 'border-red-500' : 'border-gray-200'}
+          ${error ? 'border-red-500' : 'border-gds-border'}
           ${className}`}
       />
       {error && (

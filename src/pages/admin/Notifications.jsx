@@ -37,10 +37,10 @@ export default function AdminNotifications() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gds-dark mb-6">Notifiche admin</h1>
+      <h1 className="text-2xl font-bold text-gds-white mb-6">Notifiche admin</h1>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-white rounded-xl shadow-sm p-1 mb-4 w-fit">
+      <div className="flex gap-1 bg-gds-surface rounded-xl shadow-sm p-1 mb-4 w-fit">
         {TABS.map((tab) => (
           <button
             key={tab.value}
@@ -49,7 +49,7 @@ export default function AdminNotifications() {
               ${
                 activeTab === tab.value
                   ? 'bg-gds-pink text-white'
-                  : 'text-gds-gray hover:text-gds-dark hover:bg-gds-gray-light'
+                  : 'text-gds-gray hover:text-gds-white hover:bg-gds-gray-light'
               }`}
           >
             {tab.label}
@@ -57,7 +57,7 @@ export default function AdminNotifications() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex justify-center py-10">
             <Spinner />
@@ -91,10 +91,10 @@ export default function AdminNotifications() {
                 return (
                   <tr
                     key={notif.id}
-                    className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors"
+                    className="border-t border-gds-border hover:bg-gds-pink-light transition-colors"
                   >
                     <td className="px-6 py-3 text-gds-gray">{notif.id}</td>
-                    <td className="px-6 py-3 text-gds-dark">
+                    <td className="px-6 py-3 text-gds-white">
                       {notif.userId || notif.userEmail || '—'}
                     </td>
                     <td className="px-6 py-3 text-gds-gray text-xs font-mono">

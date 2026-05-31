@@ -30,14 +30,14 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative bg-white rounded-xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col`}
+        className={`relative bg-gds-surface rounded-xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gds-dark">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gds-border">
+          <h2 className="text-lg font-bold text-gds-white">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gds-gray hover:text-gds-dark transition-colors rounded-lg p-1 hover:bg-gds-gray-light"
+            className="text-gds-gray hover:text-gds-white transition-colors rounded-lg p-1 hover:bg-gds-gray-light"
           >
             <X size={20} />
           </button>
