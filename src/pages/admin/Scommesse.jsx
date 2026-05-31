@@ -17,6 +17,8 @@ const MARKETS = [
   { value: 'MOST_GOALS_FOR', label: 'Più gol fatti', target: 'TEAM' },
   { value: 'LEAST_GOALS_AGAINST', label: 'Meno gol subiti', target: 'TEAM' },
 ]
+const ROLE_LABEL = { GK: 'Portiere', DEF: 'Difensore', MID: 'Centrocampista', FWD: 'Attaccante' }
+const roleLabel = (r) => ROLE_LABEL[r] ?? r ?? ''
 const marketLabel = (m) => MARKETS.find((x) => x.value === m)?.label ?? m
 const marketDef = (m) => MARKETS.find((x) => x.value === m) ?? {}
 const BET_COLOR = { OPEN: 'yellow', RESOLVED: 'green', VOID: 'gray' }
@@ -129,7 +131,7 @@ function AddBetModal({ isOpen, onClose, seasonId, onCreated }) {
   function close() { reset(); setOptions([]); setErr(''); onClose() }
   function onSubmit(data) {
     setErr('')
-    if (options.length < 2) return setErr('Seleziona almeno 2 opzioni')
+    if (options.length < 1) return setErr('Seleziona almeno 1 opzione')
     create.mutate({ label: data.label, market: data.market, seasonId: Number(seasonId), options })
   }
 
@@ -146,7 +148,7 @@ function AddBetModal({ isOpen, onClose, seasonId, onCreated }) {
         <Input label="Etichetta" placeholder="es. Capocannoniere Serie A" error={errors.label?.message} {...register('label', { required: 'Etichetta obbligatoria' })} />
         {def.target === 'TEAM'
           ? <OptionPicker label="Squadre candidate" items={teams} getRef={(t) => t.id} getLabel={(t) => t.name} options={options} toggle={toggle} />
-          : <OptionPicker label={def.gk ? 'Portieri candidati' : 'Giocatori candidati'} items={playerItems} getRef={(p) => p.id} getLabel={(p) => `${p.firstName} ${p.lastName}`} options={options} toggle={toggle} />}
+          : <OptionPicker label={def.gk ? 'Portieri candidati' : 'Giocatori candidati'} items={playerItems} getRef={(p) => p.id} getLabel={(p) => `${p.firstName} ${p.lastName}`} getMeta={(p) => [roleLabel(p.role), p.teamName].filter(Boolean).join(' · ')} options={options} toggle={toggle} />}
         {err && <div className="bg-red-50 text-red-700 rounded-lg p-2.5 text-sm">{err}</div>}
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="secondary" onClick={close}>Annulla</Button>
@@ -157,22 +159,25 @@ function AddBetModal({ isOpen, onClose, seasonId, onCreated }) {
   )
 }
 
-function OptionPicker({ label, items, getRef, getLabel, options, toggle }) {
+function OptionPicker({ label, items, getRef, getLabel, getMeta, options, toggle }) {
   const [q, setQ] = useState('')
-  const filtered = (items || []).filter((it) => getLabel(it).toLowerCase().includes(q.toLowerCase()))
+  const meta = (it) => (getMeta ? getMeta(it) : '')
+  const filtered = (items || []).filter((it) => `${getLabel(it)} ${meta(it)}`.toLowerCase().includes(q.toLowerCase()))
   return (
     <div className="flex flex-col gap-1">
       <label className="text-sm font-medium text-gds-dark">{label} ({options.length} selezionate)</label>
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filtra…"
+      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filtra per nome, ruolo o squadra…"
         className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-gds-pink mb-1" />
       <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1">
         {filtered.length === 0 && <p className="text-xs text-gds-gray px-1">Nessun elemento.</p>}
         {filtered.map((it) => {
           const ref = String(getRef(it))
+          const m = meta(it)
           return (
             <label key={ref} className="flex items-center gap-2 text-sm px-1 py-0.5 hover:bg-gds-gray-light rounded cursor-pointer">
               <input type="checkbox" checked={options.some((o) => o.ref === ref)} onChange={() => toggle(ref, getLabel(it))} className="rounded text-gds-pink focus:ring-gds-pink" />
-              {getLabel(it)}
+              <span className="flex-1">{getLabel(it)}</span>
+              {m && <span className="text-xs text-gds-gray shrink-0">{m}</span>}
             </label>
           )
         })}
