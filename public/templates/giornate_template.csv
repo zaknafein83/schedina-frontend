@@ -1,0 +1,4 @@
+number,homeTeamName,awayTeamName,leagueName,giornataName,date,overUnderLine
+1,Inter,Napoli,Serie A,Giornata 1,2026-08-23,2.5
+1,Juventus,Milan,Serie A,Giornata 1,2026-08-24,2.5
+2,Napoli,Juventus,Serie A,Giornata 2,2026-08-30,2.5

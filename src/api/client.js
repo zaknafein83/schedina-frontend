@@ -204,6 +204,9 @@ export const adminApi = {
   importLeagues: (text) => apiClient.post('/admin/import/leagues', text, { headers: { 'Content-Type': 'text/plain' } }),
   importTeams:   (text) => apiClient.post('/admin/import/teams',   text, { headers: { 'Content-Type': 'text/plain' } }),
   importPlayers: (text) => apiClient.post('/admin/import/players', text, { headers: { 'Content-Type': 'text/plain' } }),
+  // Calendario: ogni riga è una partita (lega+turno+casa+ospite+data). Le squadre devono già esistere.
+  exportGiornate: () => apiClient.get('/admin/export/giornate'),
+  importGiornate: (text) => apiClient.post('/admin/import/giornate', text, { headers: { 'Content-Type': 'text/plain' } }),
 }
 
 export default apiClient

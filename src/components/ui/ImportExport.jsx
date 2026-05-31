@@ -47,7 +47,9 @@ export default function ImportExport({ exportFn, importFn, filename, onImported,
     try {
       const text = await file.text()
       const res  = await importFn(text)
-      setMessage({ type: 'ok', text: `Importati ${res.data.imported} record` })
+      const skipped = res.data.skipped
+      const extra = skipped ? `, ${skipped} saltati` : ''
+      setMessage({ type: 'ok', text: `Importati ${res.data.imported} record${extra}` })
       onImported?.()
     } catch (err) {
       const msg = err.response?.data?.detail || err.response?.data?.error || 'Errore durante l\'importazione'
