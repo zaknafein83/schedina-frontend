@@ -13,6 +13,14 @@ const MARKET_LABEL = {
 const MATCH_MARKETS = ['GOAL_NOGOAL', 'WINNER', 'EXACT_SCORE', 'FIRST_SCORER']
 const ROLE_LABEL = { GK: 'Portiere', DEF: 'Difensore', MID: 'Centrocampista', FWD: 'Attaccante' }
 const roleLabel = (r) => ROLE_LABEL[r] ?? r ?? ''
+const SEASON_MARKETS = [
+  { value: 'TOP_SCORER', label: 'Capocannoniere', target: 'PLAYER' },
+  { value: 'TOP_ASSIST', label: 'Miglior assist', target: 'PLAYER' },
+  { value: 'BEST_GOALKEEPER', label: 'Miglior portiere', target: 'PLAYER', gk: true },
+  { value: 'CLEAN_SHEET', label: 'Più clean sheet', target: 'PLAYER', gk: true },
+  { value: 'MOST_GOALS_FOR', label: 'Più gol fatti', target: 'TEAM' },
+  { value: 'LEAST_GOALS_AGAINST', label: 'Meno gol subiti', target: 'TEAM' },
+]
 
 export default function Scommesse() {
   const [tab, setTab] = useState('SEASON')
@@ -28,46 +36,80 @@ export default function Scommesse() {
   )
 }
 
-/* ─── Fine campionato ─────────────────────────────────────────────────────── */
+/* ─── Fine campionato (self-service: lega → mercato → bersaglio) ───────────── */
 function SeasonTab() {
   const queryClient = useQueryClient()
+  const [leagueId, setLeagueId] = useState('')
+  const [market, setMarket] = useState('TOP_SCORER')
+  const [prediction, setPrediction] = useState('')
   const [error, setError] = useState('')
-  const { data: bets, isLoading } = useQuery({ queryKey: ['scommesse-open'], queryFn: () => scommessaApi.listOpen().then((r) => r.data) })
+
+  const def = SEASON_MARKETS.find((m) => m.value === market) ?? {}
+  const { data: leagues } = useQuery({ queryKey: ['listini-leagues'], queryFn: () => listiniApi.leagues().then((r) => r.data) })
+  const { data: teams } = useQuery({
+    queryKey: ['listini-teams', leagueId],
+    queryFn: () => listiniApi.teams(leagueId).then((r) => r.data),
+    enabled: def.target === 'TEAM' && !!leagueId,
+  })
+  const { data: players } = useQuery({
+    queryKey: ['listini-players', leagueId, def.gk ? 'GK' : 'ALL'],
+    queryFn: () => listiniApi.players({ leagueId, ...(def.gk ? { role: 'GK' } : {}) }).then((r) => r.data),
+    enabled: def.target === 'PLAYER' && !!leagueId,
+  })
   const { data: mine } = useQuery({ queryKey: ['scommesse-mine'], queryFn: () => scommessaApi.listMine().then((r) => r.data) })
-  const myChoice = (id) => mine?.find((g) => g.scommessaId === id)?.choiceRef
 
   const place = useMutation({
-    mutationFn: ({ scommessaId, choiceRef }) => scommessaApi.place(scommessaId, choiceRef),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['scommesse-mine'] }); setError('') },
+    mutationFn: () => scommessaApi.placeStagione({ leagueId: Number(leagueId), market, prediction }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['scommesse-mine'] }); setPrediction(''); setError('') },
     onError: (e) => setError(e.response?.data?.error || 'Errore'),
   })
 
-  if (isLoading) return <div className="flex justify-center py-16"><Spinner size="lg" /></div>
+  function selectMarket(v) { setMarket(v); setPrediction('') }
+  function selectLeague(v) { setLeagueId(v); setPrediction('') }
 
   return (
     <div>
-      {error && <div className="bg-red-50 text-red-700 rounded-lg p-3 mb-4 text-sm">{error}</div>}
-      {bets?.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gds-gray"><Coins size={40} className="mx-auto mb-3 text-gray-300" />Nessuna scommessa di fine campionato aperta.</div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-          {bets?.map((bet) => {
-            const chosen = myChoice(bet.id)
-            return (
-              <div key={bet.id} className="bg-white rounded-xl shadow-sm p-4">
-                <p className="font-semibold text-gds-dark mb-2">{bet.label}</p>
-                <div className="flex flex-wrap gap-2">
-                  {bet.options?.map((o) => (
-                    <button key={o.id} onClick={() => place.mutate({ scommessaId: bet.id, choiceRef: o.ref })}
-                      className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${chosen === o.ref ? 'bg-gds-pink text-white border-gds-pink' : 'bg-white text-gds-dark border-gray-200 hover:border-gds-pink'}`}>{o.label}</button>
-                  ))}
-                </div>
-                {chosen && <p className="text-xs text-green-700 mt-2 inline-flex items-center gap-1"><Check size={13} /> Giocata registrata</p>}
-              </div>
-            )
-          })}
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-6 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gds-dark">Lega</label>
+            <select value={leagueId} onChange={(e) => selectLeague(e.target.value)}
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
+              <option value="">-- Seleziona --</option>
+              {leagues?.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gds-dark">Mercato</label>
+            <select value={market} onChange={(e) => selectMarket(e.target.value)}
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
+              {SEASON_MARKETS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+            </select>
+          </div>
         </div>
-      )}
+
+        {leagueId && (
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gds-dark">{def.target === 'TEAM' ? 'Squadra' : (def.gk ? 'Portiere' : 'Giocatore')}</label>
+            <select value={prediction} onChange={(e) => setPrediction(e.target.value)}
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink max-w-md">
+              <option value="">-- Seleziona --</option>
+              {def.target === 'TEAM'
+                ? (teams || []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)
+                : (players || []).map((p) => (
+                    <option key={p.id} value={p.id}>{p.firstName} {p.lastName} — {roleLabel(p.role)} · {p.teamName}</option>
+                  ))}
+            </select>
+          </div>
+        )}
+
+        {error && <div className="bg-red-50 text-red-700 rounded-lg p-2.5 text-sm">{error}</div>}
+        <div className="flex justify-end">
+          <Button onClick={() => { setError(''); place.mutate() }} loading={place.isPending} disabled={!leagueId || !prediction}>
+            <Trophy size={16} /> Conferma giocata
+          </Button>
+        </div>
+      </div>
 
       <h2 className="text-lg font-bold text-gds-dark mb-3">Le mie giocate</h2>
       <MyList items={mine} render={(g) => (
