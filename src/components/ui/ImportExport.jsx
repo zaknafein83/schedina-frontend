@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Download, Upload, Loader2, FileText } from 'lucide-react'
+import { Download, Upload, Loader2, FileText, AlertTriangle, X } from 'lucide-react'
 
 /**
  * Barra export/import riutilizzabile.
@@ -15,10 +15,12 @@ export default function ImportExport({ exportFn, importFn, filename, onImported,
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
   const [message, setMessage] = useState(null) // { type: 'ok'|'err', text }
+  const [skippedDetails, setSkippedDetails] = useState([]) // righe saltate (es. squadre non trovate)
 
   async function handleExport() {
     setExporting(true)
     setMessage(null)
+    setSkippedDetails([])
     try {
       const res = await exportFn()
       const json = JSON.stringify(res.data, null, 2)
@@ -44,12 +46,14 @@ export default function ImportExport({ exportFn, importFn, filename, onImported,
     if (!file) return
     setImporting(true)
     setMessage(null)
+    setSkippedDetails([])
     try {
       const text = await file.text()
       const res  = await importFn(text)
       const skipped = res.data.skipped
       const extra = skipped ? `, ${skipped} saltati` : ''
       setMessage({ type: 'ok', text: `Importati ${res.data.imported} record${extra}` })
+      setSkippedDetails(Array.isArray(res.data.skippedDetails) ? res.data.skippedDetails : [])
       onImported?.()
     } catch (err) {
       const msg = err.response?.data?.detail || err.response?.data?.error || 'Errore durante l\'importazione'
@@ -61,7 +65,8 @@ export default function ImportExport({ exportFn, importFn, filename, onImported,
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col items-end gap-2">
+    <div className="flex items-center gap-2 flex-wrap justify-end">
       {message && (
         <span className={`text-xs px-2 py-1 rounded-lg ${
           message.type === 'ok'
@@ -114,6 +119,23 @@ export default function ImportExport({ exportFn, importFn, filename, onImported,
         className="hidden"
         onChange={handleFileChange}
       />
+    </div>
+
+      {skippedDetails.length > 0 && (
+        <div className="w-full max-w-md bg-amber-50 border border-amber-200 rounded-lg p-3 text-left">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-semibold text-amber-800 inline-flex items-center gap-1.5">
+              <AlertTriangle size={14} /> {skippedDetails.length} righe saltate
+            </span>
+            <button onClick={() => setSkippedDetails([])} className="text-amber-500 hover:text-amber-800" title="Chiudi">
+              <X size={14} />
+            </button>
+          </div>
+          <ul className="list-disc pl-5 space-y-0.5 text-xs text-amber-800 max-h-44 overflow-auto">
+            {skippedDetails.map((d, i) => <li key={i}>{d}</li>)}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
