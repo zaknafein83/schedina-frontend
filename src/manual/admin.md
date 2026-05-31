@@ -14,8 +14,8 @@ utenti, e segue l'intero ciclo di vita di una giocata.
   turno, anche di leghe diverse). Ha finestra apertura/chiusura e una **Regola**
   (soglie vincenti). È questo che l'utente compila.
 - **Schedina**: il bollettino dell'utente sul concorso (1X2 + Under/Over per partita).
-- **Scommesse**: di **fine campionato** (catalogo che crei tu) o **di partita**
-  (sempre disponibili agli utenti).
+- **Scommesse**: di **fine campionato** (le aprono gli utenti per lega/mercato; tu
+  ne dichiari il risultato) o **di partita** (sempre disponibili agli utenti).
 
 ```
 Anagrafiche → Calendario (giornate per-lega + partite) →
@@ -70,14 +70,18 @@ Poi **Apri** (servono partite selezionate), **Chiudi**, **Riapri**, **Elabora**.
 
 ## 3. Scommesse
 
-Menu → **Scommesse** (fine campionato): per una **stagione**, crei scommesse con i
-candidati (squadre o giocatori; per *Miglior portiere* e *Più clean sheet* il
-picker mostra solo i **portieri**). Le risolvi a mano cliccando l'opzione vincente.
+Menu → **Scommesse** (fine campionato): **non le crei più tu** — le aprono
+direttamente gli utenti scegliendo lega + mercato + bersaglio. Tu **dichiari il
+risultato**: nel riquadro *Dichiara risultato* scegli **Lega**, **Mercato** e il
+**vincitore** (squadra o giocatore; per *Miglior portiere* e *Più clean sheet* il
+picker mostra solo i **portieri**) → tutte le giocate corrispondenti vengono
+risolte. Sotto vedi l'elenco delle scommesse della stagione con stato e numero di
+giocate; puoi *Annullare l'esito* o *Annullare/Eliminare* una scommessa.
 
 Le scommesse **di partita** (Gol/No gol, Vincitore, Risultato esatto, Primo
 marcatore) non si creano: sono sempre disponibili agli utenti per ogni partita.
 Si risolvono **in automatico** dal punteggio (tranne *Primo marcatore*, che
-imposti dal Calendario).
+imposti dal Calendario — puoi indicare anche **Autogol**).
 
 ---
 

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { loginAs } from './helpers/auth'
-import { bootstrapOpenConcorso, setMatchResult, closeConcorso, processConcorso } from './helpers/seed'
+import { bootstrapOpenConcorso, bootstrapSeasonBet, setMatchResult, closeConcorso, processConcorso } from './helpers/seed'
 
 test.describe('Flusso Concorso/Schedina (redesign #3)', () => {
   test('admin vede il concorso creato', async ({ page }) => {
@@ -63,5 +63,21 @@ test.describe('Flusso Concorso/Schedina (redesign #3)', () => {
     await page.getByRole('button', { name: /Conferma giocata/ }).click()
     // la giocata appare tra "le mie giocate di partita"
     await expect(page.getByText('Previsione:', { exact: false })).toBeVisible()
+  })
+
+  test('utente gioca una scommessa di fine campionato (Capocannoniere, self-service)', async ({ page }) => {
+    const { leagueId, playerId, playerName } = await bootstrapSeasonBet()
+
+    await loginAs(page, 'giulia')
+    await page.goto('/scommesse')
+    // tab "Fine campionato" è il default; select: 0=Lega, 1=Mercato (Capocannoniere), 2=bersaglio
+    await page.locator('select').first().selectOption(String(leagueId))
+    const targetSelect = page.locator('select').nth(2)
+    await expect(targetSelect).toBeVisible()
+    await targetSelect.selectOption(String(playerId))
+    await page.getByRole('button', { name: /Conferma giocata/ }).click()
+    // la giocata appare tra "Le mie giocate" col nome del giocatore scelto (univoco per run).
+    // exact: true così matcha lo <strong> della card e non l'<option> (testo più lungo) del select.
+    await expect(page.getByText(playerName, { exact: true })).toBeVisible()
   })
 })

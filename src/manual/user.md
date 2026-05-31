@@ -54,10 +54,17 @@ la schedina**. C'è una sola schedina per utente per concorso.
 
 La sezione **Scommesse** è separata dalla schedina e ha due tipi:
 
-- **Fine campionato**: previsioni di lungo periodo (capocannoniere, miglior
-  portiere, più gol fatti…). Scegli una delle opzioni proposte.
+- **Fine campionato**: previsioni di lungo periodo. Le apri direttamente tu:
+  scegli la **Lega**, il **mercato** (Capocannoniere, Miglior assist, Miglior
+  portiere, Più clean sheet, Più gol fatti, Meno gol subiti) e infine il
+  **bersaglio** — un **giocatore** (per *Miglior portiere* e *Più clean sheet*
+  l'elenco mostra solo i portieri) o una **squadra** (per *Più gol fatti* e
+  *Meno gol subiti*). Accanto al nome vedi **ruolo e squadra**. Una giocata per
+  mercato e lega; le risolve l'amministratore a fine stagione.
 - **Di partita**: scegli una **giornata**, poi una **partita**, poi il **tipo**
   (Gol/No gol, Vincitore, Risultato esatto, Primo marcatore) e la tua previsione.
+  Per il **Primo marcatore** puoi scegliere un giocatore delle due squadre oppure
+  **Autogol**.
 
 Ogni scommessa si vince o si perde **per conto suo**. In fondo trovi **le tue
 giocate** con l'esito (✓/✗) una volta risolte.

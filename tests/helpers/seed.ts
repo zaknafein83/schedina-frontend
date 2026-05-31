@@ -34,6 +34,12 @@ export async function createMatch(token: string, opts: { giornataId: number; hom
     scheduledAt: toLocalDT(new Date(Date.now() + 24 * 60 * 60 * 1000)), overUnderLine: opts.overUnderLine ?? 2.5,
   }, { token })
 }
+export async function createSeason(token: string, label = uniq('Stagione')) {
+  return api.post('/admin/seasons', { label, isCurrent: true }, { token })
+}
+export async function createPlayer(token: string, teamId: number, firstName: string, lastName: string) {
+  return api.post('/admin/players', { firstName, lastName, teamId }, { token })
+}
 export async function createConcorso(token: string, opts: { number: number; name?: string; ruleId?: number }) {
   const openAt = toLocalDT(new Date(Date.now() - 60 * 60 * 1000))
   const closeAt = toLocalDT(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))
@@ -70,4 +76,16 @@ export async function bootstrapOpenConcorso(): Promise<{
   await addConcorsoMatch(token, concorso.id, match.id)
   await openConcorso(token, concorso.id)
   return { token, leagueId: league.id, giornataId: giornata.id, concorsoId: concorso.id, matchId: match.id, homeName, awayName, concorsoName }
+}
+
+/** Stagione corrente + lega + squadra + 1 giocatore, per le scommesse di fine campionato self-service. */
+export async function bootstrapSeasonBet(): Promise<{ leagueId: number; leagueName: string; playerId: number; playerName: string }> {
+  const token = await getAdminToken()
+  await createSeason(token) // garantisce una stagione corrente
+  const leagueName = uniq('LegaS-e2e')
+  const league = await createLeague(token, leagueName)
+  const team = await createTeam(token, league.id, uniq('SquadraS'))
+  const firstName = 'Bomber'; const lastName = uniq('Goal')
+  const player = await createPlayer(token, team.id, firstName, lastName)
+  return { leagueId: league.id, leagueName, playerId: player.id, playerName: `${firstName} ${lastName}` }
 }

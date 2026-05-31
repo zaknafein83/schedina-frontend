@@ -161,12 +161,9 @@ export const adminApi = {
 
   // Scommesse fine campionato (self-service: l'admin dichiara solo il risultato)
   getScommesse: (params) => apiClient.get('/admin/scommesse', { params: params || {} }),
-  getScommessa: (id) => apiClient.get(`/admin/scommesse/${id}`),
   // Dichiara il risultato per (seasonId, leagueId, market): { seasonId, leagueId, market, officialResultRef }
   setSeasonResult: (data) => apiClient.post('/admin/scommesse/result', data),
   deleteScommessa: (id) => apiClient.delete(`/admin/scommesse/${id}`),
-  resolveScommessa: (id, officialResultRef) =>
-    apiClient.patch(`/admin/scommesse/${id}/resolve`, { officialResultRef }),
   unresolveScommessa: (id) => apiClient.post(`/admin/scommesse/${id}/unresolve`),
   voidScommessa: (id) => apiClient.post(`/admin/scommesse/${id}/void`),
 
