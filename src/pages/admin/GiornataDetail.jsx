@@ -9,6 +9,9 @@ import Modal from '../../components/ui/Modal'
 import Badge from '../../components/ui/Badge'
 import { ArrowLeft, Trash2, Save, CalendarPlus, Check } from 'lucide-react'
 
+const ROLE_LABEL = { GK: 'Portiere', DEF: 'Difensore', MID: 'Centrocampista', FWD: 'Attaccante' }
+const roleLabel = (r) => ROLE_LABEL[r] ?? r ?? ''
+
 /** Data odierna in formato YYYY-MM-DD nel fuso locale (per gli input type="date"). */
 function todayLocal() {
   const d = new Date()
@@ -137,10 +140,15 @@ function MatchCard({ match, players, onSaveScore, saving, onValidate, onScorer, 
       {/* Primo marcatore (per la scommessa di partita) */}
       <div className="mt-3 pt-2 border-t border-gray-100 flex items-center gap-2">
         <span className="text-xs text-gds-gray">Primo marcatore:</span>
-        <select value={match.firstScorerPlayerId ?? ''} onChange={(e) => onScorer(e.target.value ? Number(e.target.value) : null)}
+        <select value={match.firstScorerOwnGoal ? '-1' : (match.firstScorerPlayerId ?? '')} onChange={(e) => onScorer(e.target.value ? Number(e.target.value) : null)}
           className="text-sm rounded-lg border border-gray-200 px-2 py-1 bg-white outline-none focus:ring-2 focus:ring-gds-pink">
           <option value="">— nessuno —</option>
-          {matchPlayers.map((p) => <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>)}
+          {matchPlayers.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.firstName} {p.lastName} — {roleLabel(p.role)} · {p.teamId === match.homeTeamId ? match.homeTeamName : match.awayTeamName}
+            </option>
+          ))}
+          <option value="-1">⚽ Autogol</option>
         </select>
       </div>
     </div>
