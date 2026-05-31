@@ -11,7 +11,7 @@ gestisce utenti né anagrafiche strutturali (quello spetta all'Amministratore).
 | Calendario: creare giornate e partite | ✅ | ✅ |
 | Inserire punteggi / primo marcatore | ✅ | ✅ |
 | Concorsi: creare, selezionare partite, aprire/chiudere/riaprire/elaborare | ✅ | ✅ |
-| Scommesse fine campionato: creare e risolvere | ✅ | ✅ |
+| Scommesse fine campionato: dichiarare il risultato | ✅ | ✅ |
 | Vedere le schedine | ✅ | ✅ |
 | Gestire i Giocatori | ✅ | ✅ |
 | Gestire utenti, leghe, squadre, stagioni, tornei, regole | ❌ | ✅ |
@@ -51,10 +51,11 @@ elaborato per correggere.
 
 ## 3. Scommesse
 
-Le scommesse di **fine campionato** si creano e si risolvono a mano. Quelle di
-**partita** (Gol/No gol, Vincitore, Risultato esatto, Primo marcatore) si
-risolvono in automatico dal punteggio — il *Primo marcatore* lo imposti dal
-Calendario sulla partita.
+Le scommesse di **fine campionato** le aprono gli utenti (lega + mercato +
+bersaglio); tu **dichiari il risultato** dal riquadro *Dichiara risultato* e le
+giocate si risolvono. Quelle di **partita** (Gol/No gol, Vincitore, Risultato
+esatto, Primo marcatore) si risolvono in automatico dal punteggio — il *Primo
+marcatore* (anche **Autogol**) lo imposti dal Calendario sulla partita.
 
 ---
 
