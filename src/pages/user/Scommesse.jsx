@@ -11,6 +11,8 @@ const MARKET_LABEL = {
   GOAL_NOGOAL: 'Gol / No gol', EXACT_SCORE: 'Risultato esatto', WINNER: 'Vincitore', FIRST_SCORER: 'Primo marcatore',
 }
 const MATCH_MARKETS = ['GOAL_NOGOAL', 'WINNER', 'EXACT_SCORE', 'FIRST_SCORER']
+const ROLE_LABEL = { GK: 'Portiere', DEF: 'Difensore', MID: 'Centrocampista', FWD: 'Attaccante' }
+const roleLabel = (r) => ROLE_LABEL[r] ?? r ?? ''
 
 export default function Scommesse() {
   const [tab, setTab] = useState('SEASON')
@@ -166,9 +168,14 @@ function MatchTab() {
               )}
               {market === 'FIRST_SCORER' && (
                 <select value={prediction} onChange={(e) => setPrediction(e.target.value)}
-                  className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink max-w-sm">
+                  className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink max-w-md">
                   <option value="">-- Seleziona giocatore --</option>
-                  {matchPlayers.map((p) => <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>)}
+                  {matchPlayers.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.firstName} {p.lastName} — {roleLabel(p.role)} · {p.teamId === match.homeTeamId ? match.homeTeamName : match.awayTeamName}
+                    </option>
+                  ))}
+                  <option value="OWN_GOAL">⚽ Autogol</option>
                 </select>
               )}
             </div>
