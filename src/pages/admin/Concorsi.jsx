@@ -42,7 +42,7 @@ export default function Concorsi() {
   function openEdit(c) {
     setEditing(c)
     reset({ name: c.name, number: c.number, seasonId: c.seasonId || '', ruleId: c.ruleId || '',
-      openAt: (c.openAt || '').slice(0, 16), closeAt: (c.closeAt || '').slice(0, 16) })
+      openAt: (c.openAt || '').slice(0, 10), closeAt: (c.closeAt || '').slice(0, 10) })
     setModalOpen(true)
   }
   function closeModal() { setModalOpen(false); setEditing(null); reset() }
@@ -53,7 +53,9 @@ export default function Concorsi() {
       number: Number(data.number),
       seasonId: data.seasonId ? Number(data.seasonId) : undefined,
       ruleId: data.ruleId ? Number(data.ruleId) : undefined,
-      openAt: data.openAt, closeAt: data.closeAt,
+      // Solo data: apertura a inizio giornata, chiusura a fine giornata.
+      openAt: data.openAt ? `${data.openAt}T00:00:00` : data.openAt,
+      closeAt: data.closeAt ? `${data.closeAt}T23:59:59` : data.closeAt,
     }
     if (editing) await updateM.mutateAsync({ id: editing.id, data: payload })
     else await createM.mutateAsync(payload)
@@ -134,8 +136,8 @@ export default function Concorsi() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Input label="Apertura" type="datetime-local" error={errors.openAt?.message} {...register('openAt', { required: 'Obbligatorio' })} />
-            <Input label="Chiusura" type="datetime-local" error={errors.closeAt?.message} {...register('closeAt', { required: 'Obbligatorio' })} />
+            <Input label="Apertura" type="date" error={errors.openAt?.message} {...register('openAt', { required: 'Obbligatorio' })} />
+            <Input label="Chiusura" type="date" error={errors.closeAt?.message} {...register('closeAt', { required: 'Obbligatorio' })} />
           </div>
           <p className="text-xs text-gds-gray">Dopo aver creato il concorso, dal dettaglio seleziona le partite del turno {`{`}numero{`}`} tra le leghe.</p>
           <div className="flex justify-end gap-2 pt-2">
