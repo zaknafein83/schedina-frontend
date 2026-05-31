@@ -69,15 +69,16 @@ export const schedinaApi = {
 
 // ─── Scommesse (user) — fine campionato (catalogo) + di partita ──────────────
 export const scommessaApi = {
-  listOpen: () => apiClient.get('/scommesse'),
   listMine: () => apiClient.get('/scommesse/mine'),
-  place: (scommessaId, choiceRef) => apiClient.post('/scommesse', { scommessaId, choiceRef }),
+  // Fine campionato self-service: { seasonId?, leagueId, market, prediction }
+  placeStagione: (data) => apiClient.post('/scommesse/stagione', data),
   placePartita: (data) => apiClient.post('/scommesse/partita', data), // { matchId, market, prediction }
   listMinePartita: () => apiClient.get('/scommesse/partita/mine'),
 }
 
 // ─── Listini pubblici (read-only, qualsiasi utente loggato) ──────────────────
 export const listiniApi = {
+  leagues: () => apiClient.get('/listini/leagues'),
   teams: (leagueId) =>
     apiClient.get('/listini/teams', { params: leagueId ? { leagueId } : {} }),
   players: (params) =>
@@ -158,10 +159,11 @@ export const adminApi = {
   addConcorsoMatch: (id, matchId) => apiClient.post(`/admin/concorsi/${id}/matches`, { matchId }),
   removeConcorsoMatch: (id, matchId) => apiClient.delete(`/admin/concorsi/${id}/matches/${matchId}`),
 
-  // Scommesse fine campionato (catalogo)
+  // Scommesse fine campionato (self-service: l'admin dichiara solo il risultato)
   getScommesse: (params) => apiClient.get('/admin/scommesse', { params: params || {} }),
   getScommessa: (id) => apiClient.get(`/admin/scommesse/${id}`),
-  createScommessa: (data) => apiClient.post('/admin/scommesse', data),
+  // Dichiara il risultato per (seasonId, leagueId, market): { seasonId, leagueId, market, officialResultRef }
+  setSeasonResult: (data) => apiClient.post('/admin/scommesse/result', data),
   deleteScommessa: (id) => apiClient.delete(`/admin/scommesse/${id}`),
   resolveScommessa: (id, officialResultRef) =>
     apiClient.patch(`/admin/scommesse/${id}/resolve`, { officialResultRef }),
