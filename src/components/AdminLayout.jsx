@@ -56,13 +56,13 @@ export default function AdminLayout({ children }) {
     `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
       isActive
         ? 'bg-gds-pink text-white'
-        : 'text-gray-300 hover:bg-gds-dark-2 hover:text-white'
+        : 'text-gds-gray hover:bg-gds-dark-2 hover:text-white'
     }`
 
   return (
-    <div className="min-h-screen bg-gds-gray-light">
+    <div className="min-h-screen">
       {/* Topbar mobile (visibile solo sotto md) */}
-      <header className="md:hidden bg-gds-dark h-14 flex items-center justify-between px-3 sticky top-0 z-30">
+      <header className="md:hidden bg-gds-surface border-b border-gds-border h-14 flex items-center justify-between px-3 sticky top-0 z-30">
         <button
           onClick={() => setDrawerOpen(true)}
           className="p-2 rounded-lg text-white hover:bg-gds-dark-2"
@@ -71,7 +71,7 @@ export default function AdminLayout({ children }) {
           <Menu size={22} />
         </button>
         <span className="text-lg font-black text-gds-pink tracking-tight">SCHEDINA</span>
-        <span className="text-xs text-gray-400 font-semibold uppercase">Admin</span>
+        <span className="text-xs text-gds-gray font-semibold uppercase">Admin</span>
       </header>
 
       {/* Overlay drawer mobile */}
@@ -84,18 +84,18 @@ export default function AdminLayout({ children }) {
 
       {/* Sidebar: fissa su desktop, drawer su mobile */}
       <aside
-        className={`bg-gds-dark flex flex-col w-64 fixed left-0 top-0 z-50 min-h-screen
+        className={`bg-gds-surface border-r border-gds-border flex flex-col w-64 fixed left-0 top-0 z-50 min-h-screen
           transition-transform duration-200 ease-out
           ${drawerOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
       >
         <div className="h-16 flex items-center justify-between px-6 border-b border-gds-dark-2">
           <div>
             <span className="text-2xl font-black text-gds-pink tracking-tight">SCHEDINA</span>
-            <span className="ml-2 text-xs text-gray-400 font-semibold uppercase tracking-wider">Admin</span>
+            <span className="ml-2 text-xs text-gds-gray font-semibold uppercase tracking-wider">Admin</span>
           </div>
           <button
             onClick={() => setDrawerOpen(false)}
-            className="md:hidden p-2 rounded-lg text-gray-300 hover:bg-gds-dark-2"
+            className="md:hidden p-2 rounded-lg text-gds-gray hover:bg-gds-dark-2"
             aria-label="Chiudi menu"
           >
             <X size={20} />
@@ -113,10 +113,10 @@ export default function AdminLayout({ children }) {
         </nav>
 
         <div className="border-t border-gds-dark-2 p-4">
-          <div className="text-xs text-gray-400 mb-1 truncate">{user?.email}</div>
+          <div className="text-xs text-gds-gray mb-1 truncate">{user?.email}</div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors w-full px-1 py-2"
+            className="flex items-center gap-2 text-sm text-gds-gray hover:text-white transition-colors w-full px-1 py-2"
           >
             <LogOut size={16} />
             Esci

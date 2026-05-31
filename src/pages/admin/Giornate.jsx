@@ -62,7 +62,7 @@ export default function Giornate() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Calendario · Giornate</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Calendario · Giornate</h1>
         <div className="flex items-center gap-2">
           <ImportExport
             exportFn={adminApi.exportGiornate}
@@ -76,16 +76,16 @@ export default function Giornate() {
       </div>
 
       <div className="mb-5 max-w-xs">
-        <label className="text-sm font-medium text-gds-dark">Lega</label>
+        <label className="text-sm font-medium text-gds-white">Lega</label>
         <select value={leagueId} onChange={(e) => setLeagueId(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
+          className="mt-1 w-full rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink">
           <option value="">Tutte le leghe</option>
           {leagues?.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
         </select>
       </div>
 
       {isLoading ? <div className="flex justify-center py-16"><Spinner size="lg" /></div> : (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto"><table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="bg-gds-dark text-white">
@@ -99,10 +99,10 @@ export default function Giornate() {
             <tbody>
               {giornate?.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gds-gray">Nessuna giornata.</td></tr>}
               {giornate?.map((g) => (
-                <tr key={g.id} className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors">
+                <tr key={g.id} className="border-t border-gds-border hover:bg-gds-pink-light transition-colors">
                   <td className="px-4 py-3 text-gds-gray">{g.number}</td>
                   <td className="px-4 py-3">
-                    <Link to={`${basePath}/giornate/${g.id}`} className="font-medium text-gds-dark hover:text-gds-pink inline-flex items-center gap-1">
+                    <Link to={`${basePath}/giornate/${g.id}`} className="font-medium text-gds-white hover:text-gds-pink inline-flex items-center gap-1">
                       {g.name} <ChevronRight size={14} />
                     </Link>
                   </td>
@@ -124,8 +124,8 @@ export default function Giornate() {
       <Modal isOpen={modalOpen} onClose={closeModal} title={editing ? 'Modifica giornata' : 'Nuova giornata'} maxWidth="max-w-md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gds-dark">Lega</label>
-            <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink"
+            <label className="text-sm font-medium text-gds-white">Lega</label>
+            <select className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink"
               {...register('leagueId', { required: 'Lega obbligatoria' })}>
               <option value="">-- Seleziona --</option>
               {leagues?.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
@@ -135,8 +135,8 @@ export default function Giornate() {
           <div className="grid grid-cols-2 gap-3">
             <Input label="Numero turno" type="number" placeholder="auto" {...register('number')} />
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gds-dark">Stagione</label>
-              <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink" {...register('seasonId')}>
+              <label className="text-sm font-medium text-gds-white">Stagione</label>
+              <select className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink" {...register('seasonId')}>
                 <option value="">-- Nessuna --</option>
                 {seasons?.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>

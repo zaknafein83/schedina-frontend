@@ -35,7 +35,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gds-gray-light flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-sm p-8 w-full max-w-sm">
+      <div className="bg-gds-surface rounded-xl shadow-sm p-8 w-full max-w-sm">
         <div className="text-center mb-8">
           <span className="text-4xl font-black text-gds-pink tracking-tight">
             SCHEDINA

@@ -4,7 +4,7 @@ const colorMap = {
   yellow: 'bg-yellow-100 text-yellow-700',
   blue: 'bg-blue-100 text-blue-700',
   pink: 'bg-gds-pink-light text-gds-pink',
-  gray: 'bg-gray-100 text-gds-gray',
+  gray: 'bg-gds-pink-light text-gds-gray',
   dark: 'bg-gds-dark text-white',
 }
 

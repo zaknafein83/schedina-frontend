@@ -55,7 +55,7 @@ export default function Rules() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Regole</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Regole</h1>
         <Button onClick={openCreate}><Plus size={16} /> Nuova regola</Button>
       </div>
 
@@ -64,7 +64,7 @@ export default function Rules() {
         Ogni partita vale fino a 2 punti (1X2 + Under/Over). Le giornate riusano le regole.
       </p>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto"><table className="w-full text-sm min-w-[480px]">
           <thead>
             <tr className="bg-gds-dark text-white">
@@ -77,12 +77,12 @@ export default function Rules() {
           <tbody>
             {rules?.length === 0 && (
               <tr><td colSpan={4} className="text-center py-10 text-gds-gray">
-                <BookOpen size={32} className="mx-auto mb-2 text-gray-300" />Nessuna regola.
+                <BookOpen size={32} className="mx-auto mb-2 text-gds-gray" />Nessuna regola.
               </td></tr>
             )}
             {rules?.map((r) => (
-              <tr key={r.id} className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors">
-                <td className="px-4 py-3 font-medium text-gds-dark">{r.name}</td>
+              <tr key={r.id} className="border-t border-gds-border hover:bg-gds-pink-light transition-colors">
+                <td className="px-4 py-3 font-medium text-gds-white">{r.name}</td>
                 <td className="px-4 py-3 text-gds-gray">{(r.winningThresholds || []).join(', ') || '—'}</td>
                 <td className="px-4 py-3"><Badge color={r.isActive ? 'green' : 'gray'}>{r.isActive ? 'Attiva' : 'Disattivata'}</Badge></td>
                 <td className="px-4 py-3">
@@ -106,7 +106,7 @@ export default function Rules() {
               {...register('winningThresholds')} />
             <p className="text-xs text-gds-gray">Punteggi che fanno vincere la schedina (match esatto).</p>
           </div>
-          <label className="flex items-center gap-2 text-sm text-gds-dark">
+          <label className="flex items-center gap-2 text-sm text-gds-white">
             <input type="checkbox" {...register('isActive')} className="rounded text-gds-pink focus:ring-gds-pink" /> Attiva
           </label>
           <div className="flex justify-end gap-2 pt-2">

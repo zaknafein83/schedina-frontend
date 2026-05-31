@@ -27,22 +27,22 @@ export default function ModLayout({ children }) {
     `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
       isActive
         ? 'bg-gds-pink text-white'
-        : 'text-gray-300 hover:bg-white/10 hover:text-white'
+        : 'text-gds-gray hover:bg-gds-surface/10 hover:text-white'
     }`
 
   return (
-    <div className="min-h-screen bg-gds-gray-light">
+    <div className="min-h-screen">
       {/* Topbar mobile */}
-      <header className="md:hidden bg-gds-dark h-14 flex items-center justify-between px-3 sticky top-0 z-30">
+      <header className="md:hidden bg-gds-surface border-b border-gds-border h-14 flex items-center justify-between px-3 sticky top-0 z-30">
         <button
           onClick={() => setDrawerOpen(true)}
-          className="p-2 rounded-lg text-white hover:bg-white/10"
+          className="p-2 rounded-lg text-white hover:bg-gds-surface/10"
           aria-label="Apri menu"
         >
           <Menu size={22} />
         </button>
         <span className="text-lg font-black text-gds-pink tracking-tight">SCHEDINA</span>
-        <span className="text-xs text-gray-400 font-semibold uppercase">Mod</span>
+        <span className="text-xs text-gds-gray font-semibold uppercase">Mod</span>
       </header>
 
       {drawerOpen && (
@@ -50,18 +50,18 @@ export default function ModLayout({ children }) {
       )}
 
       <aside
-        className={`bg-gds-dark flex flex-col w-64 fixed left-0 top-0 z-50 min-h-screen
+        className={`bg-gds-surface border-r border-gds-border flex flex-col w-64 fixed left-0 top-0 z-50 min-h-screen
           transition-transform duration-200 ease-out
           ${drawerOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
       >
         <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
           <div>
             <span className="text-2xl font-black text-gds-pink tracking-tight">SCHEDINA</span>
-            <span className="ml-2 text-xs text-gray-400 font-semibold uppercase tracking-wider">Mod</span>
+            <span className="ml-2 text-xs text-gds-gray font-semibold uppercase tracking-wider">Mod</span>
           </div>
           <button
             onClick={() => setDrawerOpen(false)}
-            className="md:hidden p-2 rounded-lg text-gray-300 hover:bg-white/10"
+            className="md:hidden p-2 rounded-lg text-gds-gray hover:bg-gds-surface/10"
             aria-label="Chiudi menu"
           >
             <X size={20} />
@@ -80,14 +80,14 @@ export default function ModLayout({ children }) {
 
         <div className="px-3 py-4 border-t border-white/10">
           <div className="px-4 py-2 mb-2">
-            <p className="text-xs text-gray-400">Loggato come</p>
+            <p className="text-xs text-gds-gray">Loggato come</p>
             <p className="text-sm text-white font-medium truncate">{user?.email}</p>
             <span className="text-xs text-gds-pink font-semibold">MOD</span>
           </div>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
-              text-gray-300 hover:bg-white/10 hover:text-white transition-colors w-full"
+              text-gds-gray hover:bg-gds-surface/10 hover:text-white transition-colors w-full"
           >
             <LogOut size={18} />
             Esci

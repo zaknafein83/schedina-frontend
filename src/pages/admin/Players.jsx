@@ -126,7 +126,7 @@ export default function Players() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Giocatori</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Giocatori</h1>
         <div className="flex items-center gap-2">
           <ImportExport
             exportFn={adminApi.exportPlayers}
@@ -143,14 +143,14 @@ export default function Players() {
       </div>
 
       {/* Filtri */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="bg-gds-surface rounded-xl shadow-sm p-4 mb-4 grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
-          <label className="text-sm font-medium text-gds-dark block mb-2">Lega</label>
+          <label className="text-sm font-medium text-gds-white block mb-2">Lega</label>
           <select
             value={filterLeagueId}
             onChange={(e) => { setFilterLeagueId(e.target.value); setFilterTeamId('') }}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-              bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+            className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm
+              bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
           >
             <option value="">Tutte le leghe</option>
             {leagues?.map((l) => (
@@ -159,12 +159,12 @@ export default function Players() {
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium text-gds-dark block mb-2">Squadra</label>
+          <label className="text-sm font-medium text-gds-white block mb-2">Squadra</label>
           <select
             value={filterTeamId}
             onChange={(e) => setFilterTeamId(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-              bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+            className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm
+              bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
           >
             <option value="">Tutte le squadre</option>
             {teams?.map((t) => (
@@ -173,12 +173,12 @@ export default function Players() {
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium text-gds-dark block mb-2">Ruolo</label>
+          <label className="text-sm font-medium text-gds-white block mb-2">Ruolo</label>
           <select
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-              bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+            className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm
+              bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
           >
             {ROLES.map((r) => (
               <option key={r.value} value={r.value}>{r.label || 'Tutti'}</option>
@@ -187,7 +187,7 @@ export default function Players() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex justify-center py-10">
             <Spinner />
@@ -216,11 +216,11 @@ export default function Players() {
               {players?.map((p) => (
                 <tr
                   key={p.id}
-                  className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors"
+                  className="border-t border-gds-border hover:bg-gds-pink-light transition-colors"
                 >
                   <td className="px-6 py-3 text-gds-gray">{p.id}</td>
-                  <td className="px-6 py-3 font-medium text-gds-dark">{p.lastName}</td>
-                  <td className="px-6 py-3 text-gds-dark">{p.firstName}</td>
+                  <td className="px-6 py-3 font-medium text-gds-white">{p.lastName}</td>
+                  <td className="px-6 py-3 text-gds-white">{p.firstName}</td>
                   <td className="px-6 py-3 text-gds-gray">{p.teamName || '—'}</td>
                   <td className="px-6 py-3 text-gds-gray">{p.role || '—'}</td>
                   <td className="px-6 py-3">
@@ -266,10 +266,10 @@ export default function Players() {
             {...register('firstName', { required: 'Nome obbligatorio' })}
           />
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gds-dark">Squadra</label>
+            <label className="text-sm font-medium text-gds-white">Squadra</label>
             <select
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-                bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+              className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm
+                bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
               {...register('teamId')}
             >
               <option value="">— Senza squadra —</option>
@@ -279,10 +279,10 @@ export default function Players() {
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gds-dark">Ruolo</label>
+            <label className="text-sm font-medium text-gds-white">Ruolo</label>
             <select
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-                bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+              className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm
+                bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
               {...register('role')}
             >
               {ROLES.map((r) => (

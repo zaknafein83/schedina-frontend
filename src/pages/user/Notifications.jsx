@@ -41,40 +41,40 @@ export default function Notifications() {
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Notifiche</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Notifiche</h1>
         {unread.length > 0 && (
           <Badge color="pink">{unread.length} non lette</Badge>
         )}
       </div>
 
       {notifications?.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gds-gray">
-          <Bell size={48} className="mx-auto mb-4 text-gray-300" />
+        <div className="bg-gds-surface rounded-xl shadow-sm p-12 text-center text-gds-gray">
+          <Bell size={48} className="mx-auto mb-4 text-gds-gray" />
           <p className="font-medium">Nessuna notifica.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
           {[...unread, ...read].map((notification) => (
             <div
               key={notification.id}
-              className={`flex items-start gap-4 px-6 py-4 border-b border-gray-100 last:border-0
+              className={`flex items-start gap-4 px-6 py-4 border-b border-gds-border last:border-0
                 ${!notification.read ? 'bg-gds-pink-light' : ''}`}
             >
               <div
                 className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${
-                  notification.read ? 'bg-gray-200' : 'bg-gds-pink'
+                  notification.read ? 'bg-gds-pink-light' : 'bg-gds-pink'
                 }`}
               />
 
               <div className="flex-1 min-w-0">
                 {notification.title && (
-                  <p className="font-semibold text-gds-dark text-sm mb-0.5">
+                  <p className="font-semibold text-gds-white text-sm mb-0.5">
                     {notification.title}
                   </p>
                 )}
                 <p className="text-sm text-gds-gray">{notification.message}</p>
                 {notification.createdAt && (
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gds-gray mt-1">
                     {new Date(notification.createdAt).toLocaleString('it-IT', {
                       day: '2-digit',
                       month: '2-digit',

@@ -2,29 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tema "RoleFootball": dark navy + ciano/blu, font Montserrat (titoli) + Inter (testo). */
 @layer base {
   body {
-    background-color: #F5F5F5;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    color: #1A1A1A;
+    background-color: #0B0F1A;
+    /* texture leggera a gradiente, come il sito sorgente */
+    background-image:
+      radial-gradient(1200px 600px at 70% -10%, rgba(26, 107, 181, 0.18), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(41, 174, 206, 0.10), transparent 55%);
+    background-attachment: fixed;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: #A3B5C6;
   }
 
-  * {
-    box-sizing: border-box;
+  * { box-sizing: border-box; }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', system-ui, sans-serif;
+    color: #EAF2FA;
   }
+
+  a { color: #29AECE; }
+  a:hover { color: #2FC4E8; }
+
+  /* Controlli form leggibili su sfondo scuro */
+  input, select, textarea {
+    color: #EAF2FA;
+  }
+  input::placeholder, textarea::placeholder { color: #5C7A99; }
+  select option { background-color: #0D1E35; color: #EAF2FA; }
+
+  /* Scrollbar in tema */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #0B0F1A; }
+  ::-webkit-scrollbar-thumb { background: #1C3A55; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #29AECE; }
 }
 
 @layer components {
   .card {
-    @apply bg-white rounded-xl shadow-sm p-6;
+    @apply bg-gds-surface border border-gds-border rounded-xl shadow-sm p-6;
   }
 
   .btn-primary {
-    @apply bg-gds-pink text-white rounded-lg px-4 py-2 hover:bg-gds-pink-dark transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-pg-gradient text-white rounded-lg px-4 py-2 hover:shadow-pg-glow transition-shadow font-semibold disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply border border-gray-300 text-gray-700 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply border border-gds-border text-gds-white bg-gds-surface rounded-lg px-4 py-2 hover:border-gds-pink transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-danger {
@@ -32,14 +57,14 @@
   }
 
   .form-input {
-    @apply w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gds-pink focus:border-transparent;
+    @apply w-full border border-gds-border bg-gds-surface rounded-lg px-3 py-2 text-sm text-gds-white focus:outline-none focus:ring-2 focus:ring-gds-pink focus:border-transparent;
   }
 
   .form-label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    @apply block text-sm font-medium text-gds-white mb-1;
   }
 
   .page-title {
-    @apply text-2xl font-bold text-gds-dark;
+    @apply text-2xl font-bold text-gds-white;
   }
 }

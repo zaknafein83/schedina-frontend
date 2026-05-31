@@ -94,7 +94,7 @@ export default function Teams() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Squadre</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Squadre</h1>
         <div className="flex items-center gap-2">
           <ImportExport
             exportFn={adminApi.exportTeams}
@@ -111,15 +111,15 @@ export default function Teams() {
       </div>
 
       {/* Filter by league */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-4">
-        <label className="text-sm font-medium text-gds-dark block mb-2">
+      <div className="bg-gds-surface rounded-xl shadow-sm p-4 mb-4">
+        <label className="text-sm font-medium text-gds-white block mb-2">
           Filtra per lega
         </label>
         <select
           value={filterLeagueId}
           onChange={(e) => setFilterLeagueId(e.target.value)}
-          className="w-full max-w-xs rounded-lg border border-gray-200 px-3 py-2 text-sm
-            bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+          className="w-full max-w-xs rounded-lg border border-gds-border px-3 py-2 text-sm
+            bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
         >
           <option value="">Tutte le leghe</option>
           {leagues?.map((l) => (
@@ -130,7 +130,7 @@ export default function Teams() {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex justify-center py-10">
             <Spinner />
@@ -158,10 +158,10 @@ export default function Teams() {
                 return (
                   <tr
                     key={team.id}
-                    className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors"
+                    className="border-t border-gds-border hover:bg-gds-pink-light transition-colors"
                   >
                     <td className="px-6 py-3 text-gds-gray">{team.id}</td>
-                    <td className="px-6 py-3 font-medium text-gds-dark">
+                    <td className="px-6 py-3 font-medium text-gds-white">
                       {team.name}
                     </td>
                     <td className="px-6 py-3 text-gds-gray">
@@ -204,10 +204,10 @@ export default function Teams() {
             {...register('name', { required: 'Nome obbligatorio' })}
           />
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gds-dark">Lega</label>
+            <label className="text-sm font-medium text-gds-white">Lega</label>
             <select
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-                bg-white outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
+              className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm
+                bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink"
               {...register('leagueId', { required: 'Lega obbligatoria' })}
             >
               <option value="">-- Seleziona lega --</option>

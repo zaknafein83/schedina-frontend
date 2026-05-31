@@ -66,11 +66,11 @@ export default function Concorsi() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Concorsi</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Concorsi</h1>
         <Button onClick={openCreate}><Plus size={16} /> Nuovo concorso</Button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto"><table className="w-full text-sm min-w-[760px]">
           <thead>
             <tr className="bg-gds-dark text-white">
@@ -86,10 +86,10 @@ export default function Concorsi() {
           <tbody>
             {concorsi?.length === 0 && <tr><td colSpan={7} className="text-center py-10 text-gds-gray">Nessun concorso.</td></tr>}
             {concorsi?.map((c) => (
-              <tr key={c.id} className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors">
+              <tr key={c.id} className="border-t border-gds-border hover:bg-gds-pink-light transition-colors">
                 <td className="px-4 py-3 text-gds-gray">{c.number}</td>
                 <td className="px-4 py-3">
-                  <Link to={`${basePath}/concorsi/${c.id}`} className="font-medium text-gds-dark hover:text-gds-pink inline-flex items-center gap-1">
+                  <Link to={`${basePath}/concorsi/${c.id}`} className="font-medium text-gds-white hover:text-gds-pink inline-flex items-center gap-1">
                     {c.name} <ChevronRight size={14} />
                   </Link>
                 </td>
@@ -121,15 +121,15 @@ export default function Concorsi() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gds-dark">Regola (soglie)</label>
-              <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink" {...register('ruleId')}>
+              <label className="text-sm font-medium text-gds-white">Regola (soglie)</label>
+              <select className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink" {...register('ruleId')}>
                 <option value="">-- Nessuna --</option>
                 {rules?.filter((r) => r.isActive || String(r.id) === String(editing?.ruleId)).map((r) => <option key={r.id} value={r.id}>{r.name} [{(r.winningThresholds || []).join(', ')}]</option>)}
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gds-dark">Stagione</label>
-              <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink" {...register('seasonId')}>
+              <label className="text-sm font-medium text-gds-white">Stagione</label>
+              <select className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink" {...register('seasonId')}>
                 <option value="">-- Nessuna --</option>
                 {seasons?.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>

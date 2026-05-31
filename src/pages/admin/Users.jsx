@@ -24,14 +24,14 @@ function RoleDropdown({ user, onChangeRole, disabled }) {
         className="flex items-center gap-1 focus:outline-none disabled:opacity-50"
       >
         <Badge color={roleBadgeColor[user.role] || 'blue'}>{user.role}</Badge>
-        <ChevronDown size={12} className="text-gray-400" />
+        <ChevronDown size={12} className="text-gds-gray" />
       </button>
 
       {open && (
         <>
           {/* backdrop */}
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 mt-1 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
+          <div className="absolute left-0 mt-1 w-32 bg-gds-surface border border-gds-border rounded-lg shadow-lg z-20 overflow-hidden">
             {ROLES.map((role) => (
               <button
                 key={role}
@@ -40,7 +40,7 @@ function RoleDropdown({ user, onChangeRole, disabled }) {
                   if (role !== user.role) onChangeRole(role)
                 }}
                 className={`w-full text-left px-4 py-2 text-sm hover:bg-gds-pink-light transition-colors ${
-                  role === user.role ? 'font-semibold text-gds-pink' : 'text-gds-dark'
+                  role === user.role ? 'font-semibold text-gds-pink' : 'text-gds-white'
                 }`}
               >
                 {role}
@@ -84,11 +84,11 @@ export default function Users() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Utenti</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Utenti</h1>
         <span className="text-sm text-gds-gray">{users?.length ?? 0} utenti</span>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto"><table className="w-full text-sm min-w-[640px]">
           <thead>
             <tr className="bg-gds-dark text-white">
@@ -113,10 +113,10 @@ export default function Users() {
             {users?.map((user) => (
               <tr
                 key={user.id}
-                className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors"
+                className="border-t border-gds-border hover:bg-gds-pink-light transition-colors"
               >
                 <td className="px-4 py-3 text-gds-gray text-xs">{user.id}</td>
-                <td className="px-4 py-3 font-medium text-gds-dark">
+                <td className="px-4 py-3 font-medium text-gds-white">
                   {user.firstName} {user.lastName}
                 </td>
                 <td className="px-4 py-3 text-gds-gray">{user.username ?? '—'}</td>
@@ -154,7 +154,7 @@ export default function Users() {
                       className={`transition-colors disabled:opacity-50 ${
                         user.isActive
                           ? 'text-green-500 hover:text-red-500'
-                          : 'text-gray-300 hover:text-green-500'
+                          : 'text-gds-gray hover:text-green-500'
                       }`}
                       title={user.isActive ? 'Disabilita utente' : 'Abilita utente'}
                     >

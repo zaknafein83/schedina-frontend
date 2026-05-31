@@ -46,7 +46,7 @@ export default function ConcorsoDetail() {
         <ArrowLeft size={16} /> Concorsi
       </Link>
 
-      <h1 className="text-2xl font-bold text-gds-dark">{concorso.name}</h1>
+      <h1 className="text-2xl font-bold text-gds-white">{concorso.name}</h1>
       <p className="text-gds-gray mt-1 mb-6">Pronostica esito 1X2 e Under/Over per ogni partita.</p>
 
       {!isOpen && <div className="bg-yellow-50 text-yellow-800 rounded-xl p-4 mb-6 text-sm">Questo concorso non è aperto alle giocate.</div>}
@@ -56,8 +56,8 @@ export default function ConcorsoDetail() {
           const p = picks[m.id] || {}
           const uo = [{ ref: 'U', label: `Under ${m.overUnderLine}` }, { ref: 'O', label: `Over ${m.overUnderLine}` }]
           return (
-            <div key={m.id} className="bg-white rounded-xl shadow-sm p-4">
-              <p className="font-semibold text-gds-dark mb-3">{m.homeTeamName} – {m.awayTeamName}</p>
+            <div key={m.id} className="bg-gds-surface rounded-xl shadow-sm p-4">
+              <p className="font-semibold text-gds-white mb-3">{m.homeTeamName} – {m.awayTeamName}</p>
               <div className="space-y-2">
                 <div>
                   <p className="text-xs text-gds-gray mb-1">Esito 1X2</p>
@@ -80,7 +80,7 @@ export default function ConcorsoDetail() {
       {error && <div className="bg-red-50 text-red-700 rounded-lg p-3 mt-4 text-sm">{error}</div>}
 
       {isOpen && (
-        <div className="sticky bottom-0 mt-6 bg-white/90 backdrop-blur rounded-xl shadow-lg p-4 flex items-center justify-between">
+        <div className="sticky bottom-0 mt-6 bg-gds-surface/90 backdrop-blur rounded-xl shadow-lg p-4 flex items-center justify-between">
           <span className="text-sm text-gds-gray">{completed}/{total} partite complete</span>
           <Button onClick={() => { setError(''); submit.mutate() }} loading={submit.isPending} disabled={!allDone}>
             <FileText size={16} /> Conferma schedina
@@ -95,7 +95,7 @@ function PickButton({ selected, disabled, onClick, label }) {
   return (
     <button disabled={disabled} onClick={onClick}
       className={`px-3 py-1.5 text-sm rounded-lg border transition-colors disabled:opacity-50 ${
-        selected ? 'bg-gds-pink text-white border-gds-pink' : 'bg-white text-gds-dark border-gray-200 hover:border-gds-pink'
+        selected ? 'bg-gds-pink text-white border-gds-pink' : 'bg-gds-surface text-gds-white border-gds-border hover:border-gds-pink'
       }`}>{label}</button>
   )
 }

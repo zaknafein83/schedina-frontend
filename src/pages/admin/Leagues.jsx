@@ -90,7 +90,7 @@ export default function Leagues() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Leghe</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Leghe</h1>
         <div className="flex items-center gap-2">
           <ImportExport
             exportFn={adminApi.exportLeagues}
@@ -106,7 +106,7 @@ export default function Leagues() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto"><table className="w-full text-sm min-w-[560px]">
           <thead>
             <tr className="bg-gds-dark text-white">
@@ -125,9 +125,9 @@ export default function Leagues() {
               </tr>
             )}
             {leagues?.map((league) => (
-              <tr key={league.id} className="border-t border-gray-100 hover:bg-gds-pink-light transition-colors">
+              <tr key={league.id} className="border-t border-gds-border hover:bg-gds-pink-light transition-colors">
                 <td className="px-6 py-3 text-gds-gray">{league.id}</td>
-                <td className="px-6 py-3 font-medium text-gds-dark">{league.name}</td>
+                <td className="px-6 py-3 font-medium text-gds-white">{league.name}</td>
                 <td className="px-6 py-3 text-gds-gray">{league.country || '—'}</td>
                 <td className="px-6 py-3">
                   <div className="flex justify-end gap-2">

@@ -81,8 +81,8 @@ export default function ImportExport({ exportFn, importFn, filename, onImported,
         <a
           href={templateUrl}
           download
-          className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-gray-300
-            hover:bg-gray-50 text-gds-gray hover:text-gds-dark transition-colors"
+          className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-dashed border-gds-border
+            hover:bg-gds-pink-light text-gds-gray hover:text-gds-white transition-colors"
           title="Scarica template CSV"
         >
           <FileText size={14} />
@@ -93,8 +93,8 @@ export default function ImportExport({ exportFn, importFn, filename, onImported,
       <button
         onClick={handleExport}
         disabled={exporting}
-        className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-gray-200
-          hover:bg-gray-50 text-gds-gray hover:text-gds-dark transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-gds-border
+          hover:bg-gds-pink-light text-gds-gray hover:text-gds-white transition-colors disabled:opacity-50"
         title="Esporta JSON"
       >
         {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
@@ -104,8 +104,8 @@ export default function ImportExport({ exportFn, importFn, filename, onImported,
       <button
         onClick={() => fileRef.current?.click()}
         disabled={importing}
-        className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-gray-200
-          hover:bg-gray-50 text-gds-gray hover:text-gds-dark transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-gds-border
+          hover:bg-gds-pink-light text-gds-gray hover:text-gds-white transition-colors disabled:opacity-50"
         title="Importa JSON o CSV"
       >
         {importing ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}

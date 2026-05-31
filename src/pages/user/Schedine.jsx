@@ -33,23 +33,23 @@ export default function Schedine() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gds-dark mb-6">Le mie schedine</h1>
+      <h1 className="text-2xl font-bold text-gds-white mb-6">Le mie schedine</h1>
 
       {schedine?.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gds-gray">
-          <FileText size={48} className="mx-auto mb-4 text-gray-300" />
+        <div className="bg-gds-surface rounded-xl shadow-sm p-12 text-center text-gds-gray">
+          <FileText size={48} className="mx-auto mb-4 text-gds-gray" />
           <p className="font-medium">Non hai ancora compilato schedine.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {schedine?.map((s) => (
-            <div key={s.id} className="bg-white rounded-xl shadow-sm p-4">
+            <div key={s.id} className="bg-gds-surface rounded-xl shadow-sm p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-semibold text-gds-dark">Schedina #{s.id}</span>
+                <span className="font-semibold text-gds-white">Schedina #{s.id}</span>
                 <Badge color={ST_COLOR[s.status] ?? 'gray'}>{ST_LABEL[s.status] ?? s.status}</Badge>
               </div>
               <p className="text-sm text-gds-gray">
-                Punti: <strong className="text-gds-dark">{s.correctCount ?? '—'}</strong> {s.isWinner ? '🏆' : ''}
+                Punti: <strong className="text-gds-white">{s.correctCount ?? '—'}</strong> {s.isWinner ? '🏆' : ''}
               </p>
               <div className="mt-3 flex items-center gap-3">
                 <button onClick={() => setDetailId(s.id)} className="text-sm text-gds-pink hover:underline font-medium">Dettaglio</button>
@@ -69,7 +69,7 @@ export default function Schedine() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Badge color={ST_COLOR[detail.status] ?? 'gray'}>{ST_LABEL[detail.status] ?? detail.status}</Badge>
-              <span className="text-sm text-gds-gray">Punti: <strong className="text-gds-dark">{detail.correctCount ?? '—'}</strong></span>
+              <span className="text-sm text-gds-gray">Punti: <strong className="text-gds-white">{detail.correctCount ?? '—'}</strong></span>
               {detail.isWinner && <span>🏆</span>}
             </div>
             <SchedinaSelezioni selezioni={detail.selezioni} />

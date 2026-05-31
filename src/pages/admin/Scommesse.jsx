@@ -42,20 +42,20 @@ export default function Scommesse() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gds-dark">Scommesse · fine campionato</h1>
+        <h1 className="text-2xl font-bold text-gds-white">Scommesse · fine campionato</h1>
       </div>
 
       <div className="mb-6 max-w-xs">
-        <label className="text-sm font-medium text-gds-dark">Stagione</label>
+        <label className="text-sm font-medium text-gds-white">Stagione</label>
         <select value={seasonId} onChange={(e) => setSeasonId(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
+          className="mt-1 w-full rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink">
           <option value="">-- Seleziona --</option>
           {seasons?.map((s) => <option key={s.id} value={s.id}>{s.label}{s.isCurrent ? ' (corrente)' : ''}</option>)}
         </select>
       </div>
 
       {!seasonId ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gds-gray"><Coins size={40} className="mx-auto mb-3 text-gray-300" />Seleziona una stagione.</div>
+        <div className="bg-gds-surface rounded-xl shadow-sm p-12 text-center text-gds-gray"><Coins size={40} className="mx-auto mb-3 text-gds-gray" />Seleziona una stagione.</div>
       ) : (
         <>
           <p className="text-sm text-gds-gray mb-4">
@@ -65,18 +65,18 @@ export default function Scommesse() {
 
           <ResultForm seasonId={seasonId} onSaved={invalidate} />
 
-          <h2 className="text-lg font-bold text-gds-dark mt-8 mb-3">Scommesse della stagione</h2>
+          <h2 className="text-lg font-bold text-gds-white mt-8 mb-3">Scommesse della stagione</h2>
           {isLoading ? (
             <div className="flex justify-center py-12"><Spinner size="lg" /></div>
           ) : bets?.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-8 text-center text-gds-gray">Nessuna giocata ancora. Appena un utente gioca, la scommessa comparirà qui.</div>
+            <div className="bg-gds-surface rounded-xl shadow-sm p-8 text-center text-gds-gray">Nessuna giocata ancora. Appena un utente gioca, la scommessa comparirà qui.</div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               {bets?.map((bet) => (
-                <div key={bet.id} className="bg-white rounded-xl shadow-sm p-4">
+                <div key={bet.id} className="bg-gds-surface rounded-xl shadow-sm p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-semibold text-gds-dark">{bet.label}</p>
+                      <p className="font-semibold text-gds-white">{bet.label}</p>
                       <p className="text-xs text-gds-gray">{marketLabel(bet.market)} · {bet.giocateCount} giocate</p>
                     </div>
                     <Badge color={BET_COLOR[bet.status]}>{bet.status}</Badge>
@@ -91,7 +91,7 @@ export default function Scommesse() {
                   ) : (
                     <p className="mt-3 text-xs text-gds-gray">Esito non ancora dichiarato (usa il riquadro sopra).</p>
                   )}
-                  <div className="mt-3 pt-2 border-t border-gray-100 flex justify-end gap-3">
+                  <div className="mt-3 pt-2 border-t border-gds-border flex justify-end gap-3">
                     {bet.status !== 'VOID' && <button onClick={() => voidBet.mutate(bet.id)} className="text-xs text-gds-gray hover:text-yellow-600 inline-flex items-center gap-1">Annulla</button>}
                     <button onClick={() => { if (confirm('Eliminare la scommessa e le sue giocate?')) deleteBet.mutate(bet.id) }} className="text-xs text-gds-gray hover:text-red-600 inline-flex items-center gap-1">Elimina</button>
                   </div>
@@ -132,30 +132,30 @@ function ResultForm({ seasonId, onSaved }) {
   })
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
-      <p className="font-semibold text-gds-dark mb-3 inline-flex items-center gap-2"><Trophy size={16} className="text-gds-pink" /> Dichiara risultato</p>
+    <div className="bg-gds-surface rounded-xl shadow-sm p-4">
+      <p className="font-semibold text-gds-white mb-3 inline-flex items-center gap-2"><Trophy size={16} className="text-gds-pink" /> Dichiara risultato</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gds-dark">Lega</label>
+          <label className="text-sm font-medium text-gds-white">Lega</label>
           <select value={leagueId} onChange={(e) => { setLeagueId(e.target.value); setRef('') }}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
+            className="rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink">
             <option value="">-- Seleziona --</option>
             {leagues?.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
           </select>
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gds-dark">Mercato</label>
+          <label className="text-sm font-medium text-gds-white">Mercato</label>
           <select value={market} onChange={(e) => { setMarket(e.target.value); setRef('') }}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink">
+            className="rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink">
             {SEASON_MARKETS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
         </div>
       </div>
       {leagueId && (
         <div className="flex flex-col gap-1 mt-3">
-          <label className="text-sm font-medium text-gds-dark">Vincitore ({def.target === 'TEAM' ? 'squadra' : (def.gk ? 'portiere' : 'giocatore')})</label>
+          <label className="text-sm font-medium text-gds-white">Vincitore ({def.target === 'TEAM' ? 'squadra' : (def.gk ? 'portiere' : 'giocatore')})</label>
           <select value={ref} onChange={(e) => setRef(e.target.value)}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-gds-pink max-w-md">
+            className="rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink max-w-md">
             <option value="">-- Seleziona --</option>
             {def.target === 'TEAM'
               ? (teams || []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)
