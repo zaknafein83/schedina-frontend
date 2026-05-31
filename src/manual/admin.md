@@ -40,6 +40,14 @@ nome. Entra nel dettaglio per **aggiungere le partite** (due squadre della stess
 lega, data, soglia Under/Over). Qui inserisci anche i **punteggi**, **validi** le
 partite e indichi il **primo marcatore** (per la relativa scommessa).
 
+**Import/Export CSV** (in alto a destra): esporti tutto il calendario o importi
+intere giornate da un file. Ogni riga è una partita; colonne: `number` (turno),
+`homeTeamName`, `awayTeamName` e — opzionali — `leagueName`, `giornataName`,
+`date` (AAAA-MM-GG), `overUnderLine`. Le **squadre devono già esistere**; se ometti
+`leagueName` la lega è dedotta dalla squadra di casa. Le righe con squadre non
+trovate vengono saltate e contate. La giornata (lega+turno) viene creata se manca
+e le partite sono aggiornate senza duplicati. Scarica il **Template** come esempio.
+
 ![Lista delle giornate](/aiuto/11-admin-concorsi.png)
 
 ---

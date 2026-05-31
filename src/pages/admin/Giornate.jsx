@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
 import { Plus, Pencil, Trash2, ChevronRight } from 'lucide-react'
+import ImportExport from '../../components/ui/ImportExport'
 
 export default function Giornate() {
   const queryClient = useQueryClient()
@@ -62,7 +63,16 @@ export default function Giornate() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gds-dark">Calendario · Giornate</h1>
-        <Button onClick={openCreate}><Plus size={16} /> Nuova giornata</Button>
+        <div className="flex items-center gap-2">
+          <ImportExport
+            exportFn={adminApi.exportGiornate}
+            importFn={adminApi.importGiornate}
+            filename="calendario.json"
+            onImported={() => queryClient.invalidateQueries({ queryKey: ['admin-giornate'] })}
+            templateUrl="/templates/giornate_template.csv"
+          />
+          <Button onClick={openCreate}><Plus size={16} /> Nuova giornata</Button>
+        </div>
       </div>
 
       <div className="mb-5 max-w-xs">
