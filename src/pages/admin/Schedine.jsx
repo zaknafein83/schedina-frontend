@@ -67,7 +67,10 @@ export default function Schedine() {
               {schedine?.map((s) => (
                 <tr key={s.id} className="border-t border-gds-border hover:bg-gds-pink-light transition-colors">
                   <td className="px-4 py-3 text-gds-gray">#{s.id}</td>
-                  <td className="px-4 py-3 text-gds-gray">utente {s.userId}</td>
+                  <td className="px-4 py-3">
+                    <div className="text-gds-white font-medium">{s.userUsername || s.userEmail || `utente ${s.userId}`}</div>
+                    {s.userEmail && <div className="text-xs text-gds-gray">{s.userEmail}</div>}
+                  </td>
                   <td className="px-4 py-3"><Badge color={ST_COLOR[s.status] ?? 'gray'}>{s.status}</Badge></td>
                   <td className="px-4 py-3 font-semibold text-gds-white">{s.correctCount ?? '—'} {s.isWinner ? '🏆' : ''}</td>
                   <td className="px-4 py-3 text-right">
