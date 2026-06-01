@@ -70,14 +70,16 @@ test.describe('Flusso Concorso/Schedina (redesign #3)', () => {
 
     await loginAs(page, 'giulia')
     await page.goto('/scommesse')
-    // tab "Fine campionato" è il default; select: 0=Lega, 1=Mercato (Capocannoniere), 2=bersaglio
+    // tab "Fine campionato" è il default; select: 0=Lega, 1=Mercato (Capocannoniere)
     await page.locator('select').first().selectOption(String(leagueId))
-    const targetSelect = page.locator('select').nth(2)
-    await expect(targetSelect).toBeVisible()
-    await targetSelect.selectOption(String(playerId))
+    // il giocatore si sceglie dal combobox con barra di ricerca
+    const search = page.getByPlaceholder('Cerca giocatore…')
+    await search.click()
+    await search.fill('Bomber')
+    await page.getByRole('button', { name: new RegExp(playerName) }).click()
     await page.getByRole('button', { name: /Conferma giocata/ }).click()
     // la giocata appare tra "Le mie giocate" col nome del giocatore scelto (univoco per run).
-    // exact: true così matcha lo <strong> della card e non l'<option> (testo più lungo) del select.
+    // exact: true così matcha lo <strong> della card (l'input del combobox non è testo).
     await expect(page.getByText(playerName, { exact: true })).toBeVisible()
   })
 })

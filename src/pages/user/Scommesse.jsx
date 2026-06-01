@@ -4,6 +4,7 @@ import { scommessaApi, giornataApi, listiniApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Badge from '../../components/ui/Badge'
 import Button from '../../components/ui/Button'
+import SearchSelect from '../../components/ui/SearchSelect'
 import { Coins, Check, X, Trophy } from 'lucide-react'
 
 const ST_COLOR = { OPEN: 'yellow', RESOLVED: 'green', VOID: 'gray' }
@@ -91,15 +92,20 @@ function SeasonTab() {
         {leagueId && (
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gds-white">{def.target === 'TEAM' ? 'Squadra' : (def.gk ? 'Portiere' : 'Giocatore')}</label>
-            <select value={prediction} onChange={(e) => setPrediction(e.target.value)}
-              className="rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink max-w-md">
-              <option value="">-- Seleziona --</option>
-              {def.target === 'TEAM'
-                ? (teams || []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)
-                : (players || []).map((p) => (
-                    <option key={p.id} value={p.id}>{p.firstName} {p.lastName} — {roleLabel(p.role)} · {p.teamName}</option>
-                  ))}
-            </select>
+            {def.target === 'TEAM' ? (
+              <select value={prediction} onChange={(e) => setPrediction(e.target.value)}
+                className="rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink max-w-md">
+                <option value="">-- Seleziona --</option>
+                {(teams || []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+            ) : (
+              <SearchSelect
+                items={(players || []).map((p) => ({ id: p.id, label: `${p.firstName} ${p.lastName}`, meta: [roleLabel(p.role), p.teamName].filter(Boolean).join(' · ') }))}
+                value={prediction}
+                onChange={setPrediction}
+                placeholder={def.gk ? 'Cerca portiere…' : 'Cerca giocatore…'}
+              />
+            )}
           </div>
         )}
 
@@ -209,16 +215,19 @@ function MatchTab() {
                   className="w-32 rounded-lg border border-gds-border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gds-pink" />
               )}
               {market === 'FIRST_SCORER' && (
-                <select value={prediction} onChange={(e) => setPrediction(e.target.value)}
-                  className="rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink max-w-md">
-                  <option value="">-- Seleziona giocatore --</option>
-                  {matchPlayers.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.firstName} {p.lastName} — {roleLabel(p.role)} · {p.teamId === match.homeTeamId ? match.homeTeamName : match.awayTeamName}
-                    </option>
-                  ))}
-                  <option value="OWN_GOAL">⚽ Autogol</option>
-                </select>
+                <SearchSelect
+                  items={[
+                    ...matchPlayers.map((p) => ({
+                      id: p.id,
+                      label: `${p.firstName} ${p.lastName}`,
+                      meta: [roleLabel(p.role), p.teamId === match.homeTeamId ? match.homeTeamName : match.awayTeamName].filter(Boolean).join(' · '),
+                    })),
+                    { id: 'OWN_GOAL', label: '⚽ Autogol' },
+                  ]}
+                  value={prediction}
+                  onChange={setPrediction}
+                  placeholder="Cerca giocatore…"
+                />
               )}
             </div>
 
