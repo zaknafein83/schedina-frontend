@@ -4,6 +4,7 @@ import { adminApi, listiniApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
+import SearchSelect from '../../components/ui/SearchSelect'
 import { Check, RotateCcw, Trophy, Coins } from 'lucide-react'
 
 const SEASON_MARKETS = [
@@ -154,13 +155,20 @@ function ResultForm({ seasonId, onSaved }) {
       {leagueId && (
         <div className="flex flex-col gap-1 mt-3">
           <label className="text-sm font-medium text-gds-white">Vincitore ({def.target === 'TEAM' ? 'squadra' : (def.gk ? 'portiere' : 'giocatore')})</label>
-          <select value={ref} onChange={(e) => setRef(e.target.value)}
-            className="rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink max-w-md">
-            <option value="">-- Seleziona --</option>
-            {def.target === 'TEAM'
-              ? (teams || []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)
-              : (players || []).map((p) => <option key={p.id} value={p.id}>{p.firstName} {p.lastName} — {roleLabel(p.role)} · {p.teamName}</option>)}
-          </select>
+          {def.target === 'TEAM' ? (
+            <select value={ref} onChange={(e) => setRef(e.target.value)}
+              className="rounded-lg border border-gds-border px-3 py-2 text-sm bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink max-w-md">
+              <option value="">-- Seleziona --</option>
+              {(teams || []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          ) : (
+            <SearchSelect
+              items={(players || []).map((p) => ({ id: p.id, label: `${p.firstName} ${p.lastName}`, meta: [roleLabel(p.role), p.teamName].filter(Boolean).join(' · ') }))}
+              value={ref}
+              onChange={setRef}
+              placeholder={def.gk ? 'Cerca portiere…' : 'Cerca giocatore…'}
+            />
+          )}
         </div>
       )}
       {msg && <div className={`mt-3 text-sm rounded-lg p-2.5 ${msg.type === 'ok' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>{msg.text}</div>}
