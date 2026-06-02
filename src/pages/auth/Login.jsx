@@ -17,6 +17,8 @@ export default function Login() {
   } = useForm()
 
   async function onSubmit(data) {
+    // Chiude la tastiera software su mobile dopo l'invio
+    document.activeElement?.blur()
     setServerError('')
     try {
       const user = await login(data.email, data.password)
@@ -47,7 +49,11 @@ export default function Login() {
           <Input
             label="Email"
             type="email"
+            inputMode="email"
             autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck="false"
             placeholder="nome@email.com"
             error={errors.email?.message}
             {...register('email', {
