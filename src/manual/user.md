@@ -81,6 +81,11 @@ risultati indovinati. Vinci un gioco se i suoi risultati corretti rientrano in u
 delle soglie della Regola: puoi quindi vincere il Totocalcio e non l'Under/Over (o
 viceversa, o entrambi). Le soglie sono le stesse per i due giochi, valutate a parte.
 
+In cima alla pagina la card **"Hai vinto finora"** mostra il **totale dei premi**
+accumulati (in €), con il dettaglio per Totocalcio e Under/Over. Ogni soglia
+vincente ha un premio: più risultati esatti = premio più alto. Le schedine vincenti
+mostrano l'importo vinto su ciascun gioco.
+
 ![Le mie schedine](/aiuto/04-user-schedine.png)
 
 ---

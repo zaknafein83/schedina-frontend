@@ -125,6 +125,7 @@ export default function App() {
         <Route path="/mod/concorsi/:id" element={<AdminConcorsoDetail />} />
         <Route path="/mod/scommesse" element={<AdminScommesse />} />
         <Route path="/mod/schedine" element={<AdminSchedine />} />
+        <Route path="/mod/rules" element={<AdminRules />} />
         <Route path="/mod/players" element={<AdminPlayers />} />
       </Route>
     </Routes>
