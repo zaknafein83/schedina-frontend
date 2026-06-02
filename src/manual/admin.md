@@ -61,10 +61,11 @@ Poi **Apri** (servono partite selezionate), **Chiudi**, **Riapri**, **Elabora**.
 
 ![Dettaglio concorso: selezione partite](/aiuto/12-admin-concorso.png)
 
-> L'elaborazione assegna +1 punto per ogni pronostico corretto (1X2 e U/O, fino a
-> 2 a partita) e marca le schedine Vincente/Non vincente secondo le soglie della
-> Regola. È incrementale e ri-eseguibile; il concorso diventa `PROCESSED` quando
-> tutte le partite hanno il punteggio.
+> L'elaborazione calcola **due concorsi separati**: Totocalcio (1X2) e Under/Over.
+> Per ciascuno conta i pronostici corretti e lo marca vincente con le stesse soglie
+> della Regola (valutate a parte) — un utente può vincere un gioco e non l'altro. La
+> tabella Schedine mostra le due colonne distinte. È incrementale e ri-eseguibile;
+> il concorso diventa `PROCESSED` quando tutte le partite hanno il punteggio.
 
 ---
 
