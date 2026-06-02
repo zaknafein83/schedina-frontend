@@ -25,6 +25,8 @@ export default function ResetPassword() {
   const password = watch('newPassword')
 
   async function onSubmit(data) {
+    // Chiude la tastiera software su mobile dopo l'invio
+    document.activeElement?.blur()
     setServerError('')
     try {
       await authApi.resetPassword(data.token, data.newPassword)

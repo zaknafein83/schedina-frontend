@@ -20,6 +20,8 @@ export default function Register() {
   const password = watch('password')
 
   async function onSubmit(data) {
+    // Chiude la tastiera software su mobile dopo l'invio
+    document.activeElement?.blur()
     setServerError('')
     try {
       await authApi.register({
@@ -83,6 +85,9 @@ export default function Register() {
           <Input
             label="Username"
             placeholder="mariorossi99"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck="false"
             error={errors.username?.message}
             {...register('username', {
               required: 'Username obbligatorio',
@@ -93,7 +98,11 @@ export default function Register() {
           <Input
             label="Email"
             type="email"
+            inputMode="email"
             autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck="false"
             placeholder="nome@email.com"
             error={errors.email?.message}
             {...register('email', {
