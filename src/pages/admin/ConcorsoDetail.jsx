@@ -5,6 +5,7 @@ import { formatEuro } from '../../utils/format'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
+import WinnersPanel, { winnersFromSchedine } from '../../components/WinnersPanel'
 import { ArrowLeft, Lock, Unlock, Cog, RotateCcw, Plus, X } from 'lucide-react'
 
 const STATUS_COLOR = { DRAFT: 'gray', OPEN: 'green', CLOSED: 'yellow', PROCESSED: 'blue', CANCELLED: 'red' }
@@ -93,6 +94,12 @@ export default function ConcorsoDetail() {
         </div>
       </div>
 
+      {/* Vincitori per modalità */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <WinnersPanel title="Vincitori Totocalcio (1X2)" winners={winnersFromSchedine(schedine).totocalcio} />
+        <WinnersPanel title="Vincitori Under/Over" winners={winnersFromSchedine(schedine).underOver} />
+      </div>
+
       {/* Schedine */}
       <h2 className="text-lg font-bold text-gds-white mb-3">Schedine ({schedine?.length ?? 0})</h2>
       <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
@@ -106,7 +113,10 @@ export default function ConcorsoDetail() {
             {schedine?.map((s) => (
               <tr key={s.id} className="border-t border-gds-border">
                 <td className="px-4 py-2.5 text-gds-gray">#{s.id}</td>
-                <td className="px-4 py-2.5 text-gds-gray">utente {s.userId}</td>
+                <td className="px-4 py-2.5">
+                  <div className="text-gds-white font-medium">{s.userUsername || s.userEmail || `utente ${s.userId}`}</div>
+                  {s.userEmail && <div className="text-xs text-gds-gray">{s.userEmail}</div>}
+                </td>
                 <td className="px-4 py-2.5"><Badge color={SCH_COLOR[s.status] ?? 'gray'}>{s.status}</Badge></td>
                 <td className="px-4 py-2.5 font-semibold text-gds-white">{s.correct1x2Count ?? '—'} {s.isWinner1x2 ? <span className="text-gds-pink">🏆 {formatEuro(s.prize1x2)}</span> : ''}</td>
                 <td className="px-4 py-2.5 font-semibold text-gds-white">{s.correctUoCount ?? '—'} {s.isWinnerUo ? <span className="text-gds-pink">🏆 {formatEuro(s.prizeUo)}</span> : ''}</td>

@@ -6,33 +6,10 @@ import Spinner from '../../components/Spinner'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
 import SchedinaSelezioni from '../../components/SchedinaSelezioni'
-import { FileText, Trophy } from 'lucide-react'
+import WinnersPanel, { winnersFromSchedine } from '../../components/WinnersPanel'
+import { FileText } from 'lucide-react'
 
 const ST_COLOR = { WINNING: 'green', NOT_WINNING: 'red', CONFIRMED: 'blue', PROCESSED: 'yellow', DRAFT: 'gray', CANCELLED: 'gray' }
-
-function WinnersPanel({ title, winners }) {
-  return (
-    <div className="bg-gds-surface rounded-xl shadow-sm p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <Trophy size={18} className="text-gds-pink" />
-        <h3 className="font-semibold text-gds-white">{title}</h3>
-        <span className="text-xs text-gds-gray">({winners.length})</span>
-      </div>
-      {winners.length === 0 ? (
-        <p className="text-sm text-gds-gray">Nessun vincitore.</p>
-      ) : (
-        <ul className="space-y-1.5">
-          {winners.map((w) => (
-            <li key={w.id} className="flex items-center justify-between gap-2 text-sm">
-              <span className="text-gds-white truncate">{w.name} <span className="text-gds-gray">· {w.count} esatti</span></span>
-              <span className="font-semibold text-gds-pink shrink-0">{formatEuro(w.prize)}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
 
 export default function Schedine() {
   const [concorsoId, setConcorsoId] = useState('')
@@ -79,12 +56,8 @@ export default function Schedine() {
       <>
         {/* Vincitori per modalità */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-          <WinnersPanel title="Vincitori Totocalcio (1X2)"
-            winners={(schedine || []).filter((s) => s.isWinner1x2)
-              .map((s) => ({ id: s.id, name: s.userUsername || s.userEmail || `utente ${s.userId}`, count: s.correct1x2Count, prize: s.prize1x2 }))} />
-          <WinnersPanel title="Vincitori Under/Over"
-            winners={(schedine || []).filter((s) => s.isWinnerUo)
-              .map((s) => ({ id: s.id, name: s.userUsername || s.userEmail || `utente ${s.userId}`, count: s.correctUoCount, prize: s.prizeUo }))} />
+          <WinnersPanel title="Vincitori Totocalcio (1X2)" winners={winnersFromSchedine(schedine).totocalcio} />
+          <WinnersPanel title="Vincitori Under/Over" winners={winnersFromSchedine(schedine).underOver} />
         </div>
 
         <div className="bg-gds-surface rounded-xl shadow-sm overflow-hidden">
