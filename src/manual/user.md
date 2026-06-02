@@ -75,9 +75,11 @@ giocate** con l'esito (✓/✗) una volta risolte.
 
 In **Schedine** trovi le tue schedine con lo stato (Bozza, Confermata, Vincente,
 Non vincente). Il **Dettaglio** mostra, partita per partita, i tuoi pronostici
-1X2 e Under/Over con ✓/✗ e il punteggio totale. Ogni pronostico corretto vale 1
-punto (fino a 2 a partita). Vinci se il punteggio rientra in una delle soglie del
-concorso.
+1X2 e Under/Over con ✓/✗. Il punteggio è calcolato come **due concorsi separati**:
+il **Totocalcio (1X2)** e l'**Under/Over**, ciascuno con il proprio numero di
+risultati indovinati. Vinci un gioco se i suoi risultati corretti rientrano in una
+delle soglie della Regola: puoi quindi vincere il Totocalcio e non l'Under/Over (o
+viceversa, o entrambi). Le soglie sono le stesse per i due giochi, valutate a parte.
 
 ![Le mie schedine](/aiuto/04-user-schedine.png)
 

@@ -44,8 +44,10 @@ elaborato per correggere.
 
 ![Dettaglio concorso](/aiuto/12-admin-concorso.png)
 
-> L'elaborazione calcola i punti delle schedine (1X2 + U/O) e marca
-> Vincente/Non vincente secondo le soglie della Regola. È ri-eseguibile.
+> L'elaborazione calcola i risultati delle schedine come **due concorsi separati**,
+> Totocalcio (1X2) e Under/Over, contando per ciascuno i pronostici corretti e
+> marcandolo vincente con le stesse soglie della Regola (valutate a parte). Nella
+> tabella Schedine vedi le due colonne separate. È ri-eseguibile.
 
 ---
 

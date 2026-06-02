@@ -58,12 +58,13 @@ export default function Schedine() {
                 <th className="px-4 py-3 text-left font-semibold">ID</th>
                 <th className="px-4 py-3 text-left font-semibold">Utente</th>
                 <th className="px-4 py-3 text-left font-semibold">Stato</th>
-                <th className="px-4 py-3 text-left font-semibold">Punti</th>
+                <th className="px-4 py-3 text-left font-semibold">Totocalcio (1X2)</th>
+                <th className="px-4 py-3 text-left font-semibold">Under/Over</th>
                 <th className="px-4 py-3 text-right font-semibold">Dettaglio</th>
               </tr>
             </thead>
             <tbody>
-              {schedine?.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gds-gray">Nessuna schedina.</td></tr>}
+              {schedine?.length === 0 && <tr><td colSpan={6} className="text-center py-10 text-gds-gray">Nessuna schedina.</td></tr>}
               {schedine?.map((s) => (
                 <tr key={s.id} className="border-t border-gds-border hover:bg-gds-pink-light transition-colors">
                   <td className="px-4 py-3 text-gds-gray">#{s.id}</td>
@@ -72,7 +73,8 @@ export default function Schedine() {
                     {s.userEmail && <div className="text-xs text-gds-gray">{s.userEmail}</div>}
                   </td>
                   <td className="px-4 py-3"><Badge color={ST_COLOR[s.status] ?? 'gray'}>{s.status}</Badge></td>
-                  <td className="px-4 py-3 font-semibold text-gds-white">{s.correctCount ?? '—'} {s.isWinner ? '🏆' : ''}</td>
+                  <td className="px-4 py-3 font-semibold text-gds-white">{s.correct1x2Count ?? '—'} {s.isWinner1x2 ? '🏆' : ''}</td>
+                  <td className="px-4 py-3 font-semibold text-gds-white">{s.correctUoCount ?? '—'} {s.isWinnerUo ? '🏆' : ''}</td>
                   <td className="px-4 py-3 text-right">
                     <button onClick={() => setDetailId(s.id)} className="text-xs text-gds-pink hover:underline font-medium">Vedi</button>
                   </td>
@@ -86,10 +88,10 @@ export default function Schedine() {
       <Modal isOpen={!!detailId} onClose={() => setDetailId(null)} title={`Schedina #${detailId}`} maxWidth="max-w-lg">
         {!detail ? <div className="flex justify-center py-8"><Spinner /></div> : (
           <div>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
               <Badge color={ST_COLOR[detail.status] ?? 'gray'}>{detail.status}</Badge>
-              <span className="text-sm text-gds-gray">Punti: <strong className="text-gds-white">{detail.correctCount ?? '—'}</strong></span>
-              {detail.isWinner && <span>🏆</span>}
+              <span className="text-sm text-gds-gray">Totocalcio (1X2): <strong className="text-gds-white">{detail.correct1x2Count ?? '—'}</strong> {detail.isWinner1x2 ? '🏆' : ''}</span>
+              <span className="text-sm text-gds-gray">Under/Over: <strong className="text-gds-white">{detail.correctUoCount ?? '—'}</strong> {detail.isWinnerUo ? '🏆' : ''}</span>
             </div>
             <SchedinaSelezioni selezioni={detail.selezioni} />
           </div>

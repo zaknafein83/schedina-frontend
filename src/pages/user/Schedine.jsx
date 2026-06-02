@@ -48,9 +48,10 @@ export default function Schedine() {
                 <span className="font-semibold text-gds-white">Schedina #{s.id}</span>
                 <Badge color={ST_COLOR[s.status] ?? 'gray'}>{ST_LABEL[s.status] ?? s.status}</Badge>
               </div>
-              <p className="text-sm text-gds-gray">
-                Punti: <strong className="text-gds-white">{s.correctCount ?? '—'}</strong> {s.isWinner ? '🏆' : ''}
-              </p>
+              <div className="text-sm text-gds-gray space-y-0.5">
+                <p>Totocalcio (1X2): <strong className="text-gds-white">{s.correct1x2Count ?? '—'}</strong> {s.isWinner1x2 ? '🏆' : ''}</p>
+                <p>Under/Over: <strong className="text-gds-white">{s.correctUoCount ?? '—'}</strong> {s.isWinnerUo ? '🏆' : ''}</p>
+              </div>
               <div className="mt-3 flex items-center gap-3">
                 <button onClick={() => setDetailId(s.id)} className="text-sm text-gds-pink hover:underline font-medium">Dettaglio</button>
                 {(s.status === 'DRAFT' || s.status === 'CONFIRMED') && (
@@ -67,10 +68,10 @@ export default function Schedine() {
       <Modal isOpen={!!detailId} onClose={() => setDetailId(null)} title={`Schedina #${detailId}`} maxWidth="max-w-lg">
         {!detail ? <div className="flex justify-center py-8"><Spinner /></div> : (
           <div>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
               <Badge color={ST_COLOR[detail.status] ?? 'gray'}>{ST_LABEL[detail.status] ?? detail.status}</Badge>
-              <span className="text-sm text-gds-gray">Punti: <strong className="text-gds-white">{detail.correctCount ?? '—'}</strong></span>
-              {detail.isWinner && <span>🏆</span>}
+              <span className="text-sm text-gds-gray">Totocalcio (1X2): <strong className="text-gds-white">{detail.correct1x2Count ?? '—'}</strong> {detail.isWinner1x2 ? '🏆' : ''}</span>
+              <span className="text-sm text-gds-gray">Under/Over: <strong className="text-gds-white">{detail.correctUoCount ?? '—'}</strong> {detail.isWinnerUo ? '🏆' : ''}</span>
             </div>
             <SchedinaSelezioni selezioni={detail.selezioni} />
           </div>
