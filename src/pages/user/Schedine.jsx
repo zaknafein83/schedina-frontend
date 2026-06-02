@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { schedinaApi } from '../../api/client'
+import { formatEuro } from '../../utils/format'
 import Spinner from '../../components/Spinner'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
 import SchedinaSelezioni from '../../components/SchedinaSelezioni'
-import { FileText, Trash2 } from 'lucide-react'
+import { FileText, Trash2, Trophy } from 'lucide-react'
 
 const ST_COLOR = { WINNING: 'green', NOT_WINNING: 'red', CONFIRMED: 'blue', PROCESSED: 'yellow', DRAFT: 'gray', CANCELLED: 'gray' }
 const ST_LABEL = { WINNING: 'Vincente', NOT_WINNING: 'Non vincente', CONFIRMED: 'Confermata', PROCESSED: 'In elaborazione', DRAFT: 'Bozza', CANCELLED: 'Annullata' }
@@ -18,6 +19,10 @@ export default function Schedine() {
     queryKey: ['my-schedine'],
     queryFn: () => schedinaApi.listMine().then((r) => r.data),
   })
+  const { data: winnings } = useQuery({
+    queryKey: ['my-winnings'],
+    queryFn: () => schedinaApi.winnings().then((r) => r.data),
+  })
   const { data: detail } = useQuery({
     queryKey: ['my-schedina', detailId],
     queryFn: () => schedinaApi.get(detailId).then((r) => r.data),
@@ -26,7 +31,10 @@ export default function Schedine() {
 
   const cancel = useMutation({
     mutationFn: (id) => schedinaApi.cancel(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['my-schedine'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-schedine'] })
+      queryClient.invalidateQueries({ queryKey: ['my-winnings'] })
+    },
   })
 
   if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>
@@ -34,6 +42,24 @@ export default function Schedine() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gds-white mb-6">Le mie schedine</h1>
+
+      {/* Dashboard vincite */}
+      <div className="bg-gradient-to-br from-gds-pink/20 to-gds-surface border border-gds-pink/30 rounded-xl p-5 mb-6">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-gds-pink/20 text-gds-pink shrink-0">
+            <Trophy size={26} />
+          </div>
+          <div>
+            <p className="text-sm text-gds-gray">Hai vinto finora</p>
+            <p className="text-3xl font-black text-gds-white mt-0.5">{formatEuro(winnings?.total)}</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-x-6 gap-y-1 mt-3 text-sm text-gds-gray">
+          <span>Totocalcio (1X2): <strong className="text-gds-white">{formatEuro(winnings?.totalTotocalcio)}</strong></span>
+          <span>Under/Over: <strong className="text-gds-white">{formatEuro(winnings?.totalUnderOver)}</strong></span>
+          <span>Schedine vincenti: <strong className="text-gds-white">{winnings?.schedineVincenti ?? 0}</strong></span>
+        </div>
+      </div>
 
       {schedine?.length === 0 ? (
         <div className="bg-gds-surface rounded-xl shadow-sm p-12 text-center text-gds-gray">
@@ -49,8 +75,8 @@ export default function Schedine() {
                 <Badge color={ST_COLOR[s.status] ?? 'gray'}>{ST_LABEL[s.status] ?? s.status}</Badge>
               </div>
               <div className="text-sm text-gds-gray space-y-0.5">
-                <p>Totocalcio (1X2): <strong className="text-gds-white">{s.correct1x2Count ?? '—'}</strong> {s.isWinner1x2 ? '🏆' : ''}</p>
-                <p>Under/Over: <strong className="text-gds-white">{s.correctUoCount ?? '—'}</strong> {s.isWinnerUo ? '🏆' : ''}</p>
+                <p>Totocalcio (1X2): <strong className="text-gds-white">{s.correct1x2Count ?? '—'}</strong> {s.isWinner1x2 ? `🏆 ${formatEuro(s.prize1x2)}` : ''}</p>
+                <p>Under/Over: <strong className="text-gds-white">{s.correctUoCount ?? '—'}</strong> {s.isWinnerUo ? `🏆 ${formatEuro(s.prizeUo)}` : ''}</p>
               </div>
               <div className="mt-3 flex items-center gap-3">
                 <button onClick={() => setDetailId(s.id)} className="text-sm text-gds-pink hover:underline font-medium">Dettaglio</button>
@@ -70,8 +96,8 @@ export default function Schedine() {
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <Badge color={ST_COLOR[detail.status] ?? 'gray'}>{ST_LABEL[detail.status] ?? detail.status}</Badge>
-              <span className="text-sm text-gds-gray">Totocalcio (1X2): <strong className="text-gds-white">{detail.correct1x2Count ?? '—'}</strong> {detail.isWinner1x2 ? '🏆' : ''}</span>
-              <span className="text-sm text-gds-gray">Under/Over: <strong className="text-gds-white">{detail.correctUoCount ?? '—'}</strong> {detail.isWinnerUo ? '🏆' : ''}</span>
+              <span className="text-sm text-gds-gray">Totocalcio (1X2): <strong className="text-gds-white">{detail.correct1x2Count ?? '—'}</strong> {detail.isWinner1x2 ? `🏆 ${formatEuro(detail.prize1x2)}` : ''}</span>
+              <span className="text-sm text-gds-gray">Under/Over: <strong className="text-gds-white">{detail.correctUoCount ?? '—'}</strong> {detail.isWinnerUo ? `🏆 ${formatEuro(detail.prizeUo)}` : ''}</span>
             </div>
             <SchedinaSelezioni selezioni={detail.selezioni} />
           </div>

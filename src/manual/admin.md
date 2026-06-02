@@ -28,8 +28,10 @@ Concorso (seleziona partite del turno) → [apri] → utenti compilano →
 ## 0. Anagrafiche
 
 Leghe, **Squadre** (per lega), **Giocatori** (ruolo GK/DEF/MID/FWD), **Stagioni**,
-**Tornei**, **Regole** (soglie vincenti della schedina, riusabili). Import/Export
-CSV per Leghe/Squadre/Giocatori.
+**Tornei**, **Regole** (soglie vincenti della schedina + **premio in € per soglia**,
+uguale per i due giochi; riusabili). Modificando soglie o premi di una regola, i
+concorsi già elaborati che la usano vengono **rielaborati** automaticamente.
+Import/Export CSV per Leghe/Squadre/Giocatori.
 
 ---
 
@@ -88,8 +90,10 @@ imposti dal Calendario — puoi indicare anche **Autogol**).
 
 ## 4. Schedine
 
-Menu → **Schedine**: scegli un **concorso** per vedere le schedine degli utenti
-con stato e punteggio; **Vedi** apre il dettaglio con i pronostici 1X2 / U-O.
+Menu → **Schedine**: scegli un **concorso** per vedere, in cima, i **vincitori per
+modalità** (Totocalcio 1X2 e Under/Over) con i premi, e sotto la tabella di tutte le
+schedine con i risultati e l'importo vinto per gioco; **Vedi** apre il dettaglio con
+i pronostici 1X2 / U-O.
 
 ![Viewer delle schedine](/aiuto/13-admin-schedine.png)
 

@@ -1,6 +1,7 @@
 import { useParams, Link, useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { adminApi } from '../../api/client'
+import { formatEuro } from '../../utils/format'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
@@ -107,8 +108,8 @@ export default function ConcorsoDetail() {
                 <td className="px-4 py-2.5 text-gds-gray">#{s.id}</td>
                 <td className="px-4 py-2.5 text-gds-gray">utente {s.userId}</td>
                 <td className="px-4 py-2.5"><Badge color={SCH_COLOR[s.status] ?? 'gray'}>{s.status}</Badge></td>
-                <td className="px-4 py-2.5 font-semibold text-gds-white">{s.correct1x2Count ?? '—'} {s.isWinner1x2 ? '🏆' : ''}</td>
-                <td className="px-4 py-2.5 font-semibold text-gds-white">{s.correctUoCount ?? '—'} {s.isWinnerUo ? '🏆' : ''}</td>
+                <td className="px-4 py-2.5 font-semibold text-gds-white">{s.correct1x2Count ?? '—'} {s.isWinner1x2 ? <span className="text-gds-pink">🏆 {formatEuro(s.prize1x2)}</span> : ''}</td>
+                <td className="px-4 py-2.5 font-semibold text-gds-white">{s.correctUoCount ?? '—'} {s.isWinnerUo ? <span className="text-gds-pink">🏆 {formatEuro(s.prizeUo)}</span> : ''}</td>
               </tr>
             ))}
           </tbody>

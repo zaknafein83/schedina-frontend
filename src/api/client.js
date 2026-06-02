@@ -61,6 +61,7 @@ export const giornataApi = {
 // ─── Schedine (user) — 1X2 + Under/Over per partita del concorso ─────────────
 export const schedinaApi = {
   listMine: () => apiClient.get('/schedine'),
+  winnings: () => apiClient.get('/schedine/winnings'),
   get: (id) => apiClient.get(`/schedine/${id}`),
   create: (data) => apiClient.post('/schedine', data), // { concorsoId, pronostici: [{ matchId, choice1x2, choiceUo }] }
   confirm: (id) => apiClient.post(`/schedine/${id}/confirm`),

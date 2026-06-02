@@ -12,9 +12,11 @@ gestisce utenti né anagrafiche strutturali (quello spetta all'Amministratore).
 | Inserire punteggi / primo marcatore | ✅ | ✅ |
 | Concorsi: creare, selezionare partite, aprire/chiudere/riaprire/elaborare | ✅ | ✅ |
 | Scommesse fine campionato: dichiarare il risultato | ✅ | ✅ |
-| Vedere le schedine | ✅ | ✅ |
+| Vedere le schedine e i **vincitori per modalità** (con premi) | ✅ | ✅ |
 | Gestire i Giocatori | ✅ | ✅ |
-| Gestire utenti, leghe, squadre, stagioni, tornei, regole | ❌ | ✅ |
+| **Regole**: creare e modificare soglie e **premi** | ✅ | ✅ |
+| Eliminare una regola | ❌ | ✅ |
+| Gestire utenti, leghe, squadre, stagioni, tornei | ❌ | ✅ |
 
 ## Flusso operativo
 
