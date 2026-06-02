@@ -12,7 +12,7 @@ import Badge from '../../components/ui/Badge'
 import { Plus, Pencil, Trash2, BookOpen } from 'lucide-react'
 
 const DEFAULT_THRESHOLDS = '9, 10, 11, 12, 13'
-const DEFAULT_PRIZES = { 9: 50000, 10: 100000, 11: 200000, 12: 300000, 13: 500000 }
+const DEFAULT_PRIZES = { 9: 11111, 10: 21111, 11: 150000, 12: 250000, 13: 375000 }
 
 /** Estrae le soglie numeriche distinte e ordinate da una stringa "9, 10, 13". */
 function parseThresholds(raw) {
@@ -156,7 +156,7 @@ export default function Rules() {
                 {watchedThresholds.map((t) => (
                   <div key={t} className="flex items-center gap-3">
                     <span className="w-10 shrink-0 text-sm text-gds-gray">{t}</span>
-                    <input type="number" min="0" step="1000" placeholder="0"
+                    <input type="number" min="0" step="1" placeholder="0"
                       {...register(`prize_${t}`)}
                       className="w-full rounded-lg border border-gds-border px-3 py-2 text-sm text-gds-white bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink" />
                   </div>
