@@ -10,11 +10,11 @@ gestisce utenti né anagrafiche strutturali (quello spetta all'Amministratore).
 |---|---|---|
 | Calendario: creare giornate e partite | ✅ | ✅ |
 | Inserire punteggi / primo marcatore | ✅ | ✅ |
-| Concorsi: creare, selezionare partite, aprire/chiudere/riaprire/elaborare | ✅ | ✅ |
+| Concorsi: creare, selezionare partite, **impostare i premi**, aprire/chiudere/riaprire/elaborare | ✅ | ✅ |
 | Scommesse fine campionato: dichiarare il risultato | ✅ | ✅ |
 | Vedere le schedine e i **vincitori per modalità** (con premi) | ✅ | ✅ |
 | Gestire i Giocatori | ✅ | ✅ |
-| **Regole**: creare e modificare soglie e **premi** | ✅ | ✅ |
+| **Regole**: creare e modificare le **soglie** | ✅ | ✅ |
 | Eliminare una regola | ❌ | ✅ |
 | Gestire utenti, leghe, squadre, stagioni, tornei | ❌ | ✅ |
 
