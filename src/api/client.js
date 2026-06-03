@@ -48,6 +48,7 @@ export const authApi = {
 // ─── Concorsi Totocalcio (user) — la schedina giocabile ──────────────────────
 export const concorsoApi = {
   listOpen: () => apiClient.get('/concorsi'),
+  listClosed: () => apiClient.get('/concorsi/chiusi'),
   get: (id) => apiClient.get(`/concorsi/${id}`),
   partite: (id) => apiClient.get(`/concorsi/${id}/partite`),
   montepremi: (id) => apiClient.get(`/concorsi/${id}/montepremi`),
