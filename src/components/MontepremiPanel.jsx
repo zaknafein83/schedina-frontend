@@ -7,7 +7,7 @@ import { formatEuro } from '../utils/format'
  */
 export default function MontepremiPanel({ projection, title = 'Montepremi e premi' }) {
   if (!projection) return null
-  const { managed, montepremi1x2, montepremiUo, schedineGiocate, prizes } = projection
+  const { managed, estimated, montepremi1x2, montepremiUo, schedineGiocate, prizes } = projection
 
   return (
     <div className="bg-gds-surface rounded-xl shadow-sm p-4">
@@ -51,8 +51,10 @@ export default function MontepremiPanel({ projection, title = 'Montepremi e prem
 
       {managed && (
         <p className="text-xs text-gds-gray mt-2">
-          Premi calcolati dal montepremi · {schedineGiocate} schedine giocate. Le soglie 11/12/13 si
-          dividono tra i vincitori; gli importi sono indicativi fino alla chiusura.
+          {estimated
+            ? <>Premi calcolati dal montepremi. I valori <strong>9</strong> e <strong>10</strong> sono <strong>stimati su {schedineGiocate} schedine</strong> (media dei concorsi precedenti) e cambieranno con le giocate. </>
+            : <>Premi calcolati dal montepremi · {schedineGiocate} schedine giocate. </>}
+          Le soglie 11/12/13 si dividono tra i vincitori; gli importi sono indicativi fino alla chiusura.
         </p>
       )}
     </div>
