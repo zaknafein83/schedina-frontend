@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { concorsoApi, schedinaApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import MontepremiPanel from '../../components/MontepremiPanel'
-import { ArrowLeft, FileText } from 'lucide-react'
+import { ArrowLeft, FileText, CheckCircle2 } from 'lucide-react'
 
 const X12 = [{ ref: '1', label: '1' }, { ref: 'X', label: 'X' }, { ref: '2', label: '2' }]
 
@@ -19,6 +19,23 @@ export default function ConcorsoDetail() {
   const { data: concorso, isLoading } = useQuery({ queryKey: ['concorso', id], queryFn: () => concorsoApi.get(id).then((r) => r.data) })
   const { data: partite } = useQuery({ queryKey: ['concorso-partite', id], queryFn: () => concorsoApi.partite(id).then((r) => r.data) })
   const { data: montepremi } = useQuery({ queryKey: ['concorso-montepremi', id], queryFn: () => concorsoApi.montepremi(id).then((r) => r.data) })
+
+  // Una sola schedina per utente/concorso: se ne ha già una (non annullata), niente nuova giocata.
+  const { data: mySchedine } = useQuery({ queryKey: ['my-schedine'], queryFn: () => schedinaApi.listMine().then((r) => r.data) })
+  const mySchedina = (mySchedine || []).find((s) => s.concorsoId === Number(id) && s.status !== 'CANCELLED')
+  const { data: myDetail } = useQuery({
+    queryKey: ['my-schedina', mySchedina?.id],
+    queryFn: () => schedinaApi.get(mySchedina.id).then((r) => r.data),
+    enabled: !!mySchedina,
+  })
+  // Mostra in sola lettura i pronostici già giocati.
+  useEffect(() => {
+    if (myDetail?.selezioni) {
+      const p = {}
+      myDetail.selezioni.forEach((s) => { p[s.matchId] = { choice1x2: s.choice1x2, choiceUo: s.choiceUo } })
+      setPicks(p)
+    }
+  }, [myDetail])
 
   const submit = useMutation({
     mutationFn: async () => {
@@ -38,6 +55,8 @@ export default function ConcorsoDetail() {
   if (!concorso) return <div className="text-gds-gray">Concorso non trovato.</div>
 
   const isOpen = concorso.status === 'OPEN'
+  const alreadyPlayed = !!mySchedina
+  const canPlay = isOpen && !alreadyPlayed
   const total = partite?.length ?? 0
   const completed = (partite || []).filter((m) => picks[m.id]?.choice1x2 && picks[m.id]?.choiceUo).length
   const allDone = total > 0 && completed === total
@@ -56,7 +75,12 @@ export default function ConcorsoDetail() {
         <MontepremiPanel projection={montepremi} title="Montepremi e potenziali vincite" />
       </div>
 
-      {!isOpen && <div className="bg-yellow-50 text-yellow-800 rounded-xl p-4 mb-6 text-sm">Questo concorso non è aperto alle giocate.</div>}
+      {alreadyPlayed ? (
+        <div className="bg-green-500/10 border border-green-500/30 text-green-300 rounded-xl p-4 mb-6 text-sm flex items-center gap-2">
+          <CheckCircle2 size={18} className="shrink-0" />
+          <span>Hai già giocato la tua schedina per questo concorso (1X2 + Under/Over). Puoi giocarne una sola. <Link to="/schedine" className="underline font-semibold">Le mie schedine</Link></span>
+        </div>
+      ) : (!isOpen && <div className="bg-yellow-50 text-yellow-800 rounded-xl p-4 mb-6 text-sm">Questo concorso non è aperto alle giocate.</div>)}
 
       <div className="space-y-3">
         {partite?.map((m) => {
@@ -69,13 +93,13 @@ export default function ConcorsoDetail() {
                 <div>
                   <p className="text-xs text-gds-gray mb-1">Esito 1X2</p>
                   <div className="flex flex-wrap gap-2">
-                    {X12.map((o) => <PickButton key={o.ref} disabled={!isOpen} selected={p.choice1x2 === o.ref} onClick={() => pick1x2(m.id, o.ref)} label={o.label} />)}
+                    {X12.map((o) => <PickButton key={o.ref} disabled={!canPlay} selected={p.choice1x2 === o.ref} onClick={() => pick1x2(m.id, o.ref)} label={o.label} />)}
                   </div>
                 </div>
                 <div>
                   <p className="text-xs text-gds-gray mb-1">Under/Over {m.overUnderLine}</p>
                   <div className="flex flex-wrap gap-2">
-                    {uo.map((o) => <PickButton key={o.ref} disabled={!isOpen} selected={p.choiceUo === o.ref} onClick={() => pickUo(m.id, o.ref)} label={o.label} />)}
+                    {uo.map((o) => <PickButton key={o.ref} disabled={!canPlay} selected={p.choiceUo === o.ref} onClick={() => pickUo(m.id, o.ref)} label={o.label} />)}
                   </div>
                 </div>
               </div>
@@ -86,7 +110,7 @@ export default function ConcorsoDetail() {
 
       {error && <div className="bg-red-50 text-red-700 rounded-lg p-3 mt-4 text-sm">{error}</div>}
 
-      {isOpen && (
+      {canPlay && (
         <div className="sticky bottom-0 mt-6 bg-gds-surface/90 backdrop-blur rounded-xl shadow-lg p-4 flex items-center justify-between">
           <span className="text-sm text-gds-gray">{completed}/{total} partite complete</span>
           <Button onClick={() => { setError(''); submit.mutate() }} loading={submit.isPending} disabled={!allDone}>
