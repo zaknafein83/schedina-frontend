@@ -30,9 +30,9 @@ Concorso (seleziona partite del turno) → [apri] → utenti compilano →
 Leghe, **Squadre** (per lega), **Giocatori** (ruolo GK/DEF/MID/FWD), **Stagioni**,
 **Tornei**, **Regole** (solo **soglie vincenti** della schedina; riusabili).
 Modificando le soglie di una regola, i concorsi già elaborati che la usano vengono
-**rielaborati** automaticamente. I **premi in €** si impostano sul singolo
-**Concorso** (separati per Totocalcio e Under/Over). Import/Export CSV per
-Leghe/Squadre/Giocatori.
+**rielaborati** automaticamente. I **premi** NON si impostano a mano: sono **calcolati
+dal montepremi** (vedi sotto), separati per Totocalcio e Under/Over. Import/Export CSV
+per Leghe/Squadre/Giocatori.
 
 ---
 
@@ -60,10 +60,14 @@ e le partite sono aggiornate senza duplicati. Scarica il **Template** come esemp
 Menu → **Concorsi** → **Nuovo concorso**: nome, **numero di turno**, **Regola**
 (soglie), apertura/chiusura. Nel dettaglio **selezioni le partite** del turno
 (colonna "Disponibili" → "Selezionate") prese dalle giornate delle varie leghe, e
-imposti i **Premi (€)** per soglia — **separati per Totocalcio e Under/Over** (es. il
-13 può valere importi diversi nei due giochi). Salvando i premi, se il concorso è già
-elaborato le vincite vengono ricalcolate. Poi **Apri** (servono partite selezionate),
-**Chiudi**, **Riapri**, **Elabora**.
+vedi il **Montepremi** e i **premi calcolati** per soglia (Totocalcio / Under-Over,
+read-only). Poi **Apri** (servono partite selezionate), **Chiudi**, **Riapri**, **Elabora**.
+
+> **Montepremi** (per gioco, iniziale 500.000 €, mai sotto 300.000): 9 = montepremi ÷
+> schedine giocate; 10 = (9) + 10.000; 11/12/13 = 28%/40%/75% del montepremi **divisi
+> tra i vincitori**. Tra un concorso e l'altro: se nessuno vince 11/12/13 → +30.000;
+> se vincono, il montepremi si erode delle quote vinte. Il montepremi corrente è in
+> **Dashboard**. Toccando un concorso si **rielaborano a cascata** i turni successivi.
 
 ![Dettaglio concorso: selezione partite](/aiuto/12-admin-concorso.png)
 

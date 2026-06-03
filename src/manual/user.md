@@ -46,6 +46,11 @@ A, B, C). Per ciascuna partita esprimi **due** pronostici:
 Devi pronosticare **tutte** le partite (1X2 *e* U/O) prima di poter **Confermare
 la schedina**. C'è una sola schedina per utente per concorso.
 
+In cima trovi il **Montepremi** del concorso (separato per Totocalcio e Under/Over) e
+le **potenziali vincite per ogni soglia**: 9 e 10 sono importi fissi a chi li centra,
+mentre 11/12/13 sono quote del montepremi **divise tra i vincitori**. Gli importi sono
+indicativi (cambiano con le schedine giocate) fino alla chiusura.
+
 ![Compilazione della schedina](/aiuto/03-user-pronostico.png)
 
 ---

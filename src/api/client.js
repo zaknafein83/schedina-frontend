@@ -50,6 +50,7 @@ export const concorsoApi = {
   listOpen: () => apiClient.get('/concorsi'),
   get: (id) => apiClient.get(`/concorsi/${id}`),
   partite: (id) => apiClient.get(`/concorsi/${id}/partite`),
+  montepremi: (id) => apiClient.get(`/concorsi/${id}/montepremi`),
 }
 
 // ─── Calendario / Giornate per-lega (user) — per le scommesse di partita ─────
@@ -155,6 +156,8 @@ export const adminApi = {
   closeConcorso: (id) => apiClient.post(`/admin/concorsi/${id}/close`),
   reopenConcorso: (id) => apiClient.post(`/admin/concorsi/${id}/reopen`),
   processConcorso: (id) => apiClient.post(`/admin/concorsi/${id}/process`),
+  getConcorsoMontepremi: (id) => apiClient.get(`/admin/concorsi/${id}/montepremi`),
+  getMontepremiCurrent: () => apiClient.get('/admin/concorsi/montepremi/current'),
   getConcorsoMatches: (id) => apiClient.get(`/admin/concorsi/${id}/matches`),
   getConcorsoAvailable: (id) => apiClient.get(`/admin/concorsi/${id}/available`),
   addConcorsoMatch: (id, matchId) => apiClient.post(`/admin/concorsi/${id}/matches`, { matchId }),

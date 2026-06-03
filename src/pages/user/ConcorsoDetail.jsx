@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { concorsoApi, schedinaApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
+import MontepremiPanel from '../../components/MontepremiPanel'
 import { ArrowLeft, FileText } from 'lucide-react'
 
 const X12 = [{ ref: '1', label: '1' }, { ref: 'X', label: 'X' }, { ref: '2', label: '2' }]
@@ -17,6 +18,7 @@ export default function ConcorsoDetail() {
 
   const { data: concorso, isLoading } = useQuery({ queryKey: ['concorso', id], queryFn: () => concorsoApi.get(id).then((r) => r.data) })
   const { data: partite } = useQuery({ queryKey: ['concorso-partite', id], queryFn: () => concorsoApi.partite(id).then((r) => r.data) })
+  const { data: montepremi } = useQuery({ queryKey: ['concorso-montepremi', id], queryFn: () => concorsoApi.montepremi(id).then((r) => r.data) })
 
   const submit = useMutation({
     mutationFn: async () => {
@@ -47,7 +49,12 @@ export default function ConcorsoDetail() {
       </Link>
 
       <h1 className="text-2xl font-bold text-gds-white">{concorso.name}</h1>
-      <p className="text-gds-gray mt-1 mb-6">Pronostica esito 1X2 e Under/Over per ogni partita.</p>
+      <p className="text-gds-gray mt-1 mb-4">Pronostica esito 1X2 e Under/Over per ogni partita.</p>
+
+      {/* Montepremi e potenziali vincite per soglia */}
+      <div className="mb-6">
+        <MontepremiPanel projection={montepremi} title="Montepremi e potenziali vincite" />
+      </div>
 
       {!isOpen && <div className="bg-yellow-50 text-yellow-800 rounded-xl p-4 mb-6 text-sm">Questo concorso non è aperto alle giocate.</div>}
 
