@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { adminApi } from '../../api/client'
@@ -7,7 +6,8 @@ import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import WinnersPanel, { winnersFromSchedine } from '../../components/WinnersPanel'
-import { ArrowLeft, Lock, Unlock, Cog, RotateCcw, Plus, X, Trophy } from 'lucide-react'
+import MontepremiPanel from '../../components/MontepremiPanel'
+import { ArrowLeft, Lock, Unlock, Cog, RotateCcw, Plus, X } from 'lucide-react'
 
 const STATUS_COLOR = { DRAFT: 'gray', OPEN: 'green', CLOSED: 'yellow', PROCESSED: 'blue', CANCELLED: 'red' }
 const SCH_COLOR = { WINNING: 'green', NOT_WINNING: 'red', CONFIRMED: 'blue', PROCESSED: 'yellow', DRAFT: 'gray', CANCELLED: 'gray' }
@@ -22,11 +22,13 @@ export default function ConcorsoDetail() {
   const { data: selected } = useQuery({ queryKey: ['admin-concorso-matches', id], queryFn: () => adminApi.getConcorsoMatches(id).then((r) => r.data) })
   const { data: available } = useQuery({ queryKey: ['admin-concorso-available', id], queryFn: () => adminApi.getConcorsoAvailable(id).then((r) => r.data) })
   const { data: schedine } = useQuery({ queryKey: ['admin-concorso-schedine', id], queryFn: () => adminApi.getSchedineByConcorso(id).then((r) => r.data) })
+  const { data: montepremi } = useQuery({ queryKey: ['admin-concorso-montepremi', id], queryFn: () => adminApi.getConcorsoMontepremi(id).then((r) => r.data) })
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['admin-concorso', id] })
     queryClient.invalidateQueries({ queryKey: ['admin-concorso-matches', id] })
     queryClient.invalidateQueries({ queryKey: ['admin-concorso-available', id] })
+    queryClient.invalidateQueries({ queryKey: ['admin-concorso-montepremi', id] })
   }
   const invalidateAll = () => { invalidate(); queryClient.invalidateQueries({ queryKey: ['admin-concorso-schedine', id] }); queryClient.invalidateQueries({ queryKey: ['admin-concorsi'] }) }
 
@@ -36,33 +38,6 @@ export default function ConcorsoDetail() {
   const closeC = useMutation({ mutationFn: () => adminApi.closeConcorso(id), onSuccess: invalidateAll })
   const reopenC = useMutation({ mutationFn: () => adminApi.reopenConcorso(id), onSuccess: invalidateAll, onError: (e) => alert(e.response?.data?.error || 'Errore') })
   const processC = useMutation({ mutationFn: () => adminApi.processConcorso(id), onSuccess: invalidateAll })
-
-  // Editor premi (per gioco). Sincronizzato col concorso caricato.
-  const [prizeRows, setPrizeRows] = useState([])
-  useEffect(() => {
-    if (!concorso) return
-    const p1 = concorso.prizes1x2 || {}
-    const pu = concorso.prizesUo || {}
-    setPrizeRows((concorso.winningThresholds || []).map((t) => ({
-      t, p1x2: p1[t] ?? '', pUo: pu[t] ?? '',
-    })))
-  }, [concorso])
-
-  const setRow = (t, field, value) =>
-    setPrizeRows((rows) => rows.map((r) => (r.t === t ? { ...r, [field]: value } : r)))
-
-  const savePrizes = useMutation({
-    mutationFn: () => {
-      const prizes1x2 = {}, prizesUo = {}
-      for (const r of prizeRows) {
-        prizes1x2[r.t] = Math.round(Number(r.p1x2) || 0)
-        prizesUo[r.t] = Math.round(Number(r.pUo) || 0)
-      }
-      return adminApi.updateConcorso(id, { prizes1x2, prizesUo })
-    },
-    onSuccess: invalidateAll,
-    onError: (e) => alert(e.response?.data?.error || 'Errore salvataggio premi'),
-  })
 
   if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>
   if (!concorso) return <div className="text-gds-gray">Concorso non trovato.</div>
@@ -122,52 +97,9 @@ export default function ConcorsoDetail() {
         </div>
       </div>
 
-      {/* Premi per gioco (specifici del concorso) */}
-      <div className="bg-gds-surface rounded-xl shadow-sm p-4 mb-6">
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2">
-            <Trophy size={18} className="text-gds-pink" />
-            <h2 className="text-lg font-bold text-gds-white">Premi (€)</h2>
-          </div>
-          <Button variant="secondary" onClick={() => savePrizes.mutate()} loading={savePrizes.isPending} disabled={prizeRows.length === 0}>
-            Salva premi
-          </Button>
-        </div>
-        {prizeRows.length === 0 ? (
-          <p className="text-sm text-gds-gray">
-            Nessuna soglia: assegna una <strong>Regola</strong> con le soglie vincenti per impostare i premi.
-          </p>
-        ) : (
-          <>
-            <div className="overflow-x-auto"><table className="w-full text-sm min-w-[420px]">
-              <thead><tr className="text-gds-gray">
-                <th className="px-3 py-2 text-left font-medium">Soglia</th>
-                <th className="px-3 py-2 text-left font-medium">Totocalcio (1X2)</th>
-                <th className="px-3 py-2 text-left font-medium">Under/Over</th>
-              </tr></thead>
-              <tbody>
-                {prizeRows.map((r) => (
-                  <tr key={r.t} className="border-t border-gds-border">
-                    <td className="px-3 py-2 font-semibold text-gds-white">{r.t}</td>
-                    <td className="px-3 py-2">
-                      <input type="number" min="0" step="1" placeholder="0" value={r.p1x2}
-                        onChange={(e) => setRow(r.t, 'p1x2', e.target.value)}
-                        className="w-40 rounded-lg border border-gds-border px-3 py-1.5 text-sm text-gds-white bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink" />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input type="number" min="0" step="1" placeholder="0" value={r.pUo}
-                        onChange={(e) => setRow(r.t, 'pUo', e.target.value)}
-                        className="w-40 rounded-lg border border-gds-border px-3 py-1.5 text-sm text-gds-white bg-gds-surface outline-none focus:ring-2 focus:ring-gds-pink focus:border-gds-pink" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table></div>
-            <p className="text-xs text-gds-gray mt-2">
-              Importi diversi per Totocalcio e Under/Over. Salvando, se il concorso è già elaborato le vincite vengono ricalcolate.
-            </p>
-          </>
-        )}
+      {/* Montepremi e premi calcolati */}
+      <div className="mb-6">
+        <MontepremiPanel projection={montepremi} />
       </div>
 
       {/* Vincitori per modalità */}

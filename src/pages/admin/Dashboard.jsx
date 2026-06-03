@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { adminApi } from '../../api/client'
+import { formatEuro } from '../../utils/format'
 import Spinner from '../../components/Spinner'
-import { Users, FileText, CalendarDays, Coins, CheckCircle, XCircle } from 'lucide-react'
+import { Users, FileText, CalendarDays, Coins, CheckCircle, XCircle, Trophy } from 'lucide-react'
 
 function StatCard({ label, value, sub, icon: Icon, color }) {
   const colorMap = {
@@ -31,6 +32,10 @@ export default function Dashboard() {
     queryKey: ['admin-dashboard'],
     queryFn: () => adminApi.dashboard().then((r) => r.data),
   })
+  const { data: montepremi } = useQuery({
+    queryKey: ['admin-montepremi-current'],
+    queryFn: () => adminApi.getMontepremiCurrent().then((r) => r.data),
+  })
 
   if (isLoading) {
     return <div className="flex justify-center py-20"><Spinner size="lg" /></div>
@@ -47,6 +52,26 @@ export default function Dashboard() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gds-white mb-8">Dashboard</h1>
+
+      {/* Montepremi corrente (prossimo concorso) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div className="bg-gds-surface rounded-xl shadow-sm p-6 flex items-center gap-4">
+          <div className="p-3 rounded-xl shrink-0 bg-gds-pink-light text-gds-pink"><Trophy size={24} /></div>
+          <div>
+            <p className="text-sm text-gds-gray">Montepremi Totocalcio (1X2)</p>
+            <p className="text-3xl font-black text-gds-white mt-0.5">{montepremi ? formatEuro(montepremi.montepremi1x2) : '—'}</p>
+            <p className="text-xs text-gds-gray mt-0.5">per il prossimo concorso</p>
+          </div>
+        </div>
+        <div className="bg-gds-surface rounded-xl shadow-sm p-6 flex items-center gap-4">
+          <div className="p-3 rounded-xl shrink-0 bg-gds-pink-light text-gds-pink"><Trophy size={24} /></div>
+          <div>
+            <p className="text-sm text-gds-gray">Montepremi Under/Over</p>
+            <p className="text-3xl font-black text-gds-white mt-0.5">{montepremi ? formatEuro(montepremi.montepremiUo) : '—'}</p>
+            <p className="text-xs text-gds-gray mt-0.5">per il prossimo concorso</p>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <StatCard label="Utenti totali" value={data?.users?.total}
