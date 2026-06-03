@@ -12,6 +12,11 @@ import { Plus, Pencil, Trash2, Lock, Unlock, Cog, RotateCcw, ChevronRight } from
 
 const STATUS_COLOR = { DRAFT: 'gray', OPEN: 'green', CLOSED: 'yellow', PROCESSED: 'blue', CANCELLED: 'red' }
 
+function fmtDateTime(s) {
+  if (!s) return ''
+  return new Date(s).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
 export default function Concorsi() {
   const queryClient = useQueryClient()
   const location = useLocation()
@@ -36,13 +41,15 @@ export default function Concorsi() {
 
   function openCreate() {
     setEditing(null)
-    reset({ name: '', number: '', seasonId: '', ruleId: '', openAt: '', closeAt: '' })
+    reset({ name: '', number: '', seasonId: '', ruleId: '', date: '', openAt: '', closeAt: '' })
     setModalOpen(true)
   }
   function openEdit(c) {
     setEditing(c)
+    // La "data del concorso" è il giorno della chiusura (giorno delle partite). Gli override restano vuoti:
+    // si compilano solo se si vuole forzare apertura/chiusura, altrimenti vengono ricalcolati dalla data.
     reset({ name: c.name, number: c.number, seasonId: c.seasonId || '', ruleId: c.ruleId || '',
-      openAt: (c.openAt || '').slice(0, 10), closeAt: (c.closeAt || '').slice(0, 10) })
+      date: (c.closeAt || '').slice(0, 10), openAt: '', closeAt: '' })
     setModalOpen(true)
   }
   function closeModal() { setModalOpen(false); setEditing(null); reset() }
@@ -53,9 +60,11 @@ export default function Concorsi() {
       number: Number(data.number),
       seasonId: data.seasonId ? Number(data.seasonId) : undefined,
       ruleId: data.ruleId ? Number(data.ruleId) : undefined,
-      // Solo data: apertura a inizio giornata, chiusura a fine giornata.
-      openAt: data.openAt ? `${data.openAt}T00:00:00` : data.openAt,
-      closeAt: data.closeAt ? `${data.closeAt}T23:59:59` : data.closeAt,
+      // Data del concorso: il server calcola apertura (giorno dopo il turno precedente) e chiusura (20:30).
+      date: data.date || undefined,
+      // Override manuali facoltativi (datetime-local → aggiungo i secondi).
+      openAt: data.openAt ? `${data.openAt}:00` : undefined,
+      closeAt: data.closeAt ? `${data.closeAt}:00` : undefined,
     }
     if (editing) await updateM.mutateAsync({ id: editing.id, data: payload })
     else await createM.mutateAsync(payload)
@@ -135,11 +144,30 @@ export default function Concorsi() {
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Apertura" type="date" error={errors.openAt?.message} {...register('openAt', { required: 'Obbligatorio' })} />
-            <Input label="Chiusura" type="date" error={errors.closeAt?.message} {...register('closeAt', { required: 'Obbligatorio' })} />
-          </div>
-          <p className="text-xs text-gds-gray">Dopo aver creato il concorso, dal dettaglio seleziona le partite del turno {`{`}numero{`}`} tra le leghe.</p>
+          <Input label="Data del concorso (giorno delle partite)" type="date" error={errors.date?.message}
+            {...register('date', { required: 'Obbligatorio' })} />
+          <p className="text-xs text-gds-gray -mt-2">
+            Chiusura automatica alle <strong>20:30</strong> di quel giorno; apertura automatica dal giorno dopo il turno precedente
+            (il primo turno lo apre l'admin).
+          </p>
+
+          {editing && (
+            <p className="text-xs text-gds-gray bg-gds-dark/40 rounded-lg px-3 py-2">
+              Orari attuali — apertura: <strong className="text-gds-white">{fmtDateTime(editing.openAt) || 'manuale (admin)'}</strong>
+              {' · '}chiusura: <strong className="text-gds-white">{fmtDateTime(editing.closeAt)}</strong>
+            </p>
+          )}
+
+          <details className="text-sm">
+            <summary className="cursor-pointer text-gds-gray hover:text-gds-white select-none">Override orari (facoltativo)</summary>
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              <Input label="Apertura (override)" type="datetime-local" {...register('openAt')} />
+              <Input label="Chiusura (override)" type="datetime-local" {...register('closeAt')} />
+            </div>
+            <p className="text-xs text-gds-gray mt-1">Se compilati, prevalgono sul calcolo dalla data. Lasciali vuoti per il calcolo automatico.</p>
+          </details>
+
+          <p className="text-xs text-gds-gray">Dopo aver creato il concorso, dal dettaglio seleziona le partite del turno tra le leghe.</p>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={closeModal}>Annulla</Button>
             <Button type="submit" loading={isSubmitting}>{editing ? 'Salva' : 'Crea'}</Button>
