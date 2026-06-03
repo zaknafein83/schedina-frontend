@@ -92,7 +92,6 @@ export default function Users() {
         <div className="overflow-x-auto"><table className="w-full text-sm min-w-[640px]">
           <thead>
             <tr className="bg-gds-dark text-white">
-              <th className="px-4 py-3 text-left font-semibold">ID</th>
               <th className="px-4 py-3 text-left font-semibold">Nome</th>
               <th className="px-4 py-3 text-left font-semibold">Username</th>
               <th className="px-4 py-3 text-left font-semibold">Email</th>
@@ -105,7 +104,7 @@ export default function Users() {
           <tbody>
             {users?.length === 0 && (
               <tr>
-                <td colSpan={8} className="text-center py-10 text-gds-gray">
+                <td colSpan={7} className="text-center py-10 text-gds-gray">
                   Nessun utente trovato.
                 </td>
               </tr>
@@ -115,7 +114,6 @@ export default function Users() {
                 key={user.id}
                 className="border-t border-gds-border hover:bg-gds-pink-light transition-colors"
               >
-                <td className="px-4 py-3 text-gds-gray text-xs">{user.id}</td>
                 <td className="px-4 py-3 font-medium text-gds-white">
                   {user.firstName} {user.lastName}
                 </td>

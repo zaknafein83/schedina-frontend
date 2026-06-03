@@ -94,8 +94,9 @@ export default function AdminNotifications() {
                     className="border-t border-gds-border hover:bg-gds-pink-light transition-colors"
                   >
                     <td className="px-6 py-3 text-gds-gray">{notif.id}</td>
-                    <td className="px-6 py-3 text-gds-white">
-                      {notif.userId || notif.userEmail || '—'}
+                    <td className="px-6 py-3">
+                      <div className="text-gds-white font-medium">{notif.userUsername || notif.userEmail || `utente ${notif.userId}`}</div>
+                      {notif.userEmail && <div className="text-xs text-gds-gray">{notif.userEmail}</div>}
                     </td>
                     <td className="px-6 py-3 text-gds-gray text-xs font-mono">
                       {notif.type || '—'}
