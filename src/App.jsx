@@ -20,6 +20,7 @@ import Listini from './pages/Listini'
 import Concorsi from './pages/user/Concorsi'
 import ConcorsoDetail from './pages/user/ConcorsoDetail'
 import MySchedine from './pages/user/Schedine'
+import Classifica from './pages/user/Classifica'
 import UserScommesse from './pages/user/Scommesse'
 import UserNotifications from './pages/user/Notifications'
 
@@ -95,6 +96,7 @@ export default function App() {
         <Route path="/concorsi/:id" element={<ConcorsoDetail />} />
         <Route path="/scommesse" element={<UserScommesse />} />
         <Route path="/schedine" element={<MySchedine />} />
+        <Route path="/classifica" element={<Classifica />} />
         <Route path="/notifications" element={<UserNotifications />} />
       </Route>
 

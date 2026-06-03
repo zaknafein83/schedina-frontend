@@ -3,14 +3,15 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import { notificationApi, concorsoApi } from '../api/client'
-import { Bell, Trophy, FileText, Coins, LogOut, BookOpen, List, Menu, X, Clock } from 'lucide-react'
+import { Bell, Trophy, FileText, Coins, LogOut, BookOpen, List, Menu, X, Clock, Medal } from 'lucide-react'
 
 const navItems = [
-  { to: '/concorsi',  label: 'Concorsi',  icon: Trophy },
-  { to: '/scommesse', label: 'Scommesse', icon: Coins },
-  { to: '/schedine',  label: 'Schedine',  icon: FileText },
-  { to: '/listini',   label: 'Listini',   icon: List },
-  { to: '/aiuto',     label: 'Guida',     icon: BookOpen },
+  { to: '/concorsi',   label: 'Concorsi',   icon: Trophy },
+  { to: '/scommesse',  label: 'Scommesse',  icon: Coins },
+  { to: '/schedine',   label: 'Schedine',   icon: FileText },
+  { to: '/classifica', label: 'Classifica', icon: Medal },
+  { to: '/listini',    label: 'Listini',    icon: List },
+  { to: '/aiuto',      label: 'Guida',      icon: BookOpen },
 ]
 
 function fmtCountdown(ms) {
