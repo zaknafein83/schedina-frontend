@@ -28,10 +28,11 @@ Concorso (seleziona partite del turno) → [apri] → utenti compilano →
 ## 0. Anagrafiche
 
 Leghe, **Squadre** (per lega), **Giocatori** (ruolo GK/DEF/MID/FWD), **Stagioni**,
-**Tornei**, **Regole** (soglie vincenti della schedina + **premio in € per soglia**,
-uguale per i due giochi; riusabili). Modificando soglie o premi di una regola, i
-concorsi già elaborati che la usano vengono **rielaborati** automaticamente.
-Import/Export CSV per Leghe/Squadre/Giocatori.
+**Tornei**, **Regole** (solo **soglie vincenti** della schedina; riusabili).
+Modificando le soglie di una regola, i concorsi già elaborati che la usano vengono
+**rielaborati** automaticamente. I **premi in €** si impostano sul singolo
+**Concorso** (separati per Totocalcio e Under/Over). Import/Export CSV per
+Leghe/Squadre/Giocatori.
 
 ---
 
@@ -58,8 +59,11 @@ e le partite sono aggiornate senza duplicati. Scarica il **Template** come esemp
 
 Menu → **Concorsi** → **Nuovo concorso**: nome, **numero di turno**, **Regola**
 (soglie), apertura/chiusura. Nel dettaglio **selezioni le partite** del turno
-(colonna "Disponibili" → "Selezionate") prese dalle giornate delle varie leghe.
-Poi **Apri** (servono partite selezionate), **Chiudi**, **Riapri**, **Elabora**.
+(colonna "Disponibili" → "Selezionate") prese dalle giornate delle varie leghe, e
+imposti i **Premi (€)** per soglia — **separati per Totocalcio e Under/Over** (es. il
+13 può valere importi diversi nei due giochi). Salvando i premi, se il concorso è già
+elaborato le vincite vengono ricalcolate. Poi **Apri** (servono partite selezionate),
+**Chiudi**, **Riapri**, **Elabora**.
 
 ![Dettaglio concorso: selezione partite](/aiuto/12-admin-concorso.png)
 
