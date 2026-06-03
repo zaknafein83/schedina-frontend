@@ -64,6 +64,7 @@ export const giornataApi = {
 export const schedinaApi = {
   listMine: () => apiClient.get('/schedine'),
   winnings: () => apiClient.get('/schedine/winnings'),
+  classifica: () => apiClient.get('/schedine/classifica'),
   get: (id) => apiClient.get(`/schedine/${id}`),
   create: (data) => apiClient.post('/schedine', data), // { concorsoId, pronostici: [{ matchId, choice1x2, choiceUo }] }
   confirm: (id) => apiClient.post(`/schedine/${id}/confirm`),
