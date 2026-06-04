@@ -113,10 +113,10 @@ function MatchCard({ match, players, onSaveScore, saving, onValidate, onScorer, 
         </div>
         <div className="flex items-center gap-2">
           <input type="number" min={0} value={h} onChange={(e) => setH(e.target.value)} placeholder="–" disabled={validated}
-            className="w-14 text-center rounded-lg border border-gds-border px-2 py-1.5 text-sm focus:ring-2 focus:ring-gds-pink outline-none disabled:bg-gds-pink-light" />
+            className="w-14 text-center rounded-lg border border-gds-border px-2 py-1.5 text-sm bg-white text-gray-900 font-semibold focus:ring-2 focus:ring-gds-pink outline-none disabled:bg-gds-pink-light" />
           <span className="text-gds-gray">-</span>
           <input type="number" min={0} value={a} onChange={(e) => setA(e.target.value)} placeholder="–" disabled={validated}
-            className="w-14 text-center rounded-lg border border-gds-border px-2 py-1.5 text-sm focus:ring-2 focus:ring-gds-pink outline-none disabled:bg-gds-pink-light" />
+            className="w-14 text-center rounded-lg border border-gds-border px-2 py-1.5 text-sm bg-white text-gray-900 font-semibold focus:ring-2 focus:ring-gds-pink outline-none disabled:bg-gds-pink-light" />
           {!validated && (
             <Button size="sm" variant="secondary" loading={saving}
               disabled={h === '' || a === ''} onClick={() => onSaveScore(h, a)}><Save size={14} /> Salva</Button>
