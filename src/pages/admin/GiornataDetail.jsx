@@ -159,7 +159,7 @@ function AddMatchModal({ isOpen, onClose, giornataId, teams, onCreated }) {
   const [home, setHome] = useState('')
   const [away, setAway] = useState('')
   const [when, setWhen] = useState(todayLocal())
-  const [line, setLine] = useState(2.5)
+  const [line, setLine] = useState(3.5)
   const [err, setErr] = useState('')
 
   const create = useMutation({
@@ -172,7 +172,7 @@ function AddMatchModal({ isOpen, onClose, giornataId, teams, onCreated }) {
     onError: (e) => setErr(e.response?.data?.error || 'Errore nella creazione'),
   })
 
-  function reset() { setHome(''); setAway(''); setWhen(todayLocal()); setLine(2.5); setErr('') }
+  function reset() { setHome(''); setAway(''); setWhen(todayLocal()); setLine(3.5); setErr('') }
   function close() { reset(); onClose() }
   function submit() {
     setErr('')
