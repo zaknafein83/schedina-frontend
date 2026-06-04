@@ -31,7 +31,12 @@ export default function WinnersPanel({ title, winners }) {
 
 /** Costruisce le due liste vincitori (1X2 / U/O) da un elenco di schedine. */
 export function winnersFromSchedine(schedine) {
-  const name = (s) => s.userUsername || s.userEmail || `utente ${s.userId}`
+  const name = (s) => {
+    const full = [s.userFirstName, s.userLastName].filter(Boolean).join(' ').trim()
+    const uname = s.userUsername || s.userEmail
+    if (full && uname) return `${full} (${uname})`
+    return full || uname || `utente ${s.userId}`
+  }
   const totocalcio = (schedine || []).filter((s) => s.isWinner1x2)
     .map((s) => ({ id: s.id, name: name(s), count: s.correct1x2Count, prize: s.prize1x2 }))
   const underOver = (schedine || []).filter((s) => s.isWinnerUo)
