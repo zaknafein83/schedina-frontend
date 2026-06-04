@@ -51,7 +51,7 @@ export default function Classifica() {
                     className={`border-t border-gds-border transition-colors ${isMe ? 'bg-gds-pink/15' : 'hover:bg-gds-pink-light'}`}>
                     <td className="px-4 py-3 font-bold text-gds-white">{MEDAL[r.rank] || r.rank}</td>
                     <td className="px-4 py-3">
-                      <span className="font-medium text-gds-white">{r.username || r.fullName || '—'}</span>
+                      <span className="font-medium text-gds-white">{r.fullName || r.username || '—'}</span>
                       {isMe && <span className="ml-2 text-xs text-gds-pink font-semibold">(tu)</span>}
                     </td>
                     <td className="px-4 py-3 text-right font-bold text-gds-white tabular-nums">{formatEuro(r.total)}</td>
