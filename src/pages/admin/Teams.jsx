@@ -60,13 +60,13 @@ export default function Teams() {
 
   function openCreate() {
     setEditing(null)
-    reset({ name: '', leagueId: filterLeagueId || '' })
+    reset({ name: '', leagueId: filterLeagueId || '', autofillExcluded: false })
     setModalOpen(true)
   }
 
   function openEdit(team) {
     setEditing(team)
-    reset({ name: team.name, leagueId: team.leagueId || '' })
+    reset({ name: team.name, leagueId: team.leagueId || '', autofillExcluded: !!team.autofillExcluded })
     setModalOpen(true)
   }
 
@@ -163,6 +163,11 @@ export default function Teams() {
                     <td className="px-6 py-3 text-gds-gray">{team.id}</td>
                     <td className="px-6 py-3 font-medium text-gds-white">
                       {team.name}
+                      {team.autofillExcluded && (
+                        <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-amber-300 bg-amber-500/15 border border-amber-500/30 rounded px-1.5 py-0.5">
+                          no autofill
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-3 text-gds-gray">
                       {league?.name || team.leagueId || '—'}
@@ -221,6 +226,13 @@ export default function Teams() {
               <p className="text-xs text-red-600">{errors.leagueId.message}</p>
             )}
           </div>
+          <label className="flex items-start gap-2 text-sm text-gds-white cursor-pointer">
+            <input type="checkbox" {...register('autofillExcluded')} className="mt-0.5" />
+            <span>
+              Escludi dall'autocompletamento
+              <span className="block text-xs text-gds-gray">Deprioritizza questa squadra: l'autofill la usa solo se servono partite per raggiungere la quota.</span>
+            </span>
+          </label>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={closeModal}>
               Annulla
