@@ -23,6 +23,8 @@ export default function ConcorsoDetail() {
   const { data: available } = useQuery({ queryKey: ['admin-concorso-available', id], queryFn: () => adminApi.getConcorsoAvailable(id).then((r) => r.data) })
   const { data: schedine } = useQuery({ queryKey: ['admin-concorso-schedine', id], queryFn: () => adminApi.getSchedineByConcorso(id).then((r) => r.data) })
   const { data: montepremi } = useQuery({ queryKey: ['admin-concorso-montepremi', id], queryFn: () => adminApi.getConcorsoMontepremi(id).then((r) => r.data) })
+  const { data: leagues } = useQuery({ queryKey: ['admin-leagues'], queryFn: () => adminApi.getLeagues().then((r) => r.data) })
+  const leagueName = (lid) => leagues?.find((l) => l.id === lid)?.name || ''
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['admin-concorso', id] })
@@ -95,7 +97,11 @@ export default function ConcorsoDetail() {
               <div key={m.id} className="bg-gds-surface rounded-xl shadow-sm p-3 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gds-white">{m.homeTeamName} – {m.awayTeamName}</p>
-                  <p className="text-xs text-gds-gray">{m.result1x2 ? `Esito ${m.result1x2} · ${m.resultUO === 'O' ? 'Over' : 'Under'} ${m.overUnderLine}` : 'in attesa di punteggio'}</p>
+                  <p className="text-xs text-gds-gray">
+                    {leagueName(m.leagueId) && <span className="text-gds-pink">{leagueName(m.leagueId)}</span>}
+                    {leagueName(m.leagueId) && ' · '}
+                    {m.result1x2 ? `Esito ${m.result1x2} · ${m.resultUO === 'O' ? 'Over' : 'Under'} ${m.overUnderLine}` : 'in attesa di punteggio'}
+                  </p>
                 </div>
                 <button title="Rimuovi" onClick={() => removeM.mutate(m.id)} className="p-2 rounded-lg hover:bg-red-50 text-red-600"><X size={16} /></button>
               </div>
@@ -110,7 +116,10 @@ export default function ConcorsoDetail() {
             {available?.length === 0 && <div className="bg-gds-surface rounded-xl p-5 text-center text-gds-gray text-sm">Nessuna partita libera del turno {concorso.number}. Creale dal Calendario.</div>}
             {available?.map((m) => (
               <div key={m.id} className="bg-gds-surface rounded-xl shadow-sm p-3 flex items-center justify-between">
-                <p className="text-sm font-medium text-gds-white">{m.homeTeamName} – {m.awayTeamName}</p>
+                <div>
+                  <p className="text-sm font-medium text-gds-white">{m.homeTeamName} – {m.awayTeamName}</p>
+                  {leagueName(m.leagueId) && <p className="text-xs text-gds-pink">{leagueName(m.leagueId)}</p>}
+                </div>
                 <button title="Aggiungi" onClick={() => addM.mutate(m.id)} className="p-2 rounded-lg hover:bg-green-50 text-green-600"><Plus size={16} /></button>
               </div>
             ))}
