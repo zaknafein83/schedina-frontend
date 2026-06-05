@@ -7,7 +7,7 @@ import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import WinnersPanel, { winnersFromSchedine } from '../../components/WinnersPanel'
 import MontepremiPanel from '../../components/MontepremiPanel'
-import { ArrowLeft, Lock, Unlock, Cog, RotateCcw, Plus, X } from 'lucide-react'
+import { ArrowLeft, Lock, Unlock, Cog, RotateCcw, Plus, X, Sparkles } from 'lucide-react'
 
 const STATUS_COLOR = { DRAFT: 'gray', OPEN: 'green', CLOSED: 'yellow', PROCESSED: 'blue', CANCELLED: 'red' }
 const SCH_COLOR = { WINNING: 'green', NOT_WINNING: 'red', CONFIRMED: 'blue', PROCESSED: 'yellow', DRAFT: 'gray', CANCELLED: 'gray' }
@@ -33,6 +33,19 @@ export default function ConcorsoDetail() {
   const invalidateAll = () => { invalidate(); queryClient.invalidateQueries({ queryKey: ['admin-concorso-schedine', id] }); queryClient.invalidateQueries({ queryKey: ['admin-concorsi'] }) }
 
   const addM = useMutation({ mutationFn: (matchId) => adminApi.addConcorsoMatch(id, matchId), onSuccess: invalidate, onError: (e) => alert(e.response?.data?.error || 'Errore') })
+  const autofillM = useMutation({
+    mutationFn: () => adminApi.autofillConcorso(id),
+    onSuccess: (res) => {
+      invalidate()
+      const d = res.data || {}
+      const short = (d.detail || []).filter((x) => x.shortfall > 0)
+      if (short.length) {
+        alert('Autocompletamento parziale — partite disponibili insufficienti per:\n' +
+          short.map((x) => `• ${x.league}: aggiunte ${x.added}/${x.target} (mancano ${x.shortfall})`).join('\n'))
+      }
+    },
+    onError: (e) => alert(e.response?.data?.error || 'Errore autocompletamento'),
+  })
   const removeM = useMutation({ mutationFn: (matchId) => adminApi.removeConcorsoMatch(id, matchId), onSuccess: invalidate })
   const openC = useMutation({ mutationFn: () => adminApi.openConcorso(id), onSuccess: invalidateAll, onError: (e) => alert(e.response?.data?.error || 'Errore apertura') })
   const closeC = useMutation({ mutationFn: () => adminApi.closeConcorso(id), onSuccess: invalidateAll })
@@ -62,6 +75,14 @@ export default function ConcorsoDetail() {
           {(concorso.status === 'CLOSED' || concorso.status === 'PROCESSED') && <Button variant="secondary" onClick={() => processC.mutate()} loading={processC.isPending}><Cog size={16} /> Elabora</Button>}
           {(concorso.status === 'CLOSED' || concorso.status === 'PROCESSED') && <Button variant="secondary" onClick={() => reopenC.mutate()}><RotateCcw size={16} /> Riapri</Button>}
         </div>
+      </div>
+
+      {/* Autocompletamento partite */}
+      <div className="bg-gds-surface rounded-xl p-3 mb-4 flex flex-wrap items-center justify-between gap-2">
+        <span className="text-sm text-gds-gray">Seleziona automaticamente <strong className="text-gds-white">5 Serie A · 5 Serie B · 3 Serie C</strong> (poi puoi sostituire a mano).</span>
+        <Button variant="secondary" onClick={() => autofillM.mutate()} loading={autofillM.isPending}>
+          <Sparkles size={16} /> Autocompleta
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
