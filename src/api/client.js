@@ -163,6 +163,7 @@ export const adminApi = {
   getConcorsoMatches: (id) => apiClient.get(`/admin/concorsi/${id}/matches`),
   getConcorsoAvailable: (id) => apiClient.get(`/admin/concorsi/${id}/available`),
   addConcorsoMatch: (id, matchId) => apiClient.post(`/admin/concorsi/${id}/matches`, { matchId }),
+  autofillConcorso: (id, distribution) => apiClient.post(`/admin/concorsi/${id}/autofill`, distribution || {}),
   removeConcorsoMatch: (id, matchId) => apiClient.delete(`/admin/concorsi/${id}/matches/${matchId}`),
 
   // Scommesse fine campionato (self-service: l'admin dichiara solo il risultato)
