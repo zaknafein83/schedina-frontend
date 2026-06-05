@@ -81,7 +81,7 @@ export default function ConcorsoDetail() {
 
       {/* Autocompletamento partite */}
       <div className="bg-gds-surface rounded-xl p-3 mb-4 flex flex-wrap items-center justify-between gap-2">
-        <span className="text-sm text-gds-gray">Seleziona automaticamente <strong className="text-gds-white">5 Serie A · 5 Serie B · 3 Serie C</strong> (poi puoi sostituire a mano).</span>
+        <span className="text-sm text-gds-gray">Seleziona automaticamente <strong className="text-gds-white">5 Serie A · 5 Serie B · 3 Serie C</strong>. Se in Serie C non bastano le partite senza squadre escluse, i posti passano alla Serie B (es. 5-6-2). Poi puoi sostituire a mano.</span>
         <Button variant="secondary" onClick={() => autofillM.mutate()} loading={autofillM.isPending}>
           <Sparkles size={16} /> Autocompleta
         </Button>
