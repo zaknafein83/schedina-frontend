@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { concorsoApi, schedinaApi } from '../../api/client'
+import { concorsoApi, schedinaApi, listiniApi } from '../../api/client'
 import Spinner from '../../components/Spinner'
 import Button from '../../components/ui/Button'
 import MontepremiPanel from '../../components/MontepremiPanel'
@@ -19,6 +19,8 @@ export default function ConcorsoDetail() {
   const { data: concorso, isLoading } = useQuery({ queryKey: ['concorso', id], queryFn: () => concorsoApi.get(id).then((r) => r.data) })
   const { data: partite } = useQuery({ queryKey: ['concorso-partite', id], queryFn: () => concorsoApi.partite(id).then((r) => r.data) })
   const { data: montepremi } = useQuery({ queryKey: ['concorso-montepremi', id], queryFn: () => concorsoApi.montepremi(id).then((r) => r.data) })
+  const { data: leagues } = useQuery({ queryKey: ['listini-leagues'], queryFn: () => listiniApi.leagues().then((r) => r.data) })
+  const leagueName = (lid) => leagues?.find((l) => l.id === lid)?.name || ''
 
   // Una sola schedina per utente/concorso: se ne ha già una (non annullata), niente nuova giocata.
   const { data: mySchedine } = useQuery({ queryKey: ['my-schedine'], queryFn: () => schedinaApi.listMine().then((r) => r.data) })
@@ -88,6 +90,7 @@ export default function ConcorsoDetail() {
           const uo = [{ ref: 'U', label: `Under ${m.overUnderLine}` }, { ref: 'O', label: `Over ${m.overUnderLine}` }]
           return (
             <div key={m.id} className="bg-gds-surface rounded-xl shadow-sm p-4">
+              {leagueName(m.leagueId) && <p className="text-xs text-gds-pink mb-0.5">{leagueName(m.leagueId)}</p>}
               <p className="font-semibold text-gds-white mb-3">{m.homeTeamName} – {m.awayTeamName}</p>
               <div className="space-y-2">
                 <div>
