@@ -23,7 +23,7 @@ export default function ForgotPassword() {
     setServerError('')
     setResult(null)
     try {
-      const res = await authApi.forgotPassword(data.email)
+      const res = await authApi.forgotPassword(data.email.trim().toLowerCase())
       setResult(res.data)
     } catch (err) {
       setServerError(
