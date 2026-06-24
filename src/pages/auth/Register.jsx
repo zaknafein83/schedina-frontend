@@ -25,7 +25,7 @@ export default function Register() {
     setServerError('')
     try {
       await authApi.register({
-        email: data.email,
+        email: data.email.trim().toLowerCase(),
         password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,

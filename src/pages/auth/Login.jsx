@@ -21,7 +21,7 @@ export default function Login() {
     document.activeElement?.blur()
     setServerError('')
     try {
-      const user = await login(data.email, data.password)
+      const user = await login(data.email.trim().toLowerCase(), data.password)
       // ProtectedRoute mostrerà uno spinner mentre user si carica,
       // poi renderizzerà la pagina corretta
       const dest = user.role === 'ADMIN' ? '/admin' : user.role === 'MOD' ? '/mod/concorsi' : '/concorsi'

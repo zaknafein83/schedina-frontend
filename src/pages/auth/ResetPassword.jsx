@@ -29,7 +29,7 @@ export default function ResetPassword() {
     document.activeElement?.blur()
     setServerError('')
     try {
-      await authApi.resetPassword(data.token, data.newPassword)
+      await authApi.resetPassword(data.token.trim(), data.newPassword)
       setSuccess(true)
       setTimeout(() => navigate('/login'), 2500)
     } catch (err) {
